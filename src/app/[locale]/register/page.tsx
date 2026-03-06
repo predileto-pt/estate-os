@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useDictionary } from "@/components/dictionary-provider";
+import { GoogleIcon } from "@/components/ui/google-icon";
 
 export default function RegisterPage() {
   const { locale } = useParams<{ locale: string }>();
@@ -109,8 +110,9 @@ export default function RegisterPage() {
 
         <button
           onClick={handleGoogleSignUp}
-          className="w-full border border-gray-200 py-2 text-sm font-heading hover:bg-gray-50"
+          className="w-full flex items-center justify-center gap-2 border border-gray-200 py-2 text-sm font-heading hover:bg-gray-50"
         >
+          <GoogleIcon />
           {d.signInWithGoogle}
         </button>
 
