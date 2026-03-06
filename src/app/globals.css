@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Bernino";
+  src: url("/fonts/bernino/bernino-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bernino";
+  src: url("/fonts/bernino/bernino-semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bernino";
+  src: url("/fonts/bernino/bernino-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-heading: "Bernino", sans-serif;
+  --font-body: "Bernino", sans-serif;
+}
+
+body {
+  font-family: "Bernino", sans-serif;
+  background: #f5f5f4;
+  color: #111;
+  font-size: 14px;
+}

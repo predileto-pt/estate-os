@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "title": "Predileto"
+  },
+  "common": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "dashboard": {
+    "agendamentos": "Visit Requests",
+    "approve": "Approve",
+    "reject": "Reject",
+    "logout": "Logout",
+    "yes": "Yes",
+    "no": "No",
+    "idDocument": "ID Document",
+    "proofOfIncome": "Proof of Income",
+    "message": "Message",
+    "noAgendamentos": "No pending visit requests.",
+    "login": "Sign In",
+    "register": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match.",
+    "signInWithGoogle": "Sign in with Google",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginError": "Invalid email or password."
+  }
+}

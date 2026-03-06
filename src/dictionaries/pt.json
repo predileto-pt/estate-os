@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "title": "Predileto"
+  },
+  "common": {
+    "previous": "Anterior",
+    "next": "Seguinte"
+  },
+  "dashboard": {
+    "agendamentos": "Agendamentos",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "logout": "Sair",
+    "yes": "Sim",
+    "no": "Não",
+    "idDocument": "Documento de Identificação",
+    "proofOfIncome": "Comprovativo de Rendimentos",
+    "message": "Mensagem",
+    "noAgendamentos": "Não existem agendamentos pendentes.",
+    "login": "Entrar",
+    "register": "Criar Conta",
+    "email": "Email",
+    "password": "Palavra-passe",
+    "confirmPassword": "Confirmar Palavra-passe",
+    "passwordMismatch": "As palavras-passe não coincidem.",
+    "signInWithGoogle": "Entrar com Google",
+    "noAccount": "Não tem conta?",
+    "hasAccount": "Já tem conta?",
+    "loginError": "Email ou palavra-passe incorretos."
+  }
+}
