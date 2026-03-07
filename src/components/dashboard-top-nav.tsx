@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { useDictionary } from "@/components/dictionary-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { createClient } from "@/lib/supabase/client";
@@ -16,7 +17,11 @@ export function DashboardTopNav({
 }) {
   const dict = useDictionary();
   const d = dict.dashboard;
+  const pathname = usePathname();
   const router = useRouter();
+
+  const agendamentosHref = `/${locale}/dashboard/agendamentos`;
+  const agendamentosActive = pathname.startsWith(agendamentosHref);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -36,8 +41,13 @@ export function DashboardTopNav({
             Predileto Dashboard
           </Link>
           <Link
-            href={`/${locale}/dashboard/agendamentos`}
-            className="text-sm font-heading text-gray-400 hover:text-gray-600"
+            href={agendamentosHref}
+            className={cn(
+              "text-sm font-heading",
+              agendamentosActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600",
+            )}
           >
             {d.agendamentos}
           </Link>

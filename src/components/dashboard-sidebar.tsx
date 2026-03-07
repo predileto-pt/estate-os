@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useDictionary } from "@/components/dictionary-provider";
+import { AgendamentosSidebar } from "@/app/[locale]/dashboard/agendamentos/components/agendamentos-sidebar";
 import type { Locale } from "@/lib/i18n";
 
 const sidebarItems = [
@@ -39,6 +40,11 @@ export function DashboardSidebar({ locale }: { locale: Locale }) {
           );
         })}
       </ul>
+      {pathname.includes("/dashboard/agendamentos") && (
+        <div className="mt-4">
+          <AgendamentosSidebar />
+        </div>
+      )}
     </div>
   );
 }

@@ -3,15 +3,59 @@
 import { useTransition } from "react";
 import type { AgendamentoRow } from "@/lib/db-types";
 import type { Dictionary } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
+import { Small } from "@/components/ui/small";
+import { cn, formatPrice, formatDate } from "@/lib/utils";
 import { approveAgendamento, rejectAgendamento } from "../actions";
+
+const statusBorderStyles = {
+  pending: "border-l-gray-300",
+  approved: "border-l-green-600",
+  rejected: "border-l-red-600",
+} as const;
+
+const statusBadgeStyles = {
+  approved: "bg-green-100 text-green-700",
+  rejected: "bg-red-100 text-red-700",
+} as const;
+
+function timeAgo(dateString: string, locale: string): string {
+  const now = Date.now();
+  const then = new Date(dateString).getTime();
+  const diffSeconds = Math.floor((now - then) / 1000);
+
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60],
+  ];
+
+  if (diffSeconds < 60) {
+    return new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(0, "second");
+  }
+
+  for (const [unit, seconds] of units) {
+    const value = Math.floor(diffSeconds / seconds);
+    if (value >= 1) {
+      if (unit === "day" && value >= 30) {
+        return formatDate(dateString, locale);
+      }
+      return new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(-value, unit);
+    }
+  }
+
+  return formatDate(dateString, locale);
+}
 
 export function AgendamentoCard({
   agendamento,
   dict,
+  locale,
 }: {
   agendamento: AgendamentoRow;
   dict: Dictionary["dashboard"];
+  locale: Locale;
 }) {
   const [pending, startTransition] = useTransition();
   const a = agendamento;
@@ -25,48 +69,111 @@ export function AgendamentoCard({
   }
 
   return (
-    <div className="border border-gray-200 bg-white p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold font-heading text-blue-600">
-          {a.visitor_name}
-        </h3>
-        <Badge>{a.property_title}</Badge>
+    <div
+      className={cn(
+        "border border-gray-200 border-l-4 bg-white",
+        statusBorderStyles[a.status]
+      )}
+    >
+      {/* A. Property header */}
+      <div className="bg-gray-50 px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold font-heading text-gray-900">
+            {a.property_title}
+          </h3>
+          <div className="flex items-center gap-2">
+            {a.property_price != null && (
+              <span className="text-sm font-bold font-heading text-gray-700">
+                {formatPrice(a.property_price, locale)}
+              </span>
+            )}
+            <Small as="time" className="text-gray-400">
+              {timeAgo(a.created_at, locale)}
+            </Small>
+          </div>
+        </div>
+        {a.property_address && (
+          <p className="text-xs text-gray-400 mt-0.5">{a.property_address}</p>
+        )}
       </div>
 
-      <div className="space-y-1 mb-3">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">{dict.idDocument}</span>
-          <span className={a.has_id_document ? "text-green-600" : "text-red-600"}>
-            {a.has_id_document ? dict.yes : dict.no}
-          </span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">{dict.proofOfIncome}</span>
-          <span className={a.has_proof_of_income ? "text-green-600" : "text-red-600"}>
-            {a.has_proof_of_income ? dict.yes : dict.no}
-          </span>
+      {/* B. Visitor info */}
+      <div className="px-4 py-3">
+        <Small variant="label">{dict.visitor}</Small>
+        <p className="text-sm font-bold text-blue-600 mt-1">{a.visitor_name}</p>
+        <div className="flex items-center gap-3 mt-0.5">
+          <span className="text-xs text-gray-500">{a.visitor_email}</span>
+          {a.visitor_phone && (
+            <span className="text-xs text-gray-500">{a.visitor_phone}</span>
+          )}
         </div>
       </div>
 
+      {/* C. Documents */}
+      <div className="px-4 py-3 border-t border-gray-100">
+        <Small variant="label">{dict.documents}</Small>
+        <div className="space-y-1 mt-1">
+          <div className="flex items-center gap-2 text-sm">
+            {a.has_id_document ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#16a34a" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            ) : (
+              <svg className="text-red-600" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+            )}
+            <span className="text-gray-500">{dict.idDocument}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            {a.has_proof_of_income ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#16a34a" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            ) : (
+              <svg className="text-red-600" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+            )}
+            <span className="text-gray-500">{dict.proofOfIncome}</span>
+          </div>
+          {!a.has_proof_of_income && a.justification && (
+            <p className="text-xs text-red-600 ml-6">{a.justification}</p>
+          )}
+        </div>
+      </div>
+
+      {/* D. Message (conditional) */}
       {a.message && (
-        <p className="text-xs text-gray-400 mb-3">{a.message}</p>
+        <div className="px-4 py-3 border-t border-gray-100">
+          <Small variant="label">{dict.visitorMessage}</Small>
+          <div className="mt-1 border-l-2 border-gray-200 bg-gray-50 px-3 py-2">
+            <p className="text-xs text-gray-600">{a.message}</p>
+          </div>
+        </div>
       )}
 
-      <div className="flex gap-2">
-        <button
-          onClick={handleApprove}
-          disabled={pending}
-          className="px-3 py-1.5 text-sm text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
-        >
-          {dict.approve}
-        </button>
-        <button
-          onClick={handleReject}
-          disabled={pending}
-          className="px-3 py-1.5 text-sm text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
-        >
-          {dict.reject}
-        </button>
+      {/* E. Actions footer */}
+      <div className="px-4 py-3 border-t border-gray-100">
+        {a.status === "pending" ? (
+          <div className="flex gap-2">
+            <button
+              onClick={handleApprove}
+              disabled={pending}
+              className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 border border-green-700 shadow-[inset_0_2px_0_0_rgba(255,255,255,0.1),inset_0_-2px_0_0_rgba(0,0,0,0.1)] disabled:opacity-50 transition-colors duration-300 cursor-pointer"
+            >
+              {dict.approve}
+            </button>
+            <button
+              onClick={handleReject}
+              disabled={pending}
+              className="px-3 py-1.5 text-sm font-medium text-stone-700 bg-white hover:bg-stone-50 border border-stone-300 hover:border-stone-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.8)] disabled:opacity-50 transition-colors duration-300 cursor-pointer"
+            >
+              {dict.reject}
+            </button>
+          </div>
+        ) : (
+          <span
+            className={cn(
+              "inline-block px-2 py-1 text-xs font-medium rounded",
+              statusBadgeStyles[a.status as "approved" | "rejected"]
+            )}
+          >
+            {dict[a.status as "approved" | "rejected"]}
+          </span>
+        )}
       </div>
     </div>
   );

@@ -26,6 +26,15 @@
     "signInWithGoogle": "Entrar com Google",
     "noAccount": "Não tem conta?",
     "hasAccount": "Já tem conta?",
-    "loginError": "Email ou palavra-passe incorretos."
+    "loginError": "Email ou palavra-passe incorretos.",
+    "pending": "Pendentes",
+    "approved": "Aprovados",
+    "rejected": "Rejeitados",
+    "all": "Todos",
+    "status": "Estado",
+    "visitor": "Visitante",
+    "property": "Imóvel",
+    "documents": "Documentos",
+    "visitorMessage": "Mensagem do visitante"
   }
 }

@@ -26,6 +26,15 @@
     "signInWithGoogle": "Sign in with Google",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "loginError": "Invalid email or password."
+    "loginError": "Invalid email or password.",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "all": "All",
+    "status": "Status",
+    "visitor": "Visitor",
+    "property": "Property",
+    "documents": "Documents",
+    "visitorMessage": "Visitor message"
   }
 }
