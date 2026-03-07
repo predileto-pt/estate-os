@@ -4,16 +4,16 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { resend } from "@/lib/resend";
 
-export async function approveAgendamento(id: string) {
+export async function approveApplicant(id: string) {
   const supabase = await createClient();
 
-  const { data: agendamento } = await supabase
+  const { data: applicant } = await supabase
     .from("agendamentos")
     .select("*")
     .eq("id", id)
     .single();
 
-  if (!agendamento) return;
+  if (!applicant) return;
 
   await supabase
     .from("agendamentos")
@@ -26,11 +26,11 @@ export async function approveAgendamento(id: string) {
 
   await resend.emails.send({
     from: "Predileto <noreply@predileto.pt>",
-    to: agendamento.visitor_email,
+    to: applicant.visitor_email,
     subject: "Visita Aprovada - Predileto",
     html: `
-      <h2>Parabéns, ${agendamento.visitor_name}!</h2>
-      <p>A sua visita ao imóvel <strong>${agendamento.property_title}</strong> foi aprovada.</p>
+      <h2>Parabéns, ${applicant.visitor_name}!</h2>
+      <p>A sua visita ao imóvel <strong>${applicant.property_title}</strong> foi aprovada.</p>
       <p>A imobiliária entrará em contacto consigo brevemente para agendar a visita.</p>
       <p>Obrigado por utilizar o Predileto.</p>
     `,
@@ -39,16 +39,16 @@ export async function approveAgendamento(id: string) {
   revalidatePath("/");
 }
 
-export async function rejectAgendamento(id: string) {
+export async function rejectApplicant(id: string) {
   const supabase = await createClient();
 
-  const { data: agendamento } = await supabase
+  const { data: applicant } = await supabase
     .from("agendamentos")
     .select("*")
     .eq("id", id)
     .single();
 
-  if (!agendamento) return;
+  if (!applicant) return;
 
   await supabase
     .from("agendamentos")
@@ -61,11 +61,11 @@ export async function rejectAgendamento(id: string) {
 
   await resend.emails.send({
     from: "Predileto <noreply@predileto.pt>",
-    to: agendamento.visitor_email,
+    to: applicant.visitor_email,
     subject: "Atualização sobre a sua visita - Predileto",
     html: `
-      <h2>Olá, ${agendamento.visitor_name}</h2>
-      <p>Lamentamos informar que o seu pedido de visita ao imóvel <strong>${agendamento.property_title}</strong> não foi aprovado desta vez.</p>
+      <h2>Olá, ${applicant.visitor_name}</h2>
+      <p>Lamentamos informar que o seu pedido de visita ao imóvel <strong>${applicant.property_title}</strong> não foi aprovado desta vez.</p>
       <p>Possíveis razões:</p>
       <ul>
         <li>Documentação incompleta (documento de identificação ou comprovativo de rendimentos em falta)</li>

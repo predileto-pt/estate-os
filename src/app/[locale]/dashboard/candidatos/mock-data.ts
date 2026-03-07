@@ -1,6 +1,6 @@
-import type { AgendamentoRow } from "@/lib/db-types";
+import type { ApplicantRow } from "@/lib/db-types";
 
-export function getMockAgendamentos(): AgendamentoRow[] {
+export function getMockApplicants(): ApplicantRow[] {
   const now = new Date().toISOString();
 
   return [

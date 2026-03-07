@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AgendamentosSidebar } from "@/app/[locale]/dashboard/agendamentos/components/agendamentos-sidebar";
+import { ApplicantsSidebar } from "@/app/[locale]/dashboard/candidatos/components/applicants-sidebar";
 import { SettingsSidebar } from "@/app/[locale]/dashboard/settings/components/settings-sidebar";
 
 export function DashboardSidebar() {
@@ -10,7 +10,7 @@ export function DashboardSidebar() {
 
   return (
     <div className="border border-gray-200 bg-white p-4">
-      {isSettings ? <SettingsSidebar /> : <AgendamentosSidebar />}
+      {isSettings ? <SettingsSidebar /> : <ApplicantsSidebar />}
     </div>
   );
 }

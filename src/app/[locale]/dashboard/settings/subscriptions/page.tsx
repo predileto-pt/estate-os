@@ -41,7 +41,7 @@ export default async function SubscriptionsPage({
                 </span>
               )}
             </div>
-            <p className="text-2xl font-bold">
+            <p className="text-4xl font-bold">
               {plan.price === 0 ? (
                 d.free
               ) : (

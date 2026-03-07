@@ -7,7 +7,7 @@ import { useDictionary } from "@/components/dictionary-provider";
 
 const statusFilters = ["pending", "approved", "rejected", "all"] as const;
 
-export function AgendamentosSidebar() {
+export function ApplicantsSidebar() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const dict = useDictionary();

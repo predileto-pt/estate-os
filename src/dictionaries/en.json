@@ -7,7 +7,7 @@
     "next": "Next"
   },
   "dashboard": {
-    "agendamentos": "Visit Requests",
+    "candidatos": "Applicants",
     "approve": "Approve",
     "reject": "Reject",
     "logout": "Logout",
@@ -16,7 +16,7 @@
     "idDocument": "ID Document",
     "proofOfIncome": "Proof of Income",
     "message": "Message",
-    "noAgendamentos": "No pending visit requests.",
+    "noCandidatos": "No pending applicants.",
     "login": "Sign In",
     "register": "Create Account",
     "email": "Email",

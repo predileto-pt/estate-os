@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { AgendamentoList } from "./components/agendamento-list";
-import { getMockAgendamentos } from "./mock-data";
-import type { AgendamentoStatus } from "@/lib/db-types";
+import { ApplicantList } from "./components/applicant-list";
+import { getMockApplicants } from "./mock-data";
+import type { ApplicantStatus } from "@/lib/db-types";
 
-const validStatuses: AgendamentoStatus[] = ["pending", "approved", "rejected"];
+const validStatuses: ApplicantStatus[] = ["pending", "approved", "rejected"];
 
-export default async function AgendamentosPage({
+export default async function CandidatosPage({
   params,
   searchParams,
 }: {
@@ -30,11 +30,11 @@ export default async function AgendamentosPage({
   const isTester =
     process.env.TESTER_EMAIL && user?.email === process.env.TESTER_EMAIL;
 
-  let agendamentos;
+  let applicants;
 
   if (isTester) {
-    const mock = getMockAgendamentos();
-    agendamentos =
+    const mock = getMockApplicants();
+    applicants =
       status === "all"
         ? mock
         : mock.filter((a) => a.status === status);
@@ -50,16 +50,16 @@ export default async function AgendamentosPage({
     }
 
     const { data } = await query;
-    agendamentos = data ?? [];
+    applicants = data ?? [];
   }
 
   return (
     <div>
       <h1 className="text-lg font-bold font-heading mb-4">
-        {dict.dashboard.agendamentos}
+        {dict.dashboard.candidatos}
       </h1>
-      <AgendamentoList
-        agendamentos={agendamentos}
+      <ApplicantList
+        applicants={applicants}
         dict={dict.dashboard}
         status={status}
         locale={locale as Locale}

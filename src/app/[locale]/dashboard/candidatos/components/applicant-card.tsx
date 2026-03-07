@@ -1,14 +1,14 @@
 "use client";
 
 import { useTransition } from "react";
-import type { AgendamentoRow } from "@/lib/db-types";
+import type { ApplicantRow } from "@/lib/db-types";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Small } from "@/components/ui/small";
 import { cn, formatPrice, formatDate } from "@/lib/utils";
-import { approveAgendamento, rejectAgendamento } from "../actions";
+import { approveApplicant, rejectApplicant } from "../actions";
 
 const statusBorderStyles = {
   pending: "border-l-gray-300",
@@ -49,24 +49,24 @@ function timeAgo(dateString: string, locale: string): string {
   return formatDate(dateString, locale);
 }
 
-export function AgendamentoCard({
-  agendamento,
+export function ApplicantCard({
+  applicant,
   dict,
   locale,
 }: {
-  agendamento: AgendamentoRow;
+  applicant: ApplicantRow;
   dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
   const [pending, startTransition] = useTransition();
-  const a = agendamento;
+  const a = applicant;
 
   function handleApprove() {
-    startTransition(() => approveAgendamento(a.id));
+    startTransition(() => approveApplicant(a.id));
   }
 
   function handleReject() {
-    startTransition(() => rejectAgendamento(a.id));
+    startTransition(() => rejectApplicant(a.id));
   }
 
   return (
@@ -84,7 +84,7 @@ export function AgendamentoCard({
           </h3>
           <div className="flex items-center gap-2">
             {a.property_price != null && (
-              <span className="text-sm font-bold font-heading text-gray-700">
+              <span className="text-xl font-bold font-heading text-gray-700">
                 {formatPrice(a.property_price, locale)}
               </span>
             )}

@@ -7,7 +7,7 @@
     "next": "Seguinte"
   },
   "dashboard": {
-    "agendamentos": "Agendamentos",
+    "candidatos": "Candidatos",
     "approve": "Aprovar",
     "reject": "Rejeitar",
     "logout": "Sair",
@@ -16,7 +16,7 @@
     "idDocument": "Documento de Identificação",
     "proofOfIncome": "Comprovativo de Rendimentos",
     "message": "Mensagem",
-    "noAgendamentos": "Não existem agendamentos pendentes.",
+    "noCandidatos": "Não existem candidatos pendentes.",
     "login": "Entrar",
     "register": "Criar Conta",
     "email": "Email",

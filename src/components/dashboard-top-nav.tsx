@@ -20,8 +20,8 @@ export function DashboardTopNav({
   const pathname = usePathname();
   const router = useRouter();
 
-  const agendamentosHref = `/${locale}/dashboard/agendamentos`;
-  const agendamentosActive = pathname.startsWith(agendamentosHref);
+  const applicantsHref = `/${locale}/dashboard/candidatos`;
+  const applicantsActive = pathname.startsWith(applicantsHref);
   const settingsHref = `/${locale}/dashboard/settings`;
   const settingsActive = pathname.startsWith(settingsHref);
 
@@ -43,15 +43,15 @@ export function DashboardTopNav({
             Predileto Dashboard
           </Link>
           <Link
-            href={agendamentosHref}
+            href={applicantsHref}
             className={cn(
               "text-sm font-heading",
-              agendamentosActive
+              applicantsActive
                 ? "text-gray-900 font-bold"
                 : "text-gray-400 hover:text-gray-600",
             )}
           >
-            {d.agendamentos}
+            {d.candidatos}
           </Link>
           <Link
             href={settingsHref}

@@ -1,6 +1,6 @@
-export type AgendamentoStatus = "pending" | "approved" | "rejected";
+export type ApplicantStatus = "pending" | "approved" | "rejected";
 
-export interface AgendamentoRow {
+export interface ApplicantRow {
   id: string;
   property_id: string;
   property_title: string;
@@ -13,14 +13,14 @@ export interface AgendamentoRow {
   has_proof_of_income: boolean;
   justification: string | null;
   message: string | null;
-  status: AgendamentoStatus;
+  status: ApplicantStatus;
   agency_id: string;
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
 }
 
-export interface AgendamentoInsert {
+export interface ApplicantInsert {
   id?: string;
   property_id: string;
   property_title: string;
@@ -33,14 +33,14 @@ export interface AgendamentoInsert {
   has_proof_of_income?: boolean;
   justification?: string | null;
   message?: string | null;
-  status?: AgendamentoStatus;
+  status?: ApplicantStatus;
   agency_id: string;
   created_at?: string;
   updated_at?: string;
   resolved_at?: string | null;
 }
 
-export interface AgendamentoUpdate {
+export interface ApplicantUpdate {
   id?: string;
   property_id?: string;
   property_title?: string;
@@ -53,7 +53,7 @@ export interface AgendamentoUpdate {
   has_proof_of_income?: boolean;
   justification?: string | null;
   message?: string | null;
-  status?: AgendamentoStatus;
+  status?: ApplicantStatus;
   agency_id?: string;
   created_at?: string;
   updated_at?: string;
@@ -74,16 +74,16 @@ export interface Database {
   public: {
     Tables: {
       agendamentos: {
-        Row: AgendamentoRow;
-        Insert: AgendamentoInsert;
-        Update: AgendamentoUpdate;
+        Row: ApplicantRow;
+        Insert: ApplicantInsert;
+        Update: ApplicantUpdate;
         Relationships: [];
       };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
-      agendamento_status: AgendamentoStatus;
+      agendamento_status: ApplicantStatus;
     };
     CompositeTypes: Record<string, never>;
   };
