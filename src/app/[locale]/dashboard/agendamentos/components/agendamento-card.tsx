@@ -161,7 +161,7 @@ export function AgendamentoCard({
             <Button variant="primary" onClick={handleApprove} disabled={pending}>
               {dict.approve}
             </Button>
-            <Button onClick={handleReject} disabled={pending}>
+            <Button variant="steel" onClick={handleReject} disabled={pending}>
               {dict.reject}
             </Button>
           </div>
