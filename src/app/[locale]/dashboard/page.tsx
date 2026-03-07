@@ -6,5 +6,5 @@ export default async function DashboardPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  redirect(`/${locale}/dashboard/candidatos`);
+  redirect(`/${locale}/candidatos`);
 }
