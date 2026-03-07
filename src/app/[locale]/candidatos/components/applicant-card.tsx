@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Small } from "@/components/ui/small";
 import { cn, formatPrice, formatDate } from "@/lib/utils";
 import { approveApplicant, rejectApplicant } from "../actions";
+import { useApplicantDetail } from "./applicant-detail-context";
 
 const statusBorderStyles = {
   pending: "border-l-gray-300",
@@ -59,7 +60,9 @@ export function ApplicantCard({
   locale: Locale;
 }) {
   const [pending, startTransition] = useTransition();
+  const { selected, select } = useApplicantDetail();
   const a = applicant;
+  const isSelected = selected?.id === a.id;
 
   function handleApprove() {
     startTransition(() => approveApplicant(a.id));
@@ -72,8 +75,9 @@ export function ApplicantCard({
   return (
     <div
       className={cn(
-        "border border-gray-200 border-l-4 bg-white",
-        statusBorderStyles[a.status]
+        "border border-gray-200 border-l-4 bg-white transition-shadow",
+        statusBorderStyles[a.status],
+        isSelected && "ring-2 ring-blue-400 ring-offset-1"
       )}
     >
       {/* A. Property header */}
@@ -155,7 +159,7 @@ export function ApplicantCard({
       )}
 
       {/* E. Actions footer */}
-      <div className="px-4 py-3 border-t border-gray-100">
+      <div className="px-4 py-3 border-t border-gray-100 flex justify-between items-center">
         {a.status === "pending" ? (
           <div className="flex gap-2">
             <Button variant="primary" onClick={handleApprove} disabled={pending}>
@@ -175,6 +179,9 @@ export function ApplicantCard({
             {dict[a.status as "approved" | "rejected"]}
           </span>
         )}
+        <Button variant="steel" onClick={() => select(a)}>
+          {dict.details}
+        </Button>
       </div>
     </div>
   );

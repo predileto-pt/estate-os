@@ -1,8 +1,6 @@
 import type { ApplicantRow } from "@/lib/db-types";
 
 export function getMockApplicants(): ApplicantRow[] {
-  const now = new Date().toISOString();
-
   return [
     {
       id: "mock-0001-aaaa-bbbb-cccc-000000000001",
@@ -13,6 +11,13 @@ export function getMockApplicants(): ApplicantRow[] {
       visitor_name: "Ana Beatriz Silva",
       visitor_email: "ana.silva@email.pt",
       visitor_phone: "+351 912 345 678",
+      visitor_nif: "123456789",
+      visitor_date_of_birth: "1990-05-14",
+      income_records: [
+        { month: "2026-01", amount: 2200, source: "TechPT Lda." },
+        { month: "2025-12", amount: 2200, source: "TechPT Lda." },
+        { month: "2025-11", amount: 2100, source: "TechPT Lda." },
+      ],
       has_id_document: true,
       has_proof_of_income: true,
       justification: null,
@@ -32,6 +37,9 @@ export function getMockApplicants(): ApplicantRow[] {
       visitor_name: "Miguel Ferreira",
       visitor_email: "miguel.ferreira@email.pt",
       visitor_phone: "+351 916 789 012",
+      visitor_nif: null,
+      visitor_date_of_birth: "1988-11-02",
+      income_records: null,
       has_id_document: true,
       has_proof_of_income: false,
       justification: "Rendimento do candidato é insuficiente para o valor da renda",
@@ -51,6 +59,13 @@ export function getMockApplicants(): ApplicantRow[] {
       visitor_name: "Sofia Rodrigues",
       visitor_email: "sofia.rodrigues@email.pt",
       visitor_phone: "+351 923 456 789",
+      visitor_nif: "987654321",
+      visitor_date_of_birth: null,
+      income_records: [
+        { month: "2026-01", amount: 1800, source: "Supermercado Pingo Doce" },
+        { month: "2025-12", amount: 1750, source: "Supermercado Pingo Doce" },
+        { month: "2025-11", amount: 1800, source: "Supermercado Pingo Doce" },
+      ],
       has_id_document: true,
       has_proof_of_income: true,
       justification: null,
@@ -70,6 +85,9 @@ export function getMockApplicants(): ApplicantRow[] {
       visitor_name: "João Pedro Almeida",
       visitor_email: "joao.almeida@email.pt",
       visitor_phone: null,
+      visitor_nif: null,
+      visitor_date_of_birth: null,
+      income_records: null,
       has_id_document: true,
       has_proof_of_income: true,
       justification: null,
@@ -89,6 +107,12 @@ export function getMockApplicants(): ApplicantRow[] {
       visitor_name: "Carlos Eduardo Santos",
       visitor_email: "carlos.santos@email.pt",
       visitor_phone: "+351 934 567 890",
+      visitor_nif: "456789123",
+      visitor_date_of_birth: "1995-08-23",
+      income_records: [
+        { month: "2026-01", amount: 1500, source: "Freelance Design" },
+        { month: "2025-12", amount: 1200, source: "Freelance Design" },
+      ],
       has_id_document: false,
       has_proof_of_income: false,
       justification: "Documentos apresentados não são válidos",
@@ -108,6 +132,9 @@ export function getMockApplicants(): ApplicantRow[] {
       visitor_name: "Maria Inês Costa",
       visitor_email: "maria.costa@email.pt",
       visitor_phone: "+351 968 901 234",
+      visitor_nif: null,
+      visitor_date_of_birth: null,
+      income_records: null,
       has_id_document: true,
       has_proof_of_income: false,
       justification: "Comprovativo de rendimento em falta",

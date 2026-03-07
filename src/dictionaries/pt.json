@@ -54,6 +54,13 @@
     "deleteAccount": "Eliminar Conta",
     "deleteAccountConfirm": "Tem a certeza que deseja eliminar a sua conta? Esta ação é irreversível.",
     "month": "mês",
-    "required": "Este campo é obrigatório."
+    "required": "Este campo é obrigatório.",
+    "details": "Detalhes",
+    "close": "Fechar",
+    "dateOfBirth": "Data de Nascimento",
+    "notProvided": "Não fornecido",
+    "incomeHistory": "Histórico de Rendimentos",
+    "noIncomeRecords": "Sem registos de rendimento",
+    "openDocuments": "Abrir Documentos"
   }
 }

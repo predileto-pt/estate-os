@@ -54,6 +54,13 @@
     "deleteAccount": "Delete Account",
     "deleteAccountConfirm": "Are you sure you want to delete your account? This action is irreversible.",
     "month": "month",
-    "required": "This field is required."
+    "required": "This field is required.",
+    "details": "Details",
+    "close": "Close",
+    "dateOfBirth": "Date of Birth",
+    "notProvided": "Not provided",
+    "incomeHistory": "Income History",
+    "noIncomeRecords": "No income records",
+    "openDocuments": "Open Documents"
   }
 }

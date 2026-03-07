@@ -1,5 +1,11 @@
 export type ApplicantStatus = "pending" | "approved" | "rejected";
 
+export interface IncomeRecord {
+  month: string; // "YYYY-MM"
+  amount: number; // EUR
+  source: string; // employer/source name
+}
+
 export interface ApplicantRow {
   id: string;
   property_id: string;
@@ -16,6 +22,9 @@ export interface ApplicantRow {
   status: ApplicantStatus;
   agency_id: string;
   created_at: string;
+  visitor_nif: string | null;
+  visitor_date_of_birth: string | null;
+  income_records: IncomeRecord[] | null;
   updated_at: string;
   resolved_at: string | null;
 }
@@ -36,6 +45,9 @@ export interface ApplicantInsert {
   status?: ApplicantStatus;
   agency_id: string;
   created_at?: string;
+  visitor_nif?: string | null;
+  visitor_date_of_birth?: string | null;
+  income_records?: IncomeRecord[] | null;
   updated_at?: string;
   resolved_at?: string | null;
 }
@@ -57,6 +69,9 @@ export interface ApplicantUpdate {
   agency_id?: string;
   created_at?: string;
   updated_at?: string;
+  visitor_nif?: string | null;
+  visitor_date_of_birth?: string | null;
+  income_records?: IncomeRecord[] | null;
   resolved_at?: string | null;
 }
 
