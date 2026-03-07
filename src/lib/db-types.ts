@@ -60,6 +60,16 @@ export interface AgendamentoUpdate {
   resolved_at?: string | null;
 }
 
+export interface CompanyRow {
+  id: string;
+  user_id: string;
+  name: string;
+  nif: string;
+  address: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {

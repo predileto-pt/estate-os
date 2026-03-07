@@ -35,6 +35,25 @@
     "visitor": "Visitor",
     "property": "Property",
     "documents": "Documents",
-    "visitorMessage": "Visitor message"
+    "visitorMessage": "Visitor message",
+    "settings": "Settings",
+    "profile": "Profile",
+    "company": "Company",
+    "subscriptions": "Subscriptions",
+    "privacy": "Privacy & Security",
+    "name": "Name",
+    "save": "Save",
+    "saved": "Saved",
+    "companyName": "Company Name",
+    "nif": "Tax ID",
+    "address": "Address",
+    "currentPlan": "Current Plan",
+    "free": "Free",
+    "pro": "Pro",
+    "enterprise": "Enterprise",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirm": "Are you sure you want to delete your account? This action is irreversible.",
+    "month": "month",
+    "required": "This field is required."
   }
 }

@@ -35,6 +35,25 @@
     "visitor": "Visitante",
     "property": "Imóvel",
     "documents": "Documentos",
-    "visitorMessage": "Mensagem do visitante"
+    "visitorMessage": "Mensagem do visitante",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "company": "Empresa",
+    "subscriptions": "Subscrições",
+    "privacy": "Privacidade & Segurança",
+    "name": "Nome",
+    "save": "Guardar",
+    "saved": "Guardado",
+    "companyName": "Nome da Empresa",
+    "nif": "NIF",
+    "address": "Morada",
+    "currentPlan": "Plano Atual",
+    "free": "Gratuito",
+    "pro": "Profissional",
+    "enterprise": "Empresarial",
+    "deleteAccount": "Eliminar Conta",
+    "deleteAccountConfirm": "Tem a certeza que deseja eliminar a sua conta? Esta ação é irreversível.",
+    "month": "mês",
+    "required": "Este campo é obrigatório."
   }
 }

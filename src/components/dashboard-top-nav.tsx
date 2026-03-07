@@ -22,6 +22,8 @@ export function DashboardTopNav({
 
   const agendamentosHref = `/${locale}/dashboard/agendamentos`;
   const agendamentosActive = pathname.startsWith(agendamentosHref);
+  const settingsHref = `/${locale}/dashboard/settings`;
+  const settingsActive = pathname.startsWith(settingsHref);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -50,6 +52,17 @@ export function DashboardTopNav({
             )}
           >
             {d.agendamentos}
+          </Link>
+          <Link
+            href={settingsHref}
+            className={cn(
+              "text-sm font-heading",
+              settingsActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600",
+            )}
+          >
+            {d.settings}
           </Link>
         </div>
         <div className="flex items-center gap-4">
