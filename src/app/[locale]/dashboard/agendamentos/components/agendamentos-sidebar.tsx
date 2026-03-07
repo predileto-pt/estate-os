@@ -16,7 +16,7 @@ export function AgendamentosSidebar() {
   const current = searchParams.get("status") ?? "pending";
 
   return (
-    <div className="border border-gray-200 bg-white p-4 mb-4">
+    <>
       <h2 className="text-xs text-gray-400 uppercase mb-3">{d.status}</h2>
       <ul className="space-y-1">
         {statusFilters.map((status) => {
@@ -43,6 +43,6 @@ export function AgendamentosSidebar() {
           );
         })}
       </ul>
-    </div>
+    </>
   );
 }
