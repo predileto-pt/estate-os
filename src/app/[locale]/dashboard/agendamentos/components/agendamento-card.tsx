@@ -5,6 +5,7 @@ import type { AgendamentoRow } from "@/lib/db-types";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Small } from "@/components/ui/small";
 import { cn, formatPrice, formatDate } from "@/lib/utils";
 import { approveAgendamento, rejectAgendamento } from "../actions";
@@ -157,20 +158,12 @@ export function AgendamentoCard({
       <div className="px-4 py-3 border-t border-gray-100">
         {a.status === "pending" ? (
           <div className="flex gap-2">
-            <button
-              onClick={handleApprove}
-              disabled={pending}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 border border-green-700 shadow-[inset_0_2px_0_0_rgba(255,255,255,0.1),inset_0_-2px_0_0_rgba(0,0,0,0.1)] disabled:opacity-50 transition-colors duration-300 cursor-pointer"
-            >
+            <Button variant="primary" onClick={handleApprove} disabled={pending}>
               {dict.approve}
-            </button>
-            <button
-              onClick={handleReject}
-              disabled={pending}
-              className="px-3 py-1.5 text-sm font-medium text-stone-700 bg-white hover:bg-stone-50 border border-stone-300 hover:border-stone-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.8)] disabled:opacity-50 transition-colors duration-300 cursor-pointer"
-            >
+            </Button>
+            <Button onClick={handleReject} disabled={pending}>
               {dict.reject}
-            </button>
+            </Button>
           </div>
         ) : (
           <span
