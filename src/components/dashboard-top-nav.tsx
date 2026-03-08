@@ -22,6 +22,8 @@ export function DashboardTopNav({
 
   const applicantsHref = `/${locale}/candidatos`;
   const applicantsActive = pathname.startsWith(applicantsHref);
+  const intakeFormsHref = `/${locale}/intake-form-requests`;
+  const intakeFormsActive = pathname.startsWith(intakeFormsHref);
   const settingsActive = pathname.startsWith(`/${locale}/dashboard/settings`);
 
   async function handleLogout() {
@@ -51,6 +53,17 @@ export function DashboardTopNav({
             )}
           >
             {d.candidatos}
+          </Link>
+          <Link
+            href={intakeFormsHref}
+            className={cn(
+              "text-sm font-heading",
+              intakeFormsActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600",
+            )}
+          >
+            {d.intakeFormRequests}
           </Link>
         </div>
         <div className="flex items-center gap-4">

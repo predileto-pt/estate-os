@@ -85,6 +85,38 @@ export interface CompanyRow {
   updated_at: string;
 }
 
+export type IntakeFormRequestStatus = "pending" | "completed" | "expired";
+
+export interface IntakeFormRequestRow {
+  id: string;
+  agency_id: string;
+  applicant_name: string;
+  applicant_email: string;
+  applicant_phone: string | null;
+  property_id: string;
+  property_title: string | null;
+  property_price: number | null;
+  property_address: string | null;
+  status: IntakeFormRequestStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IntakeFormRequestInsert {
+  id?: string;
+  agency_id: string;
+  applicant_name: string;
+  applicant_email: string;
+  applicant_phone?: string | null;
+  property_id: string;
+  property_title?: string | null;
+  property_price?: number | null;
+  property_address?: string | null;
+  status?: IntakeFormRequestStatus;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -92,6 +124,12 @@ export interface Database {
         Row: ApplicantRow;
         Insert: ApplicantInsert;
         Update: ApplicantUpdate;
+        Relationships: [];
+      };
+      intake_form_requests: {
+        Row: IntakeFormRequestRow;
+        Insert: IntakeFormRequestInsert;
+        Update: Partial<IntakeFormRequestInsert>;
         Relationships: [];
       };
     };

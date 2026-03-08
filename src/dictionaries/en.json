@@ -61,6 +61,25 @@
     "notProvided": "Not provided",
     "incomeHistory": "Income History",
     "noIncomeRecords": "No income records",
-    "openDocuments": "Open Documents"
+    "openDocuments": "Open Documents",
+    "intakeFormRequests": "Intake Forms",
+    "createIntakeFormRequest": "New Request",
+    "applicantName": "Applicant Name",
+    "applicantEmail": "Applicant Email",
+    "applicantPhone": "Applicant Phone",
+    "propertyId": "Property ID",
+    "noIntakeFormRequests": "No intake form requests yet.",
+    "copyLink": "Copy Link",
+    "resendEmail": "Resend Email",
+    "linkCopied": "Link copied!",
+    "emailResent": "Email resent!",
+    "propertyTitle": "Property Title",
+    "propertyPrice": "Property Price",
+    "propertyAddress": "Property Address",
+    "send": "Send",
+    "createdAt": "Created",
+    "completed": "Completed",
+    "expired": "Expired",
+    "cancel": "Cancel"
   }
 }

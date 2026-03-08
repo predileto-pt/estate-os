@@ -61,6 +61,25 @@
     "notProvided": "Não fornecido",
     "incomeHistory": "Histórico de Rendimentos",
     "noIncomeRecords": "Sem registos de rendimento",
-    "openDocuments": "Abrir Documentos"
+    "openDocuments": "Abrir Documentos",
+    "intakeFormRequests": "Formulários",
+    "createIntakeFormRequest": "Novo Pedido",
+    "applicantName": "Nome do Candidato",
+    "applicantEmail": "Email do Candidato",
+    "applicantPhone": "Telefone do Candidato",
+    "propertyId": "ID do Imóvel",
+    "noIntakeFormRequests": "Ainda não existem pedidos de formulário.",
+    "copyLink": "Copiar Link",
+    "resendEmail": "Reenviar Email",
+    "linkCopied": "Link copiado!",
+    "emailResent": "Email reenviado!",
+    "propertyTitle": "Título do Imóvel",
+    "propertyPrice": "Preço do Imóvel",
+    "propertyAddress": "Morada do Imóvel",
+    "send": "Enviar",
+    "createdAt": "Criado",
+    "completed": "Concluído",
+    "expired": "Expirado",
+    "cancel": "Cancelar"
   }
 }
