@@ -51,9 +51,13 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  // DEBUG: remove after fixing auth
+  if (authError) {
+    console.error("[middleware] getUser error:", authError.message);
+  }
+  console.log("[middleware]", pathname, "user:", user?.email ?? "null", "cookies:", request.cookies.getAll().map(c => c.name).join(", "));
 
   // Extract the path after locale (e.g. /pt/login → /login)
   const localeSegment = pathname.split("/")[1];
