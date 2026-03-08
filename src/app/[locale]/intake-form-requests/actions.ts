@@ -24,22 +24,35 @@ export async function createIntakeFormRequest(formData: {
 
   if (!user) return { error: "Not authenticated" };
 
-  const { data, error } = await supabase
-    .from("intake_form_requests")
-    .insert({
-      agency_id: user.id,
-      applicant_name: formData.applicant_name,
-      applicant_email: formData.applicant_email,
-      applicant_phone: formData.applicant_phone || null,
-      property_id: formData.property_id,
-      property_title: formData.property_title || null,
-      property_price: formData.property_price ?? null,
-      property_address: formData.property_address || null,
-    })
-    .select("id")
-    .single();
+  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
+  if (!serviceUrl) return { error: "Service URL not configured" };
 
-  if (error || !data) return { error: error?.message ?? "Insert failed" };
+  let data: { id: string };
+  try {
+    const response = await fetch(`${serviceUrl}/api/v1/intake-form-requests`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        agency_id: user.id,
+        applicant_name: formData.applicant_name,
+        applicant_email: formData.applicant_email,
+        applicant_phone: formData.applicant_phone || null,
+        property_id: formData.property_id,
+        property_title: formData.property_title || null,
+        property_price: formData.property_price ?? null,
+        property_address: formData.property_address || null,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      return { error: errorBody };
+    }
+
+    data = await response.json();
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
 
   const link = `${APPLICANT_INTAKE_FORM_URL}/${data.id}`;
 
@@ -68,14 +81,21 @@ export async function resendIntakeFormEmail(requestId: string) {
 
   if (!user) return { error: "Not authenticated" };
 
-  const { data: request } = await supabase
-    .from("intake_form_requests")
-    .select("*")
-    .eq("id", requestId)
-    .eq("agency_id", user.id)
-    .single();
+  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
+  if (!serviceUrl) return { error: "Service URL not configured" };
 
-  if (!request) return { error: "Request not found" };
+  let request: { id: string; applicant_name: string; applicant_email: string; agency_id: string };
+  try {
+    const response = await fetch(
+      `${serviceUrl}/api/v1/intake-form-requests/${requestId}`
+    );
+    if (!response.ok) return { error: "Request not found" };
+    request = await response.json();
+  } catch {
+    return { error: "Failed to fetch request" };
+  }
+
+  if (request.agency_id !== user.id) return { error: "Request not found" };
 
   const link = `${APPLICANT_INTAKE_FORM_URL}/${request.id}`;
 

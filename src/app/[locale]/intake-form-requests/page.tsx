@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { IntakeFormRequestCard } from "./components/intake-form-request-card";
 import { CreateIntakeFormRequestForm } from "./components/create-intake-form-request-form";
+import type { IntakeFormRequestRow } from "@/lib/db-types";
 
 export default async function IntakeFormRequestsPage({
   params,
@@ -18,13 +19,28 @@ export default async function IntakeFormRequestsPage({
 
   if (!user) return null;
 
-  const { data } = await supabase
-    .from("intake_form_requests")
-    .select("*")
-    .eq("agency_id", user.id)
-    .order("created_at", { ascending: false });
+  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
+  let requests: IntakeFormRequestRow[] = [];
 
-  const requests = data ?? [];
+  if (serviceUrl) {
+    try {
+      const response = await fetch(
+        `${serviceUrl}/api/v1/intake-form-requests?agency_id=${user.id}&limit=50&offset=0`,
+        { cache: "no-store" }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        requests = data.map(
+          (r: IntakeFormRequestRow & { status: string }) => ({
+            ...r,
+            status: r.status.toLowerCase() as IntakeFormRequestRow["status"],
+          })
+        );
+      }
+    } catch {
+      // Fall through with empty requests
+    }
+  }
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-4 lg:px-6">

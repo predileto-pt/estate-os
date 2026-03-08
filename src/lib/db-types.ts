@@ -126,13 +126,7 @@ export interface Database {
         Update: ApplicantUpdate;
         Relationships: [];
       };
-      intake_form_requests: {
-        Row: IntakeFormRequestRow;
-        Insert: IntakeFormRequestInsert;
-        Update: Partial<IntakeFormRequestInsert>;
-        Relationships: [];
-      };
-    };
+};
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
