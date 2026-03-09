@@ -86,6 +86,22 @@
     "submissionPending": "Pending",
     "submissionProcessing": "Processing",
     "submissionProcessed": "Processed",
-    "submissionFailed": "Failed"
+    "submissionFailed": "Failed",
+    "riskLevel": "Risk Level",
+    "riskLow": "Low",
+    "riskMedium": "Medium",
+    "riskHigh": "High",
+    "identityVerified": "Identity Verified",
+    "incomeVerified": "Income Verified",
+    "dtiRatio": "DTI Ratio",
+    "justification": "Justification",
+    "averageMonthlyIncome": "Avg. Monthly Income",
+    "screeningReport": "Screening Report",
+    "noScreeningReport": "No screening report yet.",
+    "monthlyRent": "Monthly Rent",
+    "propertyValue": "Property Value",
+    "propertyType": "Property Type",
+    "rental": "Rental",
+    "purchase": "Purchase"
   }
 }

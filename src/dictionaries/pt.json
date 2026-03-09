@@ -86,6 +86,22 @@
     "submissionPending": "Pendente",
     "submissionProcessing": "A processar",
     "submissionProcessed": "Processado",
-    "submissionFailed": "Falhou"
+    "submissionFailed": "Falhou",
+    "riskLevel": "Nível de Risco",
+    "riskLow": "Baixo",
+    "riskMedium": "Médio",
+    "riskHigh": "Alto",
+    "identityVerified": "Identidade Verificada",
+    "incomeVerified": "Rendimento Verificado",
+    "dtiRatio": "Rácio DTI",
+    "justification": "Justificação",
+    "averageMonthlyIncome": "Rendimento Médio Mensal",
+    "screeningReport": "Relatório de Avaliação",
+    "noScreeningReport": "Sem relatório de avaliação.",
+    "monthlyRent": "Renda Mensal",
+    "propertyValue": "Valor do Imóvel",
+    "propertyType": "Tipo de Imóvel",
+    "rental": "Arrendamento",
+    "purchase": "Compra"
   }
 }

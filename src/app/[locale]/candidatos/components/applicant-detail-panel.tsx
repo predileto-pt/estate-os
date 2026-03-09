@@ -3,15 +3,32 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useDictionary } from "@/components/dictionary-provider";
 import { useApplicantDetail } from "./applicant-detail-context";
-import { Button } from "@/components/ui/button";
 import { Small } from "@/components/ui/small";
 import { useParams } from "next/navigation";
-import { formatDate, formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
+import type { RiskLevel } from "@/lib/db-types";
+
+const riskBadgeStyles: Record<RiskLevel, string> = {
+  LOW: "bg-green-100 text-green-700",
+  MEDIUM: "bg-yellow-100 text-yellow-700",
+  HIGH: "bg-red-100 text-red-700",
+};
 
 export function ApplicantDetailPanel() {
   const { selected, close } = useApplicantDetail();
   const dict = useDictionary().dashboard;
   const { locale } = useParams<{ locale: string }>();
+
+  const riskLabel: Record<RiskLevel, string> = {
+    LOW: dict.riskLow,
+    MEDIUM: dict.riskMedium,
+    HIGH: dict.riskHigh,
+  };
+
+  const propertyTypeLabel: Record<string, string> = {
+    RENTAL: dict.rental,
+    PURCHASE: dict.purchase,
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -27,7 +44,7 @@ export function ApplicantDetailPanel() {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <h2 className="text-sm font-bold font-heading text-gray-900 truncate">
-              {selected.visitor_name}
+              {selected.name}
             </h2>
             <button
               onClick={close}
@@ -41,73 +58,107 @@ export function ApplicantDetailPanel() {
             </button>
           </div>
 
-          {/* Personal info */}
-          <div className="px-4 py-3 border-b border-gray-100">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Small variant="label">{dict.nif}</Small>
-                <p className="text-sm text-gray-700 mt-0.5">
-                  {selected.visitor_nif ?? dict.notProvided}
-                </p>
-              </div>
-              <div>
-                <Small variant="label">{dict.dateOfBirth}</Small>
-                <p className="text-sm text-gray-700 mt-0.5">
-                  {selected.visitor_date_of_birth
-                    ? formatDate(selected.visitor_date_of_birth, locale)
-                    : dict.notProvided}
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Contact */}
           <div className="px-4 py-3 border-b border-gray-100">
-            <Small variant="label">{dict.visitor}</Small>
-            <div className="mt-1 space-y-1">
-              {selected.visitor_phone && (
-                <span className="flex items-center gap-1.5 text-xs text-blue-400">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                  {selected.visitor_phone}
-                </span>
+            <span className="flex items-center gap-1.5 text-xs text-blue-400">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
+              {selected.email}
+            </span>
+          </div>
+
+          {/* Property info */}
+          <div className="px-4 py-3 border-b border-gray-100">
+            <Small variant="label">{dict.property}</Small>
+            <div className="space-y-1.5 mt-1">
+              <div className="text-xs text-gray-500">
+                <span className="text-gray-400">{dict.propertyType}: </span>
+                {propertyTypeLabel[selected.property_type] ?? selected.property_type}
+              </div>
+              {selected.property_value != null && (
+                <div className="text-xs text-gray-500">
+                  <span className="text-gray-400">{dict.propertyValue}: </span>
+                  <span className="font-medium text-gray-900">
+                    {formatPrice(selected.property_value, locale)}
+                  </span>
+                </div>
               )}
-              <span className="flex items-center gap-1.5 text-xs text-blue-400">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
-                {selected.visitor_email}
-              </span>
+              {selected.monthly_rent != null && (
+                <div className="text-xs text-gray-500">
+                  <span className="text-gray-400">{dict.monthlyRent}: </span>
+                  <span className="font-medium text-gray-900">
+                    {formatPrice(selected.monthly_rent, locale)}/{dict.month}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Income history */}
+          {/* Screening report */}
           <div className="px-4 py-3 border-b border-gray-100">
-            <Small variant="label">{dict.incomeHistory}</Small>
-            {selected.income_records && selected.income_records.length > 0 ? (
+            <Small variant="label">{dict.screeningReport}</Small>
+            {selected.screening_report ? (
               <div className="mt-2 space-y-2">
-                {selected.income_records.map((r) => (
-                  <div
-                    key={r.month}
-                    className="flex items-center justify-between text-sm"
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">{dict.riskLevel}</span>
+                  <span
+                    className={cn(
+                      "inline-block px-2 py-0.5 text-xs font-medium rounded",
+                      riskBadgeStyles[selected.screening_report.risk_level],
+                    )}
                   >
-                    <div>
-                      <span className="text-gray-700">{r.source}</span>
-                      <span className="text-gray-400 ml-2 text-xs">{r.month}</span>
-                    </div>
-                    <span className="font-medium text-gray-900">
-                      {formatPrice(r.amount, locale)}
-                    </span>
+                    {riskLabel[selected.screening_report.risk_level]}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {selected.screening_report.identity_verified ? (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#16a34a" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#dc2626" /><path d="M15 9l-6 6M9 9l6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  )}
+                  <span className="text-gray-500">{dict.identityVerified}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs">
+                  {selected.screening_report.income_verified ? (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#16a34a" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#dc2626" /><path d="M15 9l-6 6M9 9l6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  )}
+                  <span className="text-gray-500">{dict.incomeVerified}</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <span className="text-gray-400">{dict.dtiRatio}: </span>
+                  <span className="font-medium text-gray-700">
+                    {(selected.screening_report.dti_ratio * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <span className="text-gray-400">{dict.averageMonthlyIncome}: </span>
+                  <span className="font-medium text-gray-700">
+                    {formatPrice(selected.screening_report.average_monthly_income, locale)}
+                  </span>
+                </div>
+                {selected.screening_report.justification && (
+                  <div className="border-l-2 border-gray-200 bg-gray-50 px-2 py-1">
+                    <span className="text-xs text-gray-400">{dict.justification}</span>
+                    <p className="text-xs text-gray-600 mt-0.5">
+                      {selected.screening_report.justification}
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
             ) : (
-              <p className="text-xs text-gray-400 mt-1">{dict.noIncomeRecords}</p>
+              <p className="text-xs text-gray-400 mt-1">{dict.noScreeningReport}</p>
             )}
           </div>
 
-          {/* Footer */}
+          {/* IDs */}
           <div className="px-4 py-3">
-            <Button variant="steel" className="w-full">
-              {dict.openDocuments}
-            </Button>
+            <div className="text-xs font-mono text-gray-400 truncate">
+              ID: {selected.id}
+            </div>
+            <div className="text-xs font-mono text-gray-400 truncate mt-1">
+              Form: {selected.form_request_id}
+            </div>
           </div>
         </motion.div>
       )}

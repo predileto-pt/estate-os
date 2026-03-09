@@ -1,27 +1,20 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
-import type { ApplicantRow } from "@/lib/db-types";
+import { createContext, useContext, useState, useCallback } from "react";
+import type { Applicant } from "@/lib/db-types";
 
 interface ApplicantDetailState {
-  selected: ApplicantRow | null;
-  select: (applicant: ApplicantRow) => void;
+  selected: Applicant | null;
+  select: (applicant: Applicant) => void;
   close: () => void;
 }
 
 const ApplicantDetailContext = createContext<ApplicantDetailState | null>(null);
 
 export function ApplicantDetailProvider({ children }: { children: React.ReactNode }) {
-  const [selected, setSelected] = useState<ApplicantRow | null>(null);
-  const searchParams = useSearchParams();
+  const [selected, setSelected] = useState<Applicant | null>(null);
 
-  // Reset selection when URL changes (e.g. status filter)
-  useEffect(() => {
-    setSelected(null);
-  }, [searchParams]);
-
-  const select = useCallback((applicant: ApplicantRow) => {
+  const select = useCallback((applicant: Applicant) => {
     setSelected((prev) => (prev?.id === applicant.id ? null : applicant));
   }, []);
 

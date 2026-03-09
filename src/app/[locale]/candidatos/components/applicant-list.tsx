@@ -1,18 +1,16 @@
 "use client";
 
-import type { ApplicantRow } from "@/lib/db-types";
+import type { Applicant } from "@/lib/db-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { ApplicantCard } from "./applicant-card";
 
 export function ApplicantList({
   applicants,
   dict,
-  status,
   locale,
 }: {
-  applicants: ApplicantRow[];
+  applicants: Applicant[];
   dict: Dictionary["dashboard"];
-  status: string;
   locale: Locale;
 }) {
   if (applicants.length === 0) {

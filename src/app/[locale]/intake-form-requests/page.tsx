@@ -43,31 +43,37 @@ export default async function IntakeFormRequestsPage({
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-4 lg:px-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-lg font-bold font-heading">
-          {dict.dashboard.intakeFormRequests}
-        </h1>
-      </div>
+    <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-2" />
+        <div className="col-span-6">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-bold font-heading">
+              {dict.dashboard.intakeFormRequests}
+            </h1>
+          </div>
 
-      <CreateIntakeFormRequestForm dict={dict.dashboard} />
+          <CreateIntakeFormRequestForm dict={dict.dashboard} />
 
-      {requests.length === 0 ? (
-        <p className="text-sm text-gray-400 mt-6">
-          {dict.dashboard.noIntakeFormRequests}
-        </p>
-      ) : (
-        <div className="space-y-3 mt-4">
-          {requests.map((request) => (
-            <IntakeFormRequestCard
-              key={request.id}
-              request={request}
-              dict={dict.dashboard}
-              locale={locale as Locale}
-            />
-          ))}
+          {requests.length === 0 ? (
+            <p className="text-sm text-gray-400 mt-6">
+              {dict.dashboard.noIntakeFormRequests}
+            </p>
+          ) : (
+            <div className="space-y-3 mt-4">
+              {requests.map((request) => (
+                <IntakeFormRequestCard
+                  key={request.id}
+                  request={request}
+                  dict={dict.dashboard}
+                  locale={locale as Locale}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+        <div className="col-span-4" />
+      </div>
     </main>
   );
 }

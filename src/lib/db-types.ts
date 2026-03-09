@@ -1,78 +1,27 @@
-export type ApplicantStatus = "pending" | "approved" | "rejected";
+export type RiskLevel = "LOW" | "MEDIUM" | "HIGH";
 
-export interface IncomeRecord {
-  month: string; // "YYYY-MM"
-  amount: number; // EUR
-  source: string; // employer/source name
+export interface ScreeningReport {
+  applicant_id: string;
+  risk_level: RiskLevel;
+  identity_verified: boolean;
+  income_verified: boolean;
+  dti_ratio: number;
+  justification: string;
+  property_type: string;
+  average_monthly_income: number;
 }
 
-export interface ApplicantRow {
+export interface Applicant {
   id: string;
-  property_id: string;
-  property_title: string;
-  property_price: number | null;
-  property_address: string | null;
-  visitor_name: string;
-  visitor_email: string;
-  visitor_phone: string | null;
-  has_id_document: boolean;
-  has_proof_of_income: boolean;
-  justification: string | null;
-  message: string | null;
-  status: ApplicantStatus;
-  agency_id: string;
-  created_at: string;
-  visitor_nif: string | null;
-  visitor_date_of_birth: string | null;
-  income_records: IncomeRecord[] | null;
-  updated_at: string;
-  resolved_at: string | null;
-}
-
-export interface ApplicantInsert {
-  id?: string;
-  property_id: string;
-  property_title: string;
-  property_price?: number | null;
-  property_address?: string | null;
-  visitor_name: string;
-  visitor_email: string;
-  visitor_phone?: string | null;
-  has_id_document?: boolean;
-  has_proof_of_income?: boolean;
-  justification?: string | null;
-  message?: string | null;
-  status?: ApplicantStatus;
-  agency_id: string;
-  created_at?: string;
-  visitor_nif?: string | null;
-  visitor_date_of_birth?: string | null;
-  income_records?: IncomeRecord[] | null;
-  updated_at?: string;
-  resolved_at?: string | null;
-}
-
-export interface ApplicantUpdate {
-  id?: string;
-  property_id?: string;
-  property_title?: string;
-  property_price?: number | null;
-  property_address?: string | null;
-  visitor_name?: string;
-  visitor_email?: string;
-  visitor_phone?: string | null;
-  has_id_document?: boolean;
-  has_proof_of_income?: boolean;
-  justification?: string | null;
-  message?: string | null;
-  status?: ApplicantStatus;
-  agency_id?: string;
-  created_at?: string;
-  updated_at?: string;
-  visitor_nif?: string | null;
-  visitor_date_of_birth?: string | null;
-  income_records?: IncomeRecord[] | null;
-  resolved_at?: string | null;
+  name: string;
+  email: string;
+  owner_id: string;
+  form_request_id: string;
+  property_type: string;
+  property_value: number | null;
+  monthly_rent: number | null;
+  status: string | null;
+  screening_report: ScreeningReport | null;
 }
 
 export interface CompanyRow {
@@ -127,19 +76,10 @@ export interface IntakeFormRequestInsert {
 
 export interface Database {
   public: {
-    Tables: {
-      agendamentos: {
-        Row: ApplicantRow;
-        Insert: ApplicantInsert;
-        Update: ApplicantUpdate;
-        Relationships: [];
-      };
-};
+    Tables: Record<string, never>;
     Views: Record<string, never>;
     Functions: Record<string, never>;
-    Enums: {
-      agendamento_status: ApplicantStatus;
-    };
+    Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
 }

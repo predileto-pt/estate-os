@@ -1,56 +1,38 @@
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { ApplicantList } from "./components/applicant-list";
-import { getMockApplicants } from "./mock-data";
-import type { ApplicantStatus } from "@/lib/db-types";
-
-const validStatuses: ApplicantStatus[] = ["pending", "approved", "rejected"];
+import type { Applicant } from "@/lib/db-types";
 
 export default async function CandidatosPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ status?: string }>;
 }) {
   const { locale } = await params;
-  const { status: statusParam } = await searchParams;
   const dict = await getDictionary(locale as Locale);
   const supabase = await createClient();
-
-  const status =
-    statusParam && [...validStatuses, "all"].includes(statusParam)
-      ? statusParam
-      : "pending";
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isTester =
-    process.env.TESTER_EMAIL && user?.email === process.env.TESTER_EMAIL;
+  if (!user) return null;
 
-  let applicants;
+  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
+  let applicants: Applicant[] = [];
 
-  if (isTester) {
-    const mock = getMockApplicants();
-    applicants =
-      status === "all"
-        ? mock
-        : mock.filter((a) => a.status === status);
-  } else {
-    let query = supabase
-      .from("agendamentos")
-      .select("*")
-      .eq("agency_id", user!.id)
-      .order("created_at", { ascending: false });
-
-    if (status !== "all") {
-      query = query.eq("status", status);
+  if (serviceUrl) {
+    try {
+      const response = await fetch(
+        `${serviceUrl}/api/v1/applicants?owner_id=${user.id}`,
+        { cache: "no-store" },
+      );
+      if (response.ok) {
+        applicants = await response.json();
+      }
+    } catch {
+      // Fall through with empty applicants
     }
-
-    const { data } = await query;
-    applicants = data ?? [];
   }
 
   return (
@@ -61,7 +43,6 @@ export default async function CandidatosPage({
       <ApplicantList
         applicants={applicants}
         dict={dict.dashboard}
-        status={status}
         locale={locale as Locale}
       />
     </div>
