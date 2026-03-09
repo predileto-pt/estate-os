@@ -15,6 +15,7 @@ export interface Applicant {
   id: string;
   name: string;
   email: string;
+  phone: string | null;
   owner_id: string;
   form_request_id: string;
   property_type: string;

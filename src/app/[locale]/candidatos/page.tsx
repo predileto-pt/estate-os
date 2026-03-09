@@ -1,6 +1,9 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { ApplicantList } from "./components/applicant-list";
+import { ApplicantDetailProvider } from "./components/applicant-detail-context";
+import { ApplicantDetailPanel } from "./components/applicant-detail-panel";
 import type { Applicant } from "@/lib/db-types";
 
 export default async function CandidatosPage({
@@ -36,15 +39,20 @@ export default async function CandidatosPage({
   }
 
   return (
-    <div>
-      <h1 className="text-lg font-bold font-heading mb-4">
-        {dict.dashboard.candidatos}
-      </h1>
-      <ApplicantList
-        applicants={applicants}
-        dict={dict.dashboard}
-        locale={locale as Locale}
-      />
-    </div>
+    <Suspense>
+      <ApplicantDetailProvider applicants={applicants}>
+        <div>
+          <h1 className="text-lg font-bold font-heading mb-4">
+            {dict.dashboard.candidatos}
+          </h1>
+          <ApplicantList
+            applicants={applicants}
+            dict={dict.dashboard}
+            locale={locale as Locale}
+          />
+        </div>
+        <ApplicantDetailPanel applicants={applicants} />
+      </ApplicantDetailProvider>
+    </Suspense>
   );
 }
