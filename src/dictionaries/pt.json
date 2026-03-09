@@ -80,6 +80,8 @@
     "createdAt": "Criado",
     "completed": "Concluído",
     "expired": "Expirado",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "submittedAt": "Submetido em",
+    "submissionId": "ID"
   }
 }

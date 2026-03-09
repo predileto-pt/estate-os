@@ -176,6 +176,55 @@ export function IntakeFormRequestCard({
         </div>
       </div>
 
+      {/* Submission subcard */}
+      {r.submission && (
+        <div className="mx-4 mb-3 rounded border border-gray-100 bg-gray-50 px-3 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              {r.submission.status === "pending" && (
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="animate-spin text-gray-400"
+                >
+                  <circle cx="12" cy="12" r="10" strokeDasharray="42" strokeDashoffset="12" />
+                </svg>
+              )}
+              {r.submission.status === "completed" && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#16a34a" />
+                  <path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+              {r.submission.status === "expired" && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#dc2626" />
+                  <path d="M15 9l-6 6M9 9l6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+              <span
+                className={cn(
+                  "inline-block rounded px-2 py-0.5 text-xs font-medium",
+                  statusBadgeStyles[r.submission.status as keyof typeof statusBadgeStyles] ?? statusBadgeStyles.pending,
+                )}
+              >
+                {statusLabel[r.submission.status as keyof typeof statusLabel] ?? r.submission.status}
+              </span>
+            </div>
+            <span className="text-xs text-gray-500">
+              {dict.submittedAt}: {formatDate(r.submission.created_at, locale)}
+            </span>
+          </div>
+          <div className="mt-1 text-xs font-mono text-gray-400 truncate">
+            {dict.submissionId}: {r.submission.id}
+          </div>
+        </div>
+      )}
+
       {/* Footer actions */}
       <div className="px-4 py-3 border-t border-gray-100 flex gap-2">
         <Button variant="steel" onClick={handleCopyLink} disabled={pending}>

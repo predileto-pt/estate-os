@@ -87,6 +87,12 @@ export interface CompanyRow {
 
 export type IntakeFormRequestStatus = "pending" | "completed" | "expired";
 
+export interface IntakeFormSubmission {
+  id: string;
+  status: string;
+  created_at: string;
+}
+
 export interface IntakeFormRequestRow {
   id: string;
   agency_id: string;
@@ -94,12 +100,14 @@ export interface IntakeFormRequestRow {
   applicant_email: string;
   applicant_phone: string | null;
   property_id: string;
+  property_type: string;
   property_title: string | null;
   property_price: number | null;
   property_address: string | null;
   status: IntakeFormRequestStatus;
   created_at: string;
   updated_at: string;
+  submission: IntakeFormSubmission | null;
 }
 
 export interface IntakeFormRequestInsert {
