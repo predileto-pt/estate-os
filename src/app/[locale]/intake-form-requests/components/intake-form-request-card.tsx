@@ -20,6 +20,13 @@ const statusBadgeStyles = {
   expired: "bg-red-100 text-red-700",
 } as const;
 
+const submissionBadgeStyles = {
+  PENDING: "bg-gray-100 text-gray-600",
+  PROCESSING: "bg-blue-100 text-blue-700",
+  PROCESSED: "bg-green-100 text-green-700",
+  FAILED: "bg-red-100 text-red-700",
+} as const;
+
 function timeAgo(dateString: string, locale: string): string {
   const now = Date.now();
   const then = new Date(dateString).getTime();
@@ -90,6 +97,13 @@ export function IntakeFormRequestCard({
     pending: dict.pending,
     completed: dict.completed,
     expired: dict.expired,
+  } as const;
+
+  const submissionStatusLabel = {
+    PENDING: dict.submissionPending,
+    PROCESSING: dict.submissionProcessing,
+    PROCESSED: dict.submissionProcessed,
+    FAILED: dict.submissionFailed,
   } as const;
 
   return (
@@ -181,7 +195,7 @@ export function IntakeFormRequestCard({
         <div className="mx-4 mb-3 rounded border border-gray-100 bg-gray-50 px-3 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              {r.submission.status === "pending" && (
+              {(r.submission.status === "PENDING" || r.submission.status === "PROCESSING") && (
                 <svg
                   width="14"
                   height="14"
@@ -194,13 +208,13 @@ export function IntakeFormRequestCard({
                   <circle cx="12" cy="12" r="10" strokeDasharray="42" strokeDashoffset="12" />
                 </svg>
               )}
-              {r.submission.status === "completed" && (
+              {r.submission.status === "PROCESSED" && (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="10" fill="#16a34a" />
                   <path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               )}
-              {r.submission.status === "expired" && (
+              {r.submission.status === "FAILED" && (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="10" fill="#dc2626" />
                   <path d="M15 9l-6 6M9 9l6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -209,10 +223,10 @@ export function IntakeFormRequestCard({
               <span
                 className={cn(
                   "inline-block rounded px-2 py-0.5 text-xs font-medium",
-                  statusBadgeStyles[r.submission.status as keyof typeof statusBadgeStyles] ?? statusBadgeStyles.pending,
+                  submissionBadgeStyles[r.submission.status as keyof typeof submissionBadgeStyles] ?? "bg-gray-100 text-gray-600",
                 )}
               >
-                {statusLabel[r.submission.status as keyof typeof statusLabel] ?? r.submission.status}
+                {submissionStatusLabel[r.submission.status as keyof typeof submissionStatusLabel] ?? r.submission.status}
               </span>
             </div>
             <span className="text-xs text-gray-500">

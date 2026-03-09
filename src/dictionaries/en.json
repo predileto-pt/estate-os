@@ -82,6 +82,10 @@
     "expired": "Expired",
     "cancel": "Cancel",
     "submittedAt": "Submitted at",
-    "submissionId": "ID"
+    "submissionId": "ID",
+    "submissionPending": "Pending",
+    "submissionProcessing": "Processing",
+    "submissionProcessed": "Processed",
+    "submissionFailed": "Failed"
   }
 }
