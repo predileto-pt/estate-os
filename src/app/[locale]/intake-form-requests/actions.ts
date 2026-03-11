@@ -12,6 +12,7 @@ export async function createIntakeFormRequest(formData: {
   applicant_email: string;
   applicant_phone?: string;
   property_id: string;
+  property_type: string;
   property_title?: string;
   property_price?: number | null;
   property_address?: string;
@@ -38,6 +39,7 @@ export async function createIntakeFormRequest(formData: {
         applicant_email: formData.applicant_email,
         applicant_phone: formData.applicant_phone || null,
         property_id: formData.property_id,
+        property_type: formData.property_type,
         property_title: formData.property_title || null,
         property_price: formData.property_price ?? null,
         property_address: formData.property_address || null,

@@ -13,6 +13,7 @@ const schema = z.object({
   applicant_email: z.string().email({ message: "Invalid email" }),
   applicant_phone: z.string().optional(),
   property_id: z.string().min(1, { message: "Required" }),
+  property_type: z.enum(["RENTAL", "PURCHASE"], { message: "Required" }),
   property_title: z.string().optional(),
   property_price: z.coerce.number().positive().optional().catch(undefined),
   property_address: z.string().optional(),
@@ -105,6 +106,20 @@ export function CreateIntakeFormRequestForm({
         </label>
         <input {...register("property_id")} className={inputClass} />
         {errors.property_id && (
+          <p className="text-xs text-red-600 mt-0.5">{dict.required}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-xs text-gray-500 mb-1">
+          {dict.propertyType} *
+        </label>
+        <select {...register("property_type")} className={inputClass}>
+          <option value="">{dict.required}</option>
+          <option value="RENTAL">{dict.rental}</option>
+          <option value="PURCHASE">{dict.purchase}</option>
+        </select>
+        {errors.property_type && (
           <p className="text-xs text-red-600 mt-0.5">{dict.required}</p>
         )}
       </div>
