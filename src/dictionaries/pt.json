@@ -7,7 +7,7 @@
     "next": "Seguinte"
   },
   "dashboard": {
-    "candidatos": "Candidatos",
+    "candidatos": "Candidaturas",
     "approve": "Aprovar",
     "reject": "Rejeitar",
     "logout": "Sair",
@@ -102,6 +102,14 @@
     "propertyValue": "Valor do Imóvel",
     "propertyType": "Tipo de Imóvel",
     "rental": "Arrendamento",
-    "purchase": "Compra"
+    "purchase": "Compra",
+    "exampleBadge": "Dados de exemplo",
+    "propertyAddressHint": "morada + n + complemento, freguesia, concelho, distrito, cep, pais",
+    "registrationSuccess": "Conta criada!",
+    "checkEmailMessage": "Verifique o seu email para confirmar a conta e iniciar sessão.",
+    "listingType": "Tipo de Oferta",
+    "sale": "Venda",
+    "house": "Moradia",
+    "apartment": "Apartamento"
   }
 }

@@ -65,10 +65,12 @@ export function IntakeFormRequestCard({
   request,
   dict,
   locale,
+  isExample,
 }: {
   request: IntakeFormRequestRow;
   dict: Dictionary["dashboard"];
   locale: Locale;
+  isExample?: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const [linkCopied, setLinkCopied] = useState(false);
@@ -240,20 +242,22 @@ export function IntakeFormRequestCard({
       )}
 
       {/* Footer actions */}
-      <div className="px-4 py-3 border-t border-gray-100 flex gap-2">
-        <Button variant="steel" onClick={handleCopyLink} disabled={pending}>
-          {linkCopied ? dict.linkCopied : dict.copyLink}
-        </Button>
-        {r.status === "pending" && (
-          <Button
-            variant="steel"
-            onClick={handleResendEmail}
-            disabled={pending}
-          >
-            {emailResent ? dict.emailResent : dict.resendEmail}
+      {!isExample && (
+        <div className="px-4 py-3 border-t border-gray-100 flex gap-2">
+          <Button variant="steel" onClick={handleCopyLink} disabled={pending}>
+            {linkCopied ? dict.linkCopied : dict.copyLink}
           </Button>
-        )}
-      </div>
+          {r.status === "pending" && (
+            <Button
+              variant="steel"
+              onClick={handleResendEmail}
+              disabled={pending}
+            >
+              {emailResent ? dict.emailResent : dict.resendEmail}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

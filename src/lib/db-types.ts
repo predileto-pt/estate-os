@@ -51,6 +51,7 @@ export interface IntakeFormRequestRow {
   applicant_phone: string | null;
   property_id: string;
   property_type: string;
+  listing_type: string;
   property_title: string | null;
   property_price: number | null;
   property_address: string | null;
@@ -67,6 +68,7 @@ export interface IntakeFormRequestInsert {
   applicant_email: string;
   applicant_phone?: string | null;
   property_id: string;
+  listing_type?: string;
   property_title?: string | null;
   property_price?: number | null;
   property_address?: string | null;

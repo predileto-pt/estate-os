@@ -102,6 +102,14 @@
     "propertyValue": "Property Value",
     "propertyType": "Property Type",
     "rental": "Rental",
-    "purchase": "Purchase"
+    "purchase": "Purchase",
+    "exampleBadge": "Example data",
+    "propertyAddressHint": "address + no. + complement, parish, municipality, district, postal code, country",
+    "registrationSuccess": "Account created!",
+    "checkEmailMessage": "Please check your email to confirm your account and sign in.",
+    "listingType": "Listing Type",
+    "sale": "Sale",
+    "house": "House",
+    "apartment": "Apartment"
   }
 }

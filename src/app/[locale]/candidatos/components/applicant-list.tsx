@@ -8,10 +8,12 @@ export function ApplicantList({
   applicants,
   dict,
   locale,
+  isExample,
 }: {
   applicants: Applicant[];
   dict: Dictionary["dashboard"];
   locale: Locale;
+  isExample?: boolean;
 }) {
   if (applicants.length === 0) {
     return (
@@ -22,7 +24,7 @@ export function ApplicantList({
   return (
     <div className="space-y-4">
       {applicants.map((a) => (
-        <ApplicantCard key={a.id} applicant={a} dict={dict} locale={locale} />
+        <ApplicantCard key={a.id} applicant={a} dict={dict} locale={locale} isExample={isExample} />
       ))}
     </div>
   );

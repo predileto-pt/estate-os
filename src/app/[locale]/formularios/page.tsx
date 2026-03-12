@@ -4,6 +4,28 @@ import { IntakeFormRequestCard } from "./components/intake-form-request-card";
 import { CreateIntakeFormRequestForm } from "./components/create-intake-form-request-form";
 import type { IntakeFormRequestRow } from "@/lib/db-types";
 
+const EXAMPLE_INTAKE_FORM_REQUEST: IntakeFormRequestRow = {
+  id: "example-intake-form-request",
+  agency_id: "example-agency",
+  applicant_name: "Maria Silva",
+  applicant_email: "maria.silva@exemplo.pt",
+  applicant_phone: "+351912345678",
+  property_id: "PROP-2024-001",
+  property_type: "APARTAMENTO",
+  listing_type: "ARRENDAMENTO",
+  property_title: "T2 Apartamento Centro do Porto",
+  property_price: 950,
+  property_address: "RUA DE SANTA CATARINA N123 2D, SANTO ILDEFONSO, PORTO, PORTO, 4000-450, PORTUGAL",
+  status: "completed",
+  created_at: "2026-03-10T14:30:00Z",
+  updated_at: "2026-03-11T09:15:00Z",
+  submission: {
+    id: "sub-example-001",
+    status: "PROCESSED",
+    created_at: "2026-03-11T09:15:00Z",
+  },
+};
+
 export default async function IntakeFormRequestsPage({
   params,
 }: {
@@ -56,9 +78,19 @@ export default async function IntakeFormRequestsPage({
           <CreateIntakeFormRequestForm dict={dict.dashboard} />
 
           {requests.length === 0 ? (
-            <p className="text-sm text-gray-400 mt-6">
-              {dict.dashboard.noIntakeFormRequests}
-            </p>
+            <div className="mt-6">
+              <p className="text-sm text-gray-400 mb-4">
+                {dict.dashboard.noIntakeFormRequests}
+              </p>
+              <div className="relative opacity-70">
+                <IntakeFormRequestCard
+                  request={EXAMPLE_INTAKE_FORM_REQUEST}
+                  dict={dict.dashboard}
+                  locale={locale as Locale}
+                  isExample
+                />
+              </div>
+            </div>
           ) : (
             <div className="space-y-3 mt-4">
               {requests.map((request) => (

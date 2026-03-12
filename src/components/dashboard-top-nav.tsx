@@ -22,7 +22,7 @@ export function DashboardTopNav({
 
   const applicantsHref = `/${locale}/candidatos`;
   const applicantsActive = pathname.startsWith(applicantsHref);
-  const intakeFormsHref = `/${locale}/intake-form-requests`;
+  const intakeFormsHref = `/${locale}/formularios`;
   const intakeFormsActive = pathname.startsWith(intakeFormsHref);
   const settingsActive = pathname.startsWith(`/${locale}/dashboard/settings`);
 

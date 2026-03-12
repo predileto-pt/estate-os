@@ -17,10 +17,12 @@ export function ApplicantCard({
   applicant,
   dict,
   locale,
+  isExample,
 }: {
   applicant: Applicant;
   dict: Dictionary["dashboard"];
   locale: Locale;
+  isExample?: boolean;
 }) {
   const { selectedId, select } = useApplicantDetail();
   const a = applicant;
@@ -34,8 +36,8 @@ export function ApplicantCard({
   };
 
   const propertyTypeLabel: Record<string, string> = {
-    RENTAL: dict.rental,
-    PURCHASE: dict.purchase,
+    ARRENDAMENTO: dict.rental,
+    VENDA: dict.purchase,
   };
 
   return (
@@ -165,11 +167,13 @@ export function ApplicantCard({
       )}
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-gray-100 flex justify-end">
-        <Button variant="steel" onClick={() => select(a)}>
-          {dict.details}
-        </Button>
-      </div>
+      {!isExample && (
+        <div className="px-4 py-3 border-t border-gray-100 flex justify-end">
+          <Button variant="steel" onClick={() => select(a)}>
+            {dict.details}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

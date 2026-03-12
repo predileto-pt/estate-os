@@ -6,6 +6,29 @@ import { ApplicantDetailProvider } from "./components/applicant-detail-context";
 import { ApplicantDetailPanel } from "./components/applicant-detail-panel";
 import type { Applicant } from "@/lib/db-types";
 
+const EXAMPLE_APPLICANT: Applicant = {
+  id: "example-applicant",
+  name: "Joao Costa",
+  email: "joao.costa@exemplo.pt",
+  phone: "+351923456789",
+  owner_id: "example-agency",
+  form_request_id: "example-intake-form-request",
+  property_type: "ARRENDAMENTO",
+  property_value: 185000,
+  monthly_rent: 850,
+  status: "completed",
+  screening_report: {
+    applicant_id: "example-applicant",
+    risk_level: "LOW",
+    identity_verified: true,
+    income_verified: true,
+    dti_ratio: 0.28,
+    justification: "Histórico de emprego estável com rendimento consistente. Rácio DTI dentro do intervalo aceitável para imóvel de arrendamento.",
+    property_type: "ARRENDAMENTO",
+    average_monthly_income: 2400,
+  },
+};
+
 export default async function CandidatosPage({
   params,
 }: {
@@ -38,6 +61,8 @@ export default async function CandidatosPage({
     }
   }
 
+  const showExample = applicants.length === 0;
+
   return (
     <Suspense>
       <ApplicantDetailProvider applicants={applicants}>
@@ -45,11 +70,27 @@ export default async function CandidatosPage({
           <h1 className="text-lg font-bold font-heading mb-4">
             {dict.dashboard.candidatos}
           </h1>
-          <ApplicantList
-            applicants={applicants}
-            dict={dict.dashboard}
-            locale={locale as Locale}
-          />
+          {showExample ? (
+            <div>
+              <p className="text-sm text-gray-400 mb-4">
+                {dict.dashboard.noCandidatos}
+              </p>
+              <div className="relative opacity-70">
+                <ApplicantList
+                  applicants={[EXAMPLE_APPLICANT]}
+                  dict={dict.dashboard}
+                  locale={locale as Locale}
+                  isExample
+                />
+              </div>
+            </div>
+          ) : (
+            <ApplicantList
+              applicants={applicants}
+              dict={dict.dashboard}
+              locale={locale as Locale}
+            />
+          )}
         </div>
         <ApplicantDetailPanel applicants={applicants} />
       </ApplicantDetailProvider>

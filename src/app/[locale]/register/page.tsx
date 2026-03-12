@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,8 +45,8 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push(`/${locale}/dashboard`);
-    router.refresh();
+    setSuccess(true);
+    setLoading(false);
   }
 
   async function handleGoogleSignUp() {
@@ -56,6 +57,23 @@ export default function RegisterPage() {
         redirectTo: `${window.location.origin}/auth/callback?next=/${locale}/dashboard`,
       },
     });
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-sm border border-gray-200 bg-white p-6 text-center">
+          <h1 className="text-lg font-bold font-heading mb-4">{d.registrationSuccess}</h1>
+          <p className="text-sm text-gray-500 mb-6">{d.checkEmailMessage}</p>
+          <Link
+            href={`/${locale}/login`}
+            className="inline-block bg-gray-900 text-white px-4 py-2 text-sm font-heading hover:bg-gray-800"
+          >
+            {d.login}
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (

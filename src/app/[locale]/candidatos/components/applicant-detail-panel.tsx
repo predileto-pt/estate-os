@@ -31,8 +31,8 @@ export function ApplicantDetailPanel({
   };
 
   const propertyTypeLabel: Record<string, string> = {
-    RENTAL: dict.rental,
-    PURCHASE: dict.purchase,
+    ARRENDAMENTO: dict.rental,
+    VENDA: dict.purchase,
   };
 
   return (
