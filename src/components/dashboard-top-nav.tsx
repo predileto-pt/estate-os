@@ -44,17 +44,6 @@ export function DashboardTopNav({
             Predileto Dashboard
           </Link>
           <Link
-            href={applicantsHref}
-            className={cn(
-              "text-sm font-heading",
-              applicantsActive
-                ? "text-gray-900 font-bold"
-                : "text-gray-400 hover:text-gray-600",
-            )}
-          >
-            {d.candidatos}
-          </Link>
-          <Link
             href={intakeFormsHref}
             className={cn(
               "text-sm font-heading",
@@ -64,6 +53,17 @@ export function DashboardTopNav({
             )}
           >
             {d.intakeFormRequests}
+          </Link>
+          <Link
+            href={applicantsHref}
+            className={cn(
+              "text-sm font-heading",
+              applicantsActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600",
+            )}
+          >
+            {d.candidatos}
           </Link>
         </div>
         <div className="flex items-center gap-4">
