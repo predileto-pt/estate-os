@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { isValidLocale, getDictionary } from "@/lib/i18n";
 import { DictionaryProvider } from "@/components/dictionary-provider";
+import { QueryProvider } from "@/components/query-provider";
 import { DashboardTopNav } from "@/components/dashboard-top-nav";
 import { createClient } from "@/lib/supabase/server";
 
@@ -22,9 +23,11 @@ export default async function LocaleLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <DictionaryProvider dictionary={dictionary}>
-      {user && <DashboardTopNav locale={locale} email={user.email ?? ""} />}
-      {children}
-    </DictionaryProvider>
+    <QueryProvider>
+      <DictionaryProvider dictionary={dictionary}>
+        {user && <DashboardTopNav locale={locale} email={user.email ?? ""} />}
+        {children}
+      </DictionaryProvider>
+    </QueryProvider>
   );
 }
