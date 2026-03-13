@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getPostHogServer } from "@/lib/posthog-server";
 
 export async function updateCompany(data: {
   name: string;
@@ -26,4 +27,11 @@ export async function updateCompany(data: {
   );
 
   if (error) throw new Error(error.message);
+
+  const posthog = getPostHogServer();
+  posthog.capture({
+    distinctId: user.id,
+    event: "company_updated",
+  });
+  await posthog.flush();
 }

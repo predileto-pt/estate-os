@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { IntakeFormRequestCard } from "./components/intake-form-request-card";
 import { CreateIntakeFormRequestForm } from "./components/create-intake-form-request-form";
+import { FormPreviewProvider } from "./components/form-preview-context";
+import { FormPreviewCard } from "./components/form-preview-card";
 import type { IntakeFormRequestRow } from "@/lib/db-types";
 
 const EXAMPLE_INTAKE_FORM_REQUEST: IntakeFormRequestRow = {
@@ -65,6 +67,7 @@ export default async function IntakeFormRequestsPage({
   }
 
   return (
+    <FormPreviewProvider>
     <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-2" />
@@ -104,8 +107,11 @@ export default async function IntakeFormRequestsPage({
             </div>
           )}
         </div>
-        <div className="col-span-4" />
+        <div className="col-span-4">
+          <FormPreviewCard dict={dict.dashboard} />
+        </div>
       </div>
     </main>
+    </FormPreviewProvider>
   );
 }
