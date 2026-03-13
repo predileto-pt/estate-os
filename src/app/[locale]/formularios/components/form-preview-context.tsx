@@ -21,7 +21,15 @@ interface FormPreviewState {
   setValues: (values: FormPreviewValues) => void;
 }
 
-const FormPreviewContext = createContext<FormPreviewState | null>(null);
+const noop = () => {};
+const defaultState: FormPreviewState = {
+  open: false,
+  values: {},
+  setOpen: noop,
+  setValues: noop,
+};
+
+const FormPreviewContext = createContext<FormPreviewState>(defaultState);
 
 export function FormPreviewProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -40,7 +48,5 @@ export function FormPreviewProvider({ children }: { children: ReactNode }) {
 }
 
 export function useFormPreview() {
-  const ctx = useContext(FormPreviewContext);
-  if (!ctx) throw new Error("useFormPreview must be used within FormPreviewProvider");
-  return ctx;
+  return useContext(FormPreviewContext);
 }
