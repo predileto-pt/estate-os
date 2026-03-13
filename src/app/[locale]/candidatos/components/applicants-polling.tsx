@@ -18,6 +18,7 @@ const EXAMPLE_APPLICANT: Applicant = {
   property_type: "ARRENDAMENTO",
   property_value: 185000,
   monthly_rent: 850,
+  property_address: "RUA DE CEDOFEITA N45 3E, CEDOFEITA, PORTO, PORTO, 4050-180, PORTUGAL",
   status: "completed",
   screening_report: {
     applicant_id: "example-applicant",
