@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardPage({
   params,
@@ -10,8 +11,35 @@ export default async function DashboardPage({
   const dict = await getDictionary(locale as Locale);
   const d = dict.dashboard;
 
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let hasCompany = true;
+  if (user) {
+    const { data } = await supabase
+      .from("companies")
+      .select("id")
+      .eq("user_id", user.id)
+      .single();
+    hasCompany = !!data;
+  }
+
   return (
-    <ul className="space-y-2">
+    <>
+      {!hasCompany && (
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {d.companyWarning}{" "}
+          <Link
+            href={`/${locale}/dashboard/settings/company`}
+            className="font-medium underline hover:text-amber-900"
+          >
+            {d.companyWarningLink}
+          </Link>
+        </div>
+      )}
+      <ul className="space-y-2">
       <li>
         <Link
           href={`/${locale}/formularios`}
@@ -42,5 +70,6 @@ export default async function DashboardPage({
         </Link>
       </li>
     </ul>
+    </>
   );
 }

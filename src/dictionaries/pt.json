@@ -110,6 +110,8 @@
     "listingType": "Tipo de Oferta",
     "sale": "Venda",
     "house": "Moradia",
-    "apartment": "Apartamento"
+    "apartment": "Apartamento",
+    "companyWarning": "Os dados da sua empresa ainda não foram preenchidos.",
+    "companyWarningLink": "Atualizar informações da empresa"
   }
 }

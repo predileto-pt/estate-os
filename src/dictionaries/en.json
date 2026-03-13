@@ -110,6 +110,8 @@
     "listingType": "Listing Type",
     "sale": "Sale",
     "house": "House",
-    "apartment": "Apartment"
+    "apartment": "Apartment",
+    "companyWarning": "Your company details have not been filled in yet.",
+    "companyWarningLink": "Update company information"
   }
 }
