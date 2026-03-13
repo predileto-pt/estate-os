@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { createIntakeFormRequest } from "../actions";
+import { useFormPreview } from "./form-preview-context";
 
 const schema = z.object({
   applicant_name: z.string().min(1, { message: "Required" }),
@@ -28,18 +29,43 @@ export function CreateIntakeFormRequestForm({
 }: {
   dict: Dictionary["dashboard"];
 }) {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen, setValues } = useFormPreview();
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+
+  const [phoneMasked, setPhoneMasked] = useState("");
 
   const {
     register,
     handleSubmit,
-    reset,
+    reset: resetForm,
     setValue,
     watch,
     formState: { errors },
   } = useForm<FormValues>();
+
+  function reset() {
+    resetForm();
+    setPhoneMasked("");
+  }
+
+  function formatPhone(raw: string) {
+    const digits = raw.replace(/\D/g, "").slice(0, 9);
+    if (digits.length > 6) return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+    if (digits.length > 3) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+    return digits;
+  }
+
+  function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 9);
+    setPhoneMasked(formatPhone(digits));
+    setValue("applicant_phone", digits);
+  }
+
+  useEffect(() => {
+    const sub = watch((values) => setValues(values));
+    return () => sub.unsubscribe();
+  }, [watch, setValues]);
 
   function onSubmit(values: FormValues) {
     const parsed = schema.safeParse(values);
@@ -50,6 +76,7 @@ export function CreateIntakeFormRequestForm({
       if (result?.success) {
         reset();
         setOpen(false);
+        setValues({});
         router.refresh();
       }
     });
@@ -101,7 +128,12 @@ export function CreateIntakeFormRequestForm({
         <label className="block text-xs text-gray-500 mb-1">
           {dict.applicantPhone}
         </label>
-        <input {...register("applicant_phone")} type="tel" className={inputClass} />
+        <input
+          type="tel"
+          value={phoneMasked}
+          onChange={handlePhoneChange}
+          className={inputClass}
+        />
       </div>
 
       <div>
@@ -203,6 +235,7 @@ export function CreateIntakeFormRequestForm({
           onClick={() => {
             reset();
             setOpen(false);
+            setValues({});
           }}
         >
           {dict.cancel}

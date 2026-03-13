@@ -168,6 +168,42 @@ This creates `supabase/migrations/<timestamp>_add_notes_column.sql`. Write your 
 npm run db:push
 ```
 
+## Cypress E2E Tests
+
+End-to-end tests live in `cypress/e2e/` and run against the dev server on `:4000`.
+
+### Configuration
+
+| Setting | Value |
+|---|---|
+| Base URL | `http://localhost:4000` |
+| Spec pattern | `cypress/e2e/**/*.cy.ts` |
+| Viewport | 1280 × 720 |
+| Retries (CI) | 2 |
+| Video | off |
+
+### Environment variables
+
+Tests require a valid Supabase account to authenticate. Set these before running:
+
+```bash
+export CYPRESS_TEST_EMAIL=your-test-user@example.com
+export CYPRESS_TEST_PASSWORD=your-test-password
+```
+
+### Running
+
+```bash
+# Start the dev server first
+npm run dev
+
+# Interactive mode
+npx cypress open
+
+# Headless mode
+npx cypress run
+```
+
 ## Running with properties-searcher
 
 Start both apps side by side:
