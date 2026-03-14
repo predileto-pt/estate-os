@@ -93,6 +93,9 @@ export function ApplicantDetailPanel({
             {/* Property info */}
             <div className="px-4 py-3 border-b border-gray-100">
               <Small variant="label">{dict.property}</Small>
+              {selected.property_title && (
+                <p className="text-xs font-medium text-gray-700 mt-1">{selected.property_title}</p>
+              )}
               <div className="space-y-1.5 mt-1">
                 <div className="text-xs text-gray-500">
                   <span className="text-gray-400">{dict.propertyType}: </span>
@@ -112,6 +115,15 @@ export function ApplicantDetailPanel({
                     <span className="font-medium text-gray-900">
                       {formatPrice(selected.monthly_rent, locale)}/{dict.month}
                     </span>
+                  </div>
+                )}
+                {selected.property_address && (
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span className="truncate">{selected.property_address}</span>
                   </div>
                 )}
               </div>

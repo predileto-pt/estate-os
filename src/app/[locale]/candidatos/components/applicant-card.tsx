@@ -88,6 +88,9 @@ export function ApplicantCard({
       {/* Property details */}
       <div className="px-4 py-3 border-b border-gray-100">
         <Small variant="label">{dict.property}</Small>
+        {a.property_title && (
+          <p className="text-xs font-medium text-gray-700 mt-1">{a.property_title}</p>
+        )}
         <div className="grid grid-cols-2 gap-2 mt-1">
           <div className="text-xs text-gray-500">
             <span className="text-gray-400">{dict.propertyType}: </span>

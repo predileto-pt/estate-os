@@ -21,6 +21,7 @@ export interface Applicant {
   property_type: string;
   property_value: number | null;
   monthly_rent: number | null;
+  property_title: string | null;
   property_address: string | null;
   status: string | null;
   screening_report: ScreeningReport | null;
