@@ -79,6 +79,63 @@ export interface IntakeFormRequestInsert {
   updated_at?: string;
 }
 
+export interface Person {
+  full_name: string;
+  address: string;
+  nif: string;
+  date_of_birth: string;
+  document_id: string;
+  document_type: string;
+  email: string;
+  phone_number: string;
+  tenant_id: string;
+}
+
+export interface Property {
+  uuid: string;
+  title: string;
+  address: string;
+  listing_type: "venda" | "arrendamento";
+  property_type: "apartamento" | "moradia";
+  property_value: number;
+  monthly_rent: number | null;
+  tenant_id: string;
+}
+
+export interface Client {
+  uuid: string;
+  person: Person;
+  properties: Property[];
+}
+
+export interface ContractProperty {
+  property_title: string;
+  property_address: string;
+  property_value: number | null;
+  monthly_rent: number | null;
+}
+
+export interface Contract {
+  uuid: string;
+  url: string;
+  tenant_id: string;
+  created_at: string;
+  is_signed: boolean;
+  type: "venda" | "arrendamento";
+  property: ContractProperty;
+  seller?: Person;
+  buyer?: Person;
+  landlord?: Person;
+  tenant?: Person;
+}
+
+export interface ContractModel {
+  uuid: string;
+  url: string;
+  tenant_id: string;
+  created_at: string;
+}
+
 export interface Database {
   public: {
     Tables: Record<string, never>;

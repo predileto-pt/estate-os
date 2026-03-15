@@ -24,6 +24,12 @@ export function DashboardTopNav({
   const applicantsActive = pathname.startsWith(applicantsHref);
   const intakeFormsHref = `/${locale}/formularios`;
   const intakeFormsActive = pathname.startsWith(intakeFormsHref);
+  const clientesHref = `/${locale}/clientes`;
+  const clientesActive = pathname.startsWith(clientesHref);
+  const imoveisHref = `/${locale}/imoveis`;
+  const imoveisActive = pathname.startsWith(imoveisHref);
+  const contratosHref = `/${locale}/contratos`;
+  const contratosActive = pathname.startsWith(contratosHref);
   const settingsActive = pathname.startsWith(`/${locale}/dashboard/settings`);
 
   async function handleLogout() {
@@ -64,6 +70,40 @@ export function DashboardTopNav({
             )}
           >
             {d.candidatos}
+          </Link>
+          <Link
+            href={clientesHref}
+            className={cn(
+              "text-sm font-heading",
+              clientesActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600",
+            )}
+          >
+            {d.clientes}
+          </Link>
+          <Link
+            href={imoveisHref}
+            className={cn(
+              "text-sm font-heading",
+              imoveisActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600",
+            )}
+          >
+            {d.imoveis}
+          </Link>
+          <Link
+            href={contratosHref}
+            className={cn(
+              "text-sm font-heading flex items-center gap-2",
+              contratosActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600",
+            )}
+          >
+            <span className="mt-0.5 shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"></path></svg></span>
+            {d.contratos}
           </Link>
         </div>
         <div className="flex items-center gap-4">
