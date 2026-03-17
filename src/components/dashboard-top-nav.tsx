@@ -53,7 +53,7 @@ export function DashboardTopNav({
               "text-sm font-heading",
               intakeFormsActive
                 ? "text-gray-900 font-bold"
-                : "text-gray-400 hover:text-gray-600",
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
             {d.intakeFormRequests}
@@ -64,7 +64,7 @@ export function DashboardTopNav({
               "text-sm font-heading",
               applicantsActive
                 ? "text-gray-900 font-bold"
-                : "text-gray-400 hover:text-gray-600",
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
             {d.candidatos}
@@ -75,7 +75,7 @@ export function DashboardTopNav({
               "text-sm font-heading",
               imoveisActive
                 ? "text-gray-900 font-bold"
-                : "text-gray-400 hover:text-gray-600",
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
             {d.imoveis}
@@ -86,10 +86,23 @@ export function DashboardTopNav({
               "text-sm font-heading flex items-center gap-2",
               contratosActive
                 ? "text-gray-900 font-bold"
-                : "text-gray-400 hover:text-gray-600",
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
-            <span className="mt-0.5 shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"></path></svg></span>
+            <span className="mt-0.5 shrink-0">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"></path>
+              </svg>
+            </span>
             {d.contratos}
           </Link>
         </div>
@@ -100,11 +113,20 @@ export function DashboardTopNav({
             className={cn(
               settingsActive
                 ? "text-gray-900"
-                : "text-gray-400 hover:text-gray-600",
+                : "text-gray-400 hover:text-gray-600"
             )}
             title={d.settings}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
               <circle cx="12" cy="12" r="3" />
             </svg>

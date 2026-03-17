@@ -12,7 +12,7 @@ const icons: Record<string, React.ReactNode> = {
       <path d="M20 21a8 8 0 0 0-16 0" />
     </svg>
   ),
-  company: (
+  organization: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="2" width="16" height="20" rx="2" />
       <path d="M9 22v-4h6v4" />
@@ -32,7 +32,7 @@ const icons: Record<string, React.ReactNode> = {
   ),
 };
 
-const sections = ["profile", "company", "subscriptions", "privacy"] as const;
+const sections = ["profile", "organization", "subscriptions", "privacy"] as const;
 
 export function SettingsSidebar() {
   const pathname = usePathname();

@@ -2,22 +2,30 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useDictionary } from "@/components/dictionary-provider";
 import { GoogleIcon } from "@/components/ui/google-icon";
 
 export default function RegisterPage() {
   const { locale } = useParams<{ locale: string }>();
-  const router = useRouter();
   const dict = useDictionary();
   const d = dict.dashboard;
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  function buildCallbackParams(overrideEmail?: string) {
+    const params = new URLSearchParams();
+    params.set("next", `/${locale}/register/onboarding`);
+    params.set("name", name);
+    params.set("email", overrideEmail || email);
+    return params.toString();
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,6 +36,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!name.trim()) {
+      setError(d.required);
+      return;
+    }
+
     setLoading(true);
 
     const supabase = createClient();
@@ -35,7 +48,7 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/${locale}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?${buildCallbackParams()}`,
       },
     });
 
@@ -50,11 +63,16 @@ export default function RegisterPage() {
   }
 
   async function handleGoogleSignUp() {
+    setError("");
+
     const supabase = createClient();
+    const params = new URLSearchParams();
+    params.set("next", `/${locale}/register/onboarding`);
+
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/${locale}/dashboard`,
+        redirectTo: `${window.location.origin}/auth/callback?${params.toString()}`,
       },
     });
   }
@@ -82,6 +100,16 @@ export default function RegisterPage() {
         <h1 className="text-lg font-bold font-heading mb-6">{d.register}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{d.fullName}</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+            />
+          </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1">{d.email}</label>
             <input

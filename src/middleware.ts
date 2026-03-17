@@ -3,6 +3,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { locales, defaultLocale } from "@/lib/i18n";
 
 const publicPaths = ["/login", "/register"];
+const protectedSubpaths = ["/register/onboarding"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -64,9 +65,15 @@ export async function middleware(request: NextRequest) {
   const pathAfterLocale =
     pathname.replace(`/${localeSegment}`, "") || "/";
 
-  const isPublicPath = publicPaths.some(
+  const isProtectedSubpath = protectedSubpaths.some(
     (p) => pathAfterLocale === p || pathAfterLocale.startsWith(`${p}/`),
   );
+
+  const isPublicPath =
+    !isProtectedSubpath &&
+    publicPaths.some(
+      (p) => pathAfterLocale === p || pathAfterLocale.startsWith(`${p}/`),
+    );
 
   // Authenticated users on login/register → redirect to dashboard
   if (user && isPublicPath) {
