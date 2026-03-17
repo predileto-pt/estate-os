@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { components } from "@/lib/api-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -9,9 +9,9 @@ import { PropertyDetailProvider } from "./property-detail-context";
 import { PropertyList } from "./property-list";
 import { PropertyDetailPanel } from "./property-detail-panel";
 import { ExtractionJobCard } from "./extraction-job-card";
-import { FAKE_PROPERTIES } from "./fake-data";
-import { getExtractionJobs } from "../novo/actions";
+import { getExtractionJobs, getProperties } from "../novo/actions";
 
+type PropertyResponse = components["schemas"]["PropertyResponse"];
 type ExtractionJobResponse = components["schemas"]["ExtractionJobResponse"];
 
 const POLL_INTERVAL = 5_000;
@@ -23,31 +23,80 @@ export function PropertiesPageContent({
   dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
-  const properties = FAKE_PROPERTIES;
+  const [properties, setProperties] = useState<PropertyResponse[]>([]);
   const [jobs, setJobs] = useState<ExtractionJobResponse[]>([]);
+  const [, setDismissTick] = useState(0);
 
-  const fetchJobs = useCallback(async () => {
-    const result = await getExtractionJobs();
-    if (result.error === null) {
-      setJobs(result.jobs);
+  const dismissedJobIds = useRef(new Set<string>());
+  const isFirstFetch = useRef(true);
+  const dismissTimers = useRef(new Map<string, NodeJS.Timeout>());
+
+  const fetchData = useCallback(async () => {
+    const [propertiesResult, jobsResult] = await Promise.all([
+      getProperties(),
+      getExtractionJobs(),
+    ]);
+    if (propertiesResult.error === null) {
+      setProperties(propertiesResult.properties);
+    }
+    if (jobsResult.error === null) {
+      const newJobs = jobsResult.jobs;
+
+      if (isFirstFetch.current) {
+        // On first fetch, immediately dismiss already-completed jobs
+        for (const job of newJobs) {
+          if (job.status === "completed") {
+            dismissedJobIds.current.add(job.id);
+          }
+        }
+        isFirstFetch.current = false;
+      } else {
+        // On subsequent fetches, auto-dismiss newly completed jobs after 3s
+        for (const job of newJobs) {
+          if (
+            job.status === "completed" &&
+            !dismissedJobIds.current.has(job.id) &&
+            !dismissTimers.current.has(job.id)
+          ) {
+            const timer = setTimeout(() => {
+              dismissedJobIds.current.add(job.id);
+              dismissTimers.current.delete(job.id);
+              setDismissTick((t) => t + 1);
+            }, 3_000);
+            dismissTimers.current.set(job.id, timer);
+          }
+        }
+      }
+
+      setJobs(newJobs);
     }
   }, []);
 
   useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+    fetchData();
+  }, [fetchData]);
+
+  // Cleanup all dismiss timers on unmount
+  useEffect(() => {
+    return () => {
+      for (const timer of dismissTimers.current.values()) {
+        clearTimeout(timer);
+      }
+    };
+  }, []);
 
   // Poll while there are active jobs
+  const visibleJobs = jobs.filter((j) => !dismissedJobIds.current.has(j.id));
   const hasActiveJobs = jobs.some(
-    (j) => j.status === "pending" || j.status === "processing",
+    (j) => j.status === "pending" || j.status === "processing" || j.status === "retrying",
   );
 
   useEffect(() => {
     if (!hasActiveJobs) return;
 
-    const id = setInterval(fetchJobs, POLL_INTERVAL);
+    const id = setInterval(fetchData, POLL_INTERVAL);
     return () => clearInterval(id);
-  }, [hasActiveJobs, fetchJobs]);
+  }, [hasActiveJobs, fetchData]);
 
   return (
     <PropertyDetailProvider properties={properties}>
@@ -67,9 +116,9 @@ export function PropertiesPageContent({
             </div>
 
             {/* Extraction jobs */}
-            {jobs.length > 0 && (
+            {visibleJobs.length > 0 && (
               <div className="space-y-3 mb-6">
-                {jobs.map((job) => (
+                {visibleJobs.map((job) => (
                   <ExtractionJobCard
                     key={job.id}
                     job={job}
