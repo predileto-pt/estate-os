@@ -2,11 +2,13 @@
 
 import { createContext, useContext, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import type { Property } from "@/lib/db-types";
+import type { components } from "@/lib/api-types";
+
+type PropertyResponse = components["schemas"]["PropertyResponse"];
 
 interface PropertyDetailState {
   selectedId: string | null;
-  select: (property: Property) => void;
+  select: (property: PropertyResponse) => void;
   close: () => void;
 }
 
@@ -17,7 +19,7 @@ export function PropertyDetailProvider({
   properties,
 }: {
   children: React.ReactNode;
-  properties: Property[];
+  properties: PropertyResponse[];
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -26,12 +28,12 @@ export function PropertyDetailProvider({
   const selectedId = searchParams.get("property_id");
 
   const select = useCallback(
-    (property: Property) => {
+    (property: PropertyResponse) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (params.get("property_id") === property.uuid) {
+      if (params.get("property_id") === property.id) {
         params.delete("property_id");
       } else {
-        params.set("property_id", property.uuid);
+        params.set("property_id", property.id);
       }
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
@@ -63,10 +65,10 @@ export function usePropertyDetail() {
   return ctx;
 }
 
-export function useSelectedProperty(properties: Property[]): Property | null {
+export function useSelectedProperty(properties: PropertyResponse[]): PropertyResponse | null {
   const { selectedId } = usePropertyDetail();
   return useMemo(
-    () => properties.find((p) => p.uuid === selectedId) ?? null,
+    () => properties.find((p) => p.id === selectedId) ?? null,
     [properties, selectedId],
   );
 }

@@ -5,13 +5,29 @@ import { useDictionary } from "@/components/dictionary-provider";
 import { usePropertyDetail, useSelectedProperty } from "./property-detail-context";
 import { Small } from "@/components/ui/small";
 import { useParams } from "next/navigation";
-import { formatPrice } from "@/lib/utils";
-import type { Property } from "@/lib/db-types";
+import { formatDate } from "@/lib/utils";
+import type { components } from "@/lib/api-types";
+
+type PropertyResponse = components["schemas"]["PropertyResponse"];
+type PropertyStatus = components["schemas"]["PropertyStatus"];
+
+function formatNif(nif: string) {
+  const digits = nif.replace(/\D/g, "");
+  return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6, 9)}`;
+}
+
+const STATUS_STYLES: Record<PropertyStatus, string> = {
+  draft: "bg-gray-100 text-gray-600",
+  active: "bg-emerald-50 text-emerald-700",
+  sold: "bg-blue-50 text-blue-700",
+  rented: "bg-violet-50 text-violet-700",
+  withdrawn: "bg-red-50 text-red-600",
+};
 
 export function PropertyDetailPanel({
   properties,
 }: {
-  properties: Property[];
+  properties: PropertyResponse[];
 }) {
   const selected = useSelectedProperty(properties);
   const { close } = usePropertyDetail();
@@ -19,14 +35,35 @@ export function PropertyDetailPanel({
   const { locale } = useParams<{ locale: string }>();
 
   const listingTypeLabel: Record<string, string> = {
-    venda: dict.contractSale,
-    arrendamento: dict.contractRental,
+    sale: dict.sale,
+    purchase: dict.purchase,
   };
 
-  const propertyTypeLabel: Record<string, string> = {
-    apartamento: dict.apartment,
-    moradia: dict.house,
+  const typologyLabel: Record<string, string> = {
+    house: dict.house,
+    apartment: dict.apartment,
+    land: dict.land,
+    ruin: dict.ruin,
   };
+
+  const statusLabel: Record<PropertyStatus, string> = {
+    draft: dict.propertyStatusDraft,
+    active: dict.propertyStatusActive,
+    sold: dict.propertyStatusSold,
+    rented: dict.propertyStatusRented,
+    withdrawn: dict.propertyStatusWithdrawn,
+  };
+
+  const civilStatusLabel: Record<string, string> = {
+    single: dict.civilStatusSingle,
+    married: dict.civilStatusMarried,
+    divorced: dict.civilStatusDivorced,
+    widowed: dict.civilStatusWidowed,
+    civil_union: dict.civilStatusCivilUnion,
+    separated: dict.civilStatusSeparated,
+  };
+
+  const chars = selected?.characteristics;
 
   return (
     <AnimatePresence>
@@ -53,7 +90,7 @@ export function PropertyDetailPanel({
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
               <h2 className="text-sm font-bold font-heading text-gray-900 truncate">
-                {selected.title}
+                {selected.address}
               </h2>
               <button
                 onClick={close}
@@ -67,51 +104,136 @@ export function PropertyDetailPanel({
               </button>
             </div>
 
-            {/* Type badges */}
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+            {/* Status + Type badges */}
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2 flex-wrap">
+              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${STATUS_STYLES[selected.status]}`}>
+                {statusLabel[selected.status]}
+              </span>
               <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
                 {listingTypeLabel[selected.listing_type] ?? selected.listing_type}
               </span>
               <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
-                {propertyTypeLabel[selected.property_type] ?? selected.property_type}
+                {typologyLabel[selected.typology] ?? selected.typology}
               </span>
             </div>
 
-            {/* Address */}
-            <div className="px-4 py-3 border-b border-gray-100">
-              <Small variant="label">{dict.address}</Small>
-              <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <span>{selected.address}</span>
+            {/* Description */}
+            {selected.description && (
+              <div className="px-4 py-3 border-b border-gray-100">
+                <Small variant="label">{dict.description}</Small>
+                <p className="text-xs text-gray-600 mt-1">{selected.description}</p>
               </div>
-            </div>
+            )}
 
-            {/* Pricing */}
-            <div className="px-4 py-3 border-b border-gray-100 space-y-1.5">
-              <Small variant="label">{dict.price}</Small>
-              <div className="text-xs text-gray-500">
-                <span className="text-gray-400">{dict.propertyValue}: </span>
-                <span className="font-medium text-gray-900">
-                  {formatPrice(selected.property_value, locale)}
-                </span>
-              </div>
-              {selected.monthly_rent != null && (
-                <div className="text-xs text-gray-500">
-                  <span className="text-gray-400">{dict.monthlyRent}: </span>
-                  <span className="font-medium text-gray-900">
-                    {formatPrice(selected.monthly_rent, locale)}/{dict.month}
-                  </span>
+            {/* Characteristics */}
+            {chars && (
+              <div className="px-4 py-3 border-b border-gray-100 space-y-1.5">
+                <Small variant="label">{dict.characteristics}</Small>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                  {chars.area_in_m2 != null && (
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.areaM2}: </span>
+                      <span className="font-medium text-gray-900">{chars.area_in_m2} m²</span>
+                    </div>
+                  )}
+                  {chars.num_of_bedrooms != null && (
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.bedrooms}: </span>
+                      <span className="font-medium text-gray-900">{chars.num_of_bedrooms}</span>
+                    </div>
+                  )}
+                  {chars.num_of_bathrooms != null && (
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.bathrooms}: </span>
+                      <span className="font-medium text-gray-900">{chars.num_of_bathrooms}</span>
+                    </div>
+                  )}
+                  {chars.floor != null && (
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.floor}: </span>
+                      <span className="font-medium text-gray-900">{chars.floor}</span>
+                    </div>
+                  )}
+                  {chars.built_at != null && (
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.builtAt}: </span>
+                      <span className="font-medium text-gray-900">{chars.built_at}</span>
+                    </div>
+                  )}
+                  {chars.energy_rating != null && (
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.energyRating}: </span>
+                      <span className="font-medium text-gray-900">{chars.energy_rating}</span>
+                    </div>
+                  )}
+                  {chars.parking_spaces != null && (
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.parkingSpaces}: </span>
+                      <span className="font-medium text-gray-900">{chars.parking_spaces}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+                {/* Boolean amenities */}
+                <div className="flex items-center gap-3 mt-1">
+                  {chars.has_elevator && (
+                    <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-600">
+                      {dict.hasElevator}
+                    </span>
+                  )}
+                  {chars.has_garden && (
+                    <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-600">
+                      {dict.hasGarden}
+                    </span>
+                  )}
+                  {chars.has_pool && (
+                    <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-600">
+                      {dict.hasPool}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
 
-            {/* ID */}
-            <div className="px-4 py-3">
+            {/* Owners */}
+            {selected.owners.length > 0 && (
+              <div className="px-4 py-3 border-b border-gray-100 space-y-2">
+                <Small variant="label">{dict.owners}</Small>
+                {selected.owners.map((owner) => (
+                  <div key={owner.id} className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-gray-700">{owner.full_name}</span>
+                      <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-blue-50 text-blue-600">
+                        {formatNif(owner.nif)}
+                      </span>
+                    </div>
+                    {owner.civil_status && (
+                      <div className="text-xs text-gray-500">
+                        <span className="text-gray-400">{dict.civilStatus}: </span>
+                        {civilStatusLabel[owner.civil_status] ?? owner.civil_status}
+                      </div>
+                    )}
+                    {owner.date_of_birth && (
+                      <div className="text-xs text-gray-500">
+                        <span className="text-gray-400">{dict.dateOfBirth}: </span>
+                        {formatDate(owner.date_of_birth, locale)}
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-500">
+                      <span className="text-gray-400">{dict.ownerAddress}: </span>{owner.address}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Dates + ID */}
+            <div className="px-4 py-3 space-y-1">
+              <div className="text-xs text-gray-500">
+                <span className="text-gray-400">{dict.createdAt}: </span>
+                {formatDate(selected.created_at, locale)}
+              </div>
               <div className="text-xs font-mono text-gray-400 truncate">
-                ID: {selected.uuid}
+                ID: {selected.id}
               </div>
             </div>
           </motion.aside>

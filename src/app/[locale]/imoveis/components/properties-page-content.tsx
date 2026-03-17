@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { PropertyDetailProvider } from "./property-detail-context";
@@ -26,9 +27,11 @@ export function PropertiesPageContent({
               <h1 className="text-lg font-bold font-heading">
                 {dict.imoveis}
               </h1>
-              <Button variant="primary">
-                {dict.addProperty}
-              </Button>
+              <Link href={`/${locale}/imoveis/novo`}>
+                <Button variant="primary">
+                  {dict.addProperty}
+                </Button>
+              </Link>
             </div>
             <PropertyList properties={properties} dict={dict} locale={locale} />
           </div>
