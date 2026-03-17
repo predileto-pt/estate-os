@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { ModelsPageContent } from "../components/models-page-content";
+import { ModelsPageContent } from "../../components/models-page-content";
 
 export default async function ModelosPage({
   params,

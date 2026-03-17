@@ -1,17 +1,66 @@
-import type { Contract, ContractModel } from "@/lib/db-types";
+import type { Contract, ContractModel, ReductoParseResult } from "@/lib/db-types";
+import parseResultJson from "@/../data/reducto_parse_result_output.json";
 
 export const FAKE_CONTRACT_MODELS: ContractModel[] = [
   {
     uuid: "model-1",
-    url: "https://storage.example.com/contrato-arrendamento-modelo-v1.pdf",
+    url: "/contrato_arrendamento_exemplo.pdf",
     tenant_id: "tenant-1",
     created_at: "2025-11-15T10:30:00Z",
+    template_version: {
+      version: 3,
+      status: "approved",
+      render_engine: "handlebars",
+      schema_json: {
+        landlord_name: { type: "string" },
+        tenant_name: { type: "string" },
+        property_address: { type: "string" },
+        monthly_rent: { type: "number" },
+        start_date: { type: "string" },
+        duration_months: { type: "number" },
+      },
+      created_at: "2025-11-10T08:00:00Z",
+      approved_at: "2025-11-14T16:00:00Z",
+      review_notes: "Clause 7 updated per legal review.",
+    },
+    source_document: {
+      filename: "contrato-arrendamento-modelo-v1.pdf",
+      page_count: 12,
+      language: "pt",
+      upload_status: "completed",
+      sha256_hash:
+        "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+    },
+    parse_result: parseResultJson as unknown as ReductoParseResult,
   },
   {
     uuid: "model-2",
-    url: "https://storage.example.com/contrato-venda-modelo-v1.pdf",
+    url: "/contrato_arrendamento_exemplo.pdf",
     tenant_id: "tenant-1",
     created_at: "2025-12-02T14:20:00Z",
+    template_version: {
+      version: 1,
+      status: "review",
+      render_engine: "mustache",
+      schema_json: {
+        seller_name: { type: "string" },
+        buyer_name: { type: "string" },
+        property_address: { type: "string" },
+        sale_price: { type: "number" },
+        notary_date: { type: "string" },
+      },
+      created_at: "2025-12-01T10:00:00Z",
+      approved_at: null,
+      review_notes: null,
+    },
+    source_document: {
+      filename: "contrato-venda-modelo-v1.pdf",
+      page_count: 8,
+      language: "pt",
+      upload_status: "completed",
+      sha256_hash:
+        "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3",
+    },
   },
 ];
 

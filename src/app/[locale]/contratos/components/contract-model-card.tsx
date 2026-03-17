@@ -1,8 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import type { ContractModel } from "@/lib/db-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useContractModelDetail } from "./contract-model-detail-context";
 
 export function ContractModelCard({
   model,
@@ -13,10 +16,17 @@ export function ContractModelCard({
   dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
+  const { selectedId, select } = useContractModelDetail();
+  const isSelected = selectedId === model.uuid;
   const filename = model.url.split("/").pop() ?? model.url;
 
   return (
-    <div className="border border-gray-200 border-l-4 border-l-gray-300 bg-white">
+    <div
+      className={cn(
+        "border border-gray-200 border-l-4 border-l-gray-300 bg-white transition-shadow",
+        isSelected && "ring-2 ring-blue-400",
+      )}
+    >
       <div className="bg-gray-50 px-4 py-3 border-b border-gray-100">
         <h3 className="text-sm font-bold font-heading text-gray-900 truncate">
           {filename}
@@ -53,6 +63,14 @@ export function ContractModelCard({
           </svg>
           {dict.download}
         </a>
+        <Link href={`/${locale}/contratos/modelos/${model.uuid}`} className="ml-auto">
+          <Button
+            variant="steel"
+            className="text-xs px-2 py-1"
+          >
+            {dict.details}
+          </Button>
+        </Link>
       </div>
     </div>
   );

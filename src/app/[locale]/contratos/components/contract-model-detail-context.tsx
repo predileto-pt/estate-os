@@ -2,36 +2,35 @@
 
 import { createContext, useContext, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import type { Client } from "@/lib/db-types";
+import type { ContractModel } from "@/lib/db-types";
 
-interface ClientDetailState {
+interface ContractModelDetailState {
   selectedId: string | null;
-  select: (client: Client) => void;
+  select: (model: ContractModel) => void;
   close: () => void;
 }
 
-const ClientDetailContext = createContext<ClientDetailState | null>(null);
+const ContractModelDetailContext =
+  createContext<ContractModelDetailState | null>(null);
 
-export function ClientDetailProvider({
+export function ContractModelDetailProvider({
   children,
-  clients,
 }: {
   children: React.ReactNode;
-  clients: Client[];
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const selectedId = searchParams.get("client_id");
+  const selectedId = searchParams.get("model_id");
 
   const select = useCallback(
-    (client: Client) => {
+    (model: ContractModel) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (params.get("client_id") === client.uuid) {
-        params.delete("client_id");
+      if (params.get("model_id") === model.uuid) {
+        params.delete("model_id");
       } else {
-        params.set("client_id", client.uuid);
+        params.set("model_id", model.uuid);
       }
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
@@ -40,7 +39,7 @@ export function ClientDetailProvider({
 
   const close = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.delete("client_id");
+    params.delete("model_id");
     const qs = params.toString();
     router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [searchParams, router, pathname]);
@@ -51,22 +50,27 @@ export function ClientDetailProvider({
   );
 
   return (
-    <ClientDetailContext value={value}>
+    <ContractModelDetailContext value={value}>
       {children}
-    </ClientDetailContext>
+    </ContractModelDetailContext>
   );
 }
 
-export function useClientDetail() {
-  const ctx = useContext(ClientDetailContext);
-  if (!ctx) throw new Error("useClientDetail must be used within ClientDetailProvider");
+export function useContractModelDetail() {
+  const ctx = useContext(ContractModelDetailContext);
+  if (!ctx)
+    throw new Error(
+      "useContractModelDetail must be used within ContractModelDetailProvider",
+    );
   return ctx;
 }
 
-export function useSelectedClient(clients: Client[]): Client | null {
-  const { selectedId } = useClientDetail();
+export function useSelectedContractModel(
+  models: ContractModel[],
+): ContractModel | null {
+  const { selectedId } = useContractModelDetail();
   return useMemo(
-    () => clients.find((c) => c.uuid === selectedId) ?? null,
-    [clients, selectedId],
+    () => models.find((m) => m.uuid === selectedId) ?? null,
+    [models, selectedId],
   );
 }

@@ -24,8 +24,6 @@ export function DashboardTopNav({
   const applicantsActive = pathname.startsWith(applicantsHref);
   const intakeFormsHref = `/${locale}/formularios`;
   const intakeFormsActive = pathname.startsWith(intakeFormsHref);
-  const clientesHref = `/${locale}/clientes`;
-  const clientesActive = pathname.startsWith(clientesHref);
   const imoveisHref = `/${locale}/imoveis`;
   const imoveisActive = pathname.startsWith(imoveisHref);
   const contratosHref = `/${locale}/contratos`;
@@ -70,17 +68,6 @@ export function DashboardTopNav({
             )}
           >
             {d.candidatos}
-          </Link>
-          <Link
-            href={clientesHref}
-            className={cn(
-              "text-sm font-heading",
-              clientesActive
-                ? "text-gray-900 font-bold"
-                : "text-gray-400 hover:text-gray-600",
-            )}
-          >
-            {d.clientes}
           </Link>
           <Link
             href={imoveisHref}

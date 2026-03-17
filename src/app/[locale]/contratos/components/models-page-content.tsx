@@ -5,6 +5,8 @@ import { useDictionary } from "@/components/dictionary-provider";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/ui/feature-card";
 import { ContractModelCard } from "./contract-model-card";
+import { ContractModelDetailProvider } from "./contract-model-detail-context";
+import { ContractModelDetailPanel } from "./contract-model-detail-panel";
 import { FAKE_CONTRACT_MODELS } from "./fake-data";
 
 const sparkleIcon = (
@@ -67,50 +69,53 @@ export function ModelsPageContent({
   const d = useDictionary().dashboard;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-lg font-bold font-heading">
-          {dict.contractModels}
-        </h1>
-        <Button variant="primary">{dict.addContractModel}</Button>
-      </div>
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <FeatureCard
-          imageSrc="/images/extract_transparent.png"
-          imageAlt="Extract"
-          icon={sparkleIcon}
-          title={d.extractTitle}
-          description={d.extractDescription}
-        />
-        <FeatureCard
-          imageSrc="/images/edit_transparent.png"
-          imageAlt="Edit"
-          icon={penIcon}
-          title={d.editTitle}
-          description={d.editDescription}
-        />
-        <FeatureCard
-          imageSrc="/images/parse_transparent.png"
-          imageAlt="Parse"
-          icon={focusIcon}
-          title={d.parseTitle}
-          description={d.parseDescription}
-        />
-      </div>
-      {models.length === 0 ? (
-        <p className="text-sm text-gray-400">{dict.noContractModels}</p>
-      ) : (
-        <div className="space-y-4">
-          {models.map((m) => (
-            <ContractModelCard
-              key={m.uuid}
-              model={m}
-              dict={dict}
-              locale={locale}
-            />
-          ))}
+    <ContractModelDetailProvider>
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-lg font-bold font-heading">
+            {dict.contractModels}
+          </h1>
+          <Button variant="primary">{dict.addContractModel}</Button>
         </div>
-      )}
-    </div>
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <FeatureCard
+            imageSrc="/images/extract_transparent.png"
+            imageAlt="Extract"
+            icon={sparkleIcon}
+            title={d.extractTitle}
+            description={d.extractDescription}
+          />
+          <FeatureCard
+            imageSrc="/images/edit_transparent.png"
+            imageAlt="Edit"
+            icon={penIcon}
+            title={d.editTitle}
+            description={d.editDescription}
+          />
+          <FeatureCard
+            imageSrc="/images/parse_transparent.png"
+            imageAlt="Parse"
+            icon={focusIcon}
+            title={d.parseTitle}
+            description={d.parseDescription}
+          />
+        </div>
+        {models.length === 0 ? (
+          <p className="text-sm text-gray-400">{dict.noContractModels}</p>
+        ) : (
+          <div className="space-y-4">
+            {models.map((m) => (
+              <ContractModelCard
+                key={m.uuid}
+                model={m}
+                dict={dict}
+                locale={locale}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      <ContractModelDetailPanel />
+    </ContractModelDetailProvider>
   );
 }

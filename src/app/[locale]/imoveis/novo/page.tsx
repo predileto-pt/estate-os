@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { ClientsPageContent } from "./components/clients-page-content";
+import { CreatePropertyContent } from "./components/create-property-content";
 
-export default async function ClientesPage({
+export default async function NovoImovelPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -20,10 +20,7 @@ export default async function ClientesPage({
 
   return (
     <Suspense>
-      <ClientsPageContent
-        dict={dict.dashboard}
-        locale={locale as Locale}
-      />
+      <CreatePropertyContent dict={dict.dashboard} locale={locale as Locale} />
     </Suspense>
   );
 }

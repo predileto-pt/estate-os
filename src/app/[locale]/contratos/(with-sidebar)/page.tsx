@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { ContractsPageContent } from "./components/contracts-page-content";
+import { ContractsPageContent } from "../components/contracts-page-content";
 
 export default async function ContratosPage({
   params,
