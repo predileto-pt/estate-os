@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import type { components } from "@/lib/api-types";
 
 const CORE_API_URL = process.env.CORE_API_URL || "http://localhost:8000";
 
@@ -45,6 +46,30 @@ export async function presignExtractionFiles(
     } = await res.json();
 
     return { error: null, ...data };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
+export async function getExtractionJobs(): Promise<
+  | { error: string }
+  | { error: null; jobs: components["schemas"]["ExtractionJobResponse"][] }
+> {
+  const headers = await getAuthHeaders();
+  if (!headers) return { error: "Not authenticated" };
+
+  try {
+    const res = await fetch(`${CORE_API_URL}/api/v1/extraction-jobs/`, {
+      headers,
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      return { error: `Failed to fetch jobs: ${body}` };
+    }
+
+    const jobs: components["schemas"]["ExtractionJobResponse"][] = await res.json();
+    return { error: null, jobs };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Network error" };
   }

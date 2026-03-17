@@ -237,6 +237,13 @@
     "propertyStatusRented": "Arrendado",
     "propertyStatusWithdrawn": "Retirado",
     "aiJobSubmitted": "Pedido submetido com sucesso! O imóvel será registado em breve.",
+    "extractionJobTitle": "Extração de Imóvel com IA",
+    "extractionPending": "Pendente",
+    "extractionProcessing": "A processar",
+    "extractionCompleted": "Concluído",
+    "extractionFailed": "Falhou",
+    "file": "ficheiro",
+    "filesLabel": "ficheiros",
     "optional": "opcional"
   }
 }

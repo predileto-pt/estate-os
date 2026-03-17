@@ -237,6 +237,13 @@
     "propertyStatusRented": "Rented",
     "propertyStatusWithdrawn": "Withdrawn",
     "aiJobSubmitted": "Request submitted successfully! The property will be registered shortly.",
+    "extractionJobTitle": "AI Property Extraction",
+    "extractionPending": "Pending",
+    "extractionProcessing": "Processing",
+    "extractionCompleted": "Completed",
+    "extractionFailed": "Failed",
+    "file": "file",
+    "filesLabel": "files",
     "optional": "optional"
   }
 }
