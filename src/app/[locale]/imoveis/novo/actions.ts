@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { components } from "@/lib/api-types";
 
@@ -17,6 +18,92 @@ async function getAuthHeaders() {
     Authorization: `Bearer ${session.access_token}`,
     "Content-Type": "application/json",
   };
+}
+
+async function getOrganizationId(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const cached = cookieStore.get("organization_id")?.value;
+  if (cached) return cached;
+
+  // Fallback: fetch from API and set cookie for next time
+  const headers = await getAuthHeaders();
+  if (!headers) return null;
+
+  const res = await fetch(`${CORE_API_URL}/api/v1/auth/me`, { headers });
+  if (!res.ok) return null;
+
+  const data: components["schemas"]["UserWithOrganizationResponse"] = await res.json();
+  const orgId = data.user.organization_id ?? null;
+
+  if (orgId) {
+    cookieStore.set("organization_id", orgId, {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  }
+
+  return orgId;
+}
+
+export async function getProperties(): Promise<
+  | { error: string }
+  | { error: null; properties: components["schemas"]["PropertyResponse"][] }
+> {
+  const headers = await getAuthHeaders();
+  if (!headers) return { error: "Not authenticated" };
+
+  const organizationId = await getOrganizationId();
+  if (!organizationId) return { error: "No organization found" };
+
+  try {
+    const url = new URL(`${CORE_API_URL}/api/v1/properties/`);
+    url.searchParams.set("organization_id", organizationId);
+
+    const res = await fetch(url.toString(), { headers });
+
+    if (!res.ok) {
+      const body = await res.text();
+      return { error: `Failed to fetch properties: ${body}` };
+    }
+
+    const properties: components["schemas"]["PropertyResponse"][] = await res.json();
+    return { error: null, properties };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
+export async function getProperty(
+  propertyId: string,
+): Promise<
+  | { error: string }
+  | { error: null; property: components["schemas"]["PropertyResponse"] }
+> {
+  const headers = await getAuthHeaders();
+  if (!headers) return { error: "Not authenticated" };
+
+  const organizationId = await getOrganizationId();
+  if (!organizationId) return { error: "No organization found" };
+
+  try {
+    const url = new URL(`${CORE_API_URL}/api/v1/properties/${propertyId}`);
+    url.searchParams.set("organization_id", organizationId);
+
+    const res = await fetch(url.toString(), { headers });
+
+    if (!res.ok) {
+      const body = await res.text();
+      return { error: `Failed to fetch property: ${body}` };
+    }
+
+    const property: components["schemas"]["PropertyResponse"] = await res.json();
+    return { error: null, property };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
 }
 
 export async function presignExtractionFiles(
@@ -58,10 +145,14 @@ export async function getExtractionJobs(): Promise<
   const headers = await getAuthHeaders();
   if (!headers) return { error: "Not authenticated" };
 
+  const organizationId = await getOrganizationId();
+  if (!organizationId) return { error: "No organization found" };
+
   try {
-    const res = await fetch(`${CORE_API_URL}/api/v1/extraction-jobs/`, {
-      headers,
-    });
+    const url = new URL(`${CORE_API_URL}/api/v1/extraction-jobs/`);
+    url.searchParams.set("organization_id", organizationId);
+
+    const res = await fetch(url.toString(), { headers });
 
     if (!res.ok) {
       const body = await res.text();
@@ -84,11 +175,14 @@ export async function submitExtractionJob(params: {
   const headers = await getAuthHeaders();
   if (!headers) return { error: "Not authenticated" };
 
+  const organizationId = await getOrganizationId();
+  if (!organizationId) return { error: "No organization found" };
+
   try {
     const res = await fetch(`${CORE_API_URL}/api/v1/extraction-jobs/batch`, {
       method: "POST",
       headers,
-      body: JSON.stringify(params),
+      body: JSON.stringify({ ...params, organization_id: organizationId }),
     });
 
     if (!res.ok) {

@@ -73,22 +73,92 @@ export interface paths {
         patch: operations["update_user_profile_api_v1_users_me_patch"];
         trace?: never;
     };
-    "/api/v1/companies/{company_id}": {
+    "/api/v1/organizations/{organization_id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get company */
-        get: operations["get_company_api_v1_companies__company_id__get"];
+        /** Get organization */
+        get: operations["get_organization_api_v1_organizations__organization_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Update company */
-        patch: operations["update_company_api_v1_companies__company_id__patch"];
+        /** Update organization */
+        patch: operations["update_organization_api_v1_organizations__organization_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/memberships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List organization members */
+        get: operations["list_members_api_v1_memberships_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/memberships/{membership_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove member */
+        delete: operations["remove_member_api_v1_memberships__membership_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update member role */
+        patch: operations["update_member_role_api_v1_memberships__membership_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List pending invitations */
+        get: operations["list_invitations_api_v1_invitations_get"];
+        put?: never;
+        /** Invite user by email */
+        post: operations["invite_member_api_v1_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invitations/{invitation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke invitation */
+        delete: operations["revoke_invitation_api_v1_invitations__invitation_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/subscriptions/plans": {
@@ -350,6 +420,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/extraction-jobs/{job_id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retry a failed extraction job */
+        post: operations["retry_extraction_job_api_v1_extraction_jobs__job_id__retry_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/extraction-jobs/{job_id}": {
         parameters: {
             query?: never;
@@ -378,6 +465,11 @@ export interface components {
              * Format: uuid
              */
             property_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
             /** File */
             file: string;
         };
@@ -386,35 +478,6 @@ export interface components {
          * @enum {string}
          */
         CivilStatus: "single" | "married" | "divorced" | "widowed" | "civil_union" | "separated";
-        /** CompanyResponse */
-        CompanyResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * User Id
-             * Format: uuid
-             */
-            user_id: string;
-            /** Name */
-            name: string;
-            /** Nif */
-            nif: string;
-            /** Address */
-            address: string;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
-            updated_at: string;
-        };
         /** CreateNotificationRequest */
         CreateNotificationRequest: {
             /**
@@ -434,6 +497,11 @@ export interface components {
         };
         /** CreatePropertyOwnerRequest */
         CreatePropertyOwnerRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
             /**
              * Property Id
              * Format: uuid
@@ -467,6 +535,11 @@ export interface components {
         };
         /** CreatePropertyRequest */
         CreatePropertyRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
             /** Address */
             address: string;
             listing_type: components["schemas"]["ListingType"];
@@ -506,6 +579,11 @@ export interface components {
              * Format: uuid
              */
             user_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
             status: components["schemas"]["ExtractionJobStatus"];
             /** Document Keys */
             document_keys: string[];
@@ -532,11 +610,54 @@ export interface components {
          * ExtractionJobStatus
          * @enum {string}
          */
-        ExtractionJobStatus: "pending" | "processing" | "completed" | "failed";
+        ExtractionJobStatus: "pending" | "processing" | "completed" | "failed" | "retrying";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** InvitationResponse */
+        InvitationResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Email */
+            email: string;
+            role: components["schemas"]["MembershipRole"];
+            status: components["schemas"]["InvitationStatus"];
+            /**
+             * Invited By
+             * Format: uuid
+             */
+            invited_by: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * InvitationStatus
+         * @enum {string}
+         */
+        InvitationStatus: "pending" | "accepted" | "expired" | "revoked";
+        /** InviteMemberRequest */
+        InviteMemberRequest: {
+            /** Email */
+            email: string;
+            role: components["schemas"]["MembershipRole"];
         };
         /**
          * ListingType
@@ -548,6 +669,40 @@ export interface components {
             /** Notification Ids */
             notification_ids: string[];
         };
+        /** MembershipResponse */
+        MembershipResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            role: components["schemas"]["MembershipRole"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * MembershipRole
+         * @enum {string}
+         */
+        MembershipRole: "owner" | "admin" | "member";
         /** NotificationResponse */
         NotificationResponse: {
             /**
@@ -580,6 +735,35 @@ export interface components {
          * @enum {string}
          */
         NotificationStatus: "unread" | "read";
+        /** OrganizationResponse */
+        OrganizationResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Created By
+             * Format: uuid
+             */
+            created_by: string;
+            /** Name */
+            name: string | null;
+            /** Nif */
+            nif: string | null;
+            /** Address */
+            address: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** PhoneResponse */
         PhoneResponse: {
             /** Country Code */
@@ -645,6 +829,10 @@ export interface components {
             has_garden?: boolean | null;
             /** Has Pool */
             has_pool?: boolean | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
         };
         /** PropertyOwnerResponse */
         PropertyOwnerResponse: {
@@ -693,10 +881,10 @@ export interface components {
              */
             id: string;
             /**
-             * User Id
+             * Organization Id
              * Format: uuid
              */
-            user_id: string;
+            organization_id: string;
             /** Address */
             address: string;
             listing_type: components["schemas"]["ListingType"];
@@ -729,18 +917,8 @@ export interface components {
             name: string;
             /** Email */
             email: string;
-            /** Company Name */
-            company_name: string;
-            /**
-             * Nif
-             * @description Tax identification number (NIF)
-             */
-            nif: string;
-            /**
-             * Address
-             * @description Company address
-             */
-            address: string;
+            /** Organization Name */
+            organization_name?: string | null;
             /**
              * Phone Country Code
              * @description E.g. +351
@@ -773,6 +951,11 @@ export interface components {
         SubmitExtractionRequest: {
             /** Job Id */
             job_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
             /** Document Keys */
             document_keys: string[];
             listing_type: components["schemas"]["ListingType"];
@@ -791,10 +974,10 @@ export interface components {
              */
             id: string;
             /**
-             * Company Id
+             * Organization Id
              * Format: uuid
              */
-            company_id: string;
+            organization_id: string;
             plan: components["schemas"]["SubscriptionPlan"];
             type: components["schemas"]["SubscriptionType"];
             status: components["schemas"]["SubscriptionStatus"];
@@ -832,8 +1015,12 @@ export interface components {
          * @enum {string}
          */
         Typology: "house" | "apartment" | "land" | "ruin";
-        /** UpdateCompanyRequest */
-        UpdateCompanyRequest: {
+        /** UpdateMemberRoleRequest */
+        UpdateMemberRoleRequest: {
+            role: components["schemas"]["MembershipRole"];
+        };
+        /** UpdateOrganizationRequest */
+        UpdateOrganizationRequest: {
             /** Name */
             name?: string | null;
             /**
@@ -882,11 +1069,8 @@ export interface components {
             /** Name */
             name: string;
             phone: components["schemas"]["PhoneResponse"] | null;
-            /**
-             * Company Id
-             * Format: uuid
-             */
-            company_id: string;
+            /** Organization Id */
+            organization_id: string | null;
             /**
              * Created At
              * Format: date-time
@@ -898,10 +1082,11 @@ export interface components {
              */
             updated_at: string;
         };
-        /** UserWithCompanyResponse */
-        UserWithCompanyResponse: {
+        /** UserWithOrganizationResponse */
+        UserWithOrganizationResponse: {
             user: components["schemas"]["UserResponse"];
-            company: components["schemas"]["CompanyResponse"] | null;
+            organization: components["schemas"]["OrganizationResponse"] | null;
+            role?: components["schemas"]["MembershipRole"] | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -1007,7 +1192,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserWithCompanyResponse"];
+                    "application/json": components["schemas"]["UserWithOrganizationResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -1041,7 +1226,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserWithCompanyResponse"];
+                    "application/json": components["schemas"]["UserWithOrganizationResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -1107,12 +1292,12 @@ export interface operations {
             };
         };
     };
-    get_company_api_v1_companies__company_id__get: {
+    get_organization_api_v1_organizations__organization_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                company_id: string;
+                organization_id: string;
             };
             cookie?: never;
         };
@@ -1124,7 +1309,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CompanyResponse"];
+                    "application/json": components["schemas"]["OrganizationResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -1141,7 +1326,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Company not found */
+            /** @description Organization not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1159,18 +1344,18 @@ export interface operations {
             };
         };
     };
-    update_company_api_v1_companies__company_id__patch: {
+    update_organization_api_v1_organizations__organization_id__patch: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                company_id: string;
+                organization_id: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateCompanyRequest"];
+                "application/json": components["schemas"]["UpdateOrganizationRequest"];
             };
         };
         responses: {
@@ -1180,7 +1365,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CompanyResponse"];
+                    "application/json": components["schemas"]["OrganizationResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -1197,7 +1382,323 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Company not found */
+            /** @description Organization not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_members_api_v1_memberships_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_member_api_v1_memberships__membership_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Membership not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Cannot remove last owner */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_member_role_api_v1_memberships__membership_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMemberRoleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Membership not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Cannot demote last owner */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invitations_api_v1_invitations_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    invite_member_api_v1_invitations_post: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteMemberRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User is already a member */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_invitation_api_v1_invitations__invitation_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invitation not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1536,7 +2037,9 @@ export interface operations {
     };
     list_properties_api_v1_properties__get: {
         parameters: {
-            query?: never;
+            query: {
+                organization_id: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1558,6 +2061,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -1603,7 +2115,9 @@ export interface operations {
     };
     get_property_api_v1_properties__property_id__get: {
         parameters: {
-            query?: never;
+            query: {
+                organization_id: string;
+            };
             header?: never;
             path: {
                 property_id: string;
@@ -1657,6 +2171,7 @@ export interface operations {
         parameters: {
             query: {
                 property_id: string;
+                organization_id: string;
             };
             header?: never;
             path?: never;
@@ -1806,6 +2321,7 @@ export interface operations {
         parameters: {
             query: {
                 property_id: string;
+                organization_id: string;
             };
             header?: never;
             path: {
@@ -1896,7 +2412,9 @@ export interface operations {
     };
     list_extraction_jobs_api_v1_extraction_jobs__get: {
         parameters: {
-            query?: never;
+            query: {
+                organization_id: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1918,6 +2436,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -2011,9 +2538,63 @@ export interface operations {
             };
         };
     };
+    retry_extraction_job_api_v1_extraction_jobs__job_id__retry_post: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionJobResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Job not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Job is not in failed status */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_extraction_job_api_v1_extraction_jobs__job_id__get: {
         parameters: {
-            query?: never;
+            query: {
+                organization_id: string;
+            };
             header?: never;
             path: {
                 job_id: string;

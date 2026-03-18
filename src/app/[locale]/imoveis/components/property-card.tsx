@@ -1,10 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import type { components } from "@/lib/api-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { cn, formatDate } from "@/lib/utils";
-import { usePropertyDetail } from "./property-detail-context";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
@@ -31,9 +31,6 @@ export function PropertyCard({
   dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
-  const { selectedId, select } = usePropertyDetail();
-  const isSelected = selectedId === property.id;
-
   const listingTypeLabel: Record<string, string> = {
     sale: dict.sale,
     purchase: dict.purchase,
@@ -68,7 +65,6 @@ export function PropertyCard({
         property.status === "sold" && "border-l-blue-500",
         property.status === "rented" && "border-l-violet-500",
         property.status === "withdrawn" && "border-l-red-400",
-        isSelected && "ring-2 ring-blue-400 ring-offset-1",
       )}
     >
       {/* Header */}
@@ -146,9 +142,11 @@ export function PropertyCard({
         <span className="text-xs text-gray-400">
           {formatDate(property.created_at, locale)}
         </span>
-        <Button variant="steel" onClick={() => select(property)}>
-          {dict.details}
-        </Button>
+        <Link href={`/${locale}/imoveis/${property.id}`}>
+          <Button variant="steel">
+            {dict.details}
+          </Button>
+        </Link>
       </div>
     </div>
   );

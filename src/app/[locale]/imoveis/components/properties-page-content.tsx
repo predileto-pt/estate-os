@@ -5,9 +5,7 @@ import Link from "next/link";
 import type { components } from "@/lib/api-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { PropertyDetailProvider } from "./property-detail-context";
 import { PropertyList } from "./property-list";
-import { PropertyDetailPanel } from "./property-detail-panel";
 import { ExtractionJobCard } from "./extraction-job-card";
 import { getExtractionJobs, getProperties } from "../novo/actions";
 
@@ -99,42 +97,39 @@ export function PropertiesPageContent({
   }, [hasActiveJobs, fetchData]);
 
   return (
-    <PropertyDetailProvider properties={properties}>
-      <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-2" />
-          <div className="col-span-8">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-lg font-bold font-heading">
-                {dict.imoveis}
-              </h1>
-              <Link href={`/${locale}/imoveis/novo`}>
-                <Button variant="primary">
-                  {dict.addProperty}
-                </Button>
-              </Link>
-            </div>
-
-            {/* Extraction jobs */}
-            {visibleJobs.length > 0 && (
-              <div className="space-y-3 mb-6">
-                {visibleJobs.map((job) => (
-                  <ExtractionJobCard
-                    key={job.id}
-                    job={job}
-                    dict={dict}
-                    locale={locale}
-                  />
-                ))}
-              </div>
-            )}
-
-            <PropertyList properties={properties} dict={dict} locale={locale} />
+    <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-2" />
+        <div className="col-span-8">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-bold font-heading">
+              {dict.imoveis}
+            </h1>
+            <Link href={`/${locale}/imoveis/novo`}>
+              <Button variant="primary">
+                {dict.addProperty}
+              </Button>
+            </Link>
           </div>
-          <div className="col-span-2" />
+
+          {/* Extraction jobs */}
+          {visibleJobs.length > 0 && (
+            <div className="space-y-3 mb-6">
+              {visibleJobs.map((job) => (
+                <ExtractionJobCard
+                  key={job.id}
+                  job={job}
+                  dict={dict}
+                  locale={locale}
+                />
+              ))}
+            </div>
+          )}
+
+          <PropertyList properties={properties} dict={dict} locale={locale} />
         </div>
-      </main>
-      <PropertyDetailPanel properties={properties} />
-    </PropertyDetailProvider>
+        <div className="col-span-2" />
+      </div>
+    </main>
   );
 }
