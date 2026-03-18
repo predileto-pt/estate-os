@@ -26,6 +26,8 @@ export function DashboardTopNav({
   const intakeFormsActive = pathname.startsWith(intakeFormsHref);
   const imoveisHref = `/${locale}/imoveis`;
   const imoveisActive = pathname.startsWith(imoveisHref);
+  const propostasHref = `/${locale}/propostas`;
+  const propostasActive = pathname.startsWith(propostasHref);
   const contratosHref = `/${locale}/contratos`;
   const contratosActive = pathname.startsWith(contratosHref);
   const settingsActive = pathname.startsWith(`/${locale}/dashboard/settings`);
@@ -79,6 +81,17 @@ export function DashboardTopNav({
             )}
           >
             {d.imoveis}
+          </Link>
+          <Link
+            href={propostasHref}
+            className={cn(
+              "text-sm font-heading",
+              propostasActive
+                ? "text-gray-900 font-bold"
+                : "text-gray-400 hover:text-gray-600"
+            )}
+          >
+            {d.propostas}
           </Link>
           <Link
             href={contratosHref}

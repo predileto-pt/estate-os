@@ -254,6 +254,24 @@
     "requestOwnerApproval": "Request Owner Approval",
     "propertyManual": "Manual",
     "propertySelect": "Select Property",
-    "selectProperty": "Select a property..."
+    "selectProperty": "Select a property...",
+
+    "propostas": "Proposals",
+    "proposalOwner": "Owner",
+    "proposalApplicant": "Applicant",
+    "proposalPending": "Pending",
+    "proposalPartiallySigned": "Partially Signed",
+    "proposalSigned": "Signed",
+    "proposalCancelled": "Cancelled",
+    "proposalAwaitingSignature": "Awaiting Signature",
+    "proposalContract": "Contract",
+    "proposalRequestSignature": "Request Signature",
+    "proposalEventHistory": "Event History",
+    "proposalEventCreated": "Proposal created",
+    "proposalEventSignatureRequested": "Signature requested",
+    "proposalEventOwnerSigned": "Owner signed",
+    "proposalEventApplicantSigned": "Applicant signed",
+    "proposalEventExpired": "Proposal expired",
+    "proposalEventCancelled": "Proposal cancelled"
   }
 }

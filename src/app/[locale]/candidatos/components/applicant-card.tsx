@@ -19,12 +19,10 @@ export function ApplicantCard({
   applicant,
   dict,
   locale,
-  isExample,
 }: {
   applicant: Applicant;
   dict: Dictionary["dashboard"];
   locale: Locale;
-  isExample?: boolean;
 }) {
   const { selectedId, select } = useApplicantDetail();
   const [approvePending, startApprove] = useTransition();
@@ -184,36 +182,34 @@ export function ApplicantCard({
       )}
 
       {/* Footer */}
-      {!isExample && (
-        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="primary"
-              disabled={approvePending}
-              onClick={() => startApprove(async () => { await approveApplicant(a.id); })}
-            >
-              {dict.approve}
-            </Button>
-            <Button
-              variant="steel"
-              disabled={denyPending}
-              onClick={() => startDeny(async () => { await denyApplicant(a.id); })}
-            >
-              {dict.reject}
-            </Button>
-            <Button
-              variant="default"
-              disabled={ownerApprovalPending}
-              onClick={() => startOwnerApproval(async () => { await requestOwnerApproval(a.id); })}
-            >
-              {dict.requestOwnerApproval}
-            </Button>
-          </div>
-          <Button variant="steel" onClick={() => select(a)}>
-            {dict.details}
+      <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="primary"
+            disabled={approvePending}
+            onClick={() => startApprove(async () => { await approveApplicant(a.id); })}
+          >
+            {dict.approve}
+          </Button>
+          <Button
+            variant="steel"
+            disabled={denyPending}
+            onClick={() => startDeny(async () => { await denyApplicant(a.id); })}
+          >
+            {dict.reject}
+          </Button>
+          <Button
+            variant="default"
+            disabled={ownerApprovalPending}
+            onClick={() => startOwnerApproval(async () => { await requestOwnerApproval(a.id); })}
+          >
+            {dict.requestOwnerApproval}
           </Button>
         </div>
-      )}
+        <Button variant="steel" onClick={() => select(a)}>
+          {dict.details}
+        </Button>
+      </div>
     </div>
   );
 }

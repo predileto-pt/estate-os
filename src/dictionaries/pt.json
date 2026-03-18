@@ -254,6 +254,24 @@
     "requestOwnerApproval": "Solicitar Aprovação",
     "propertyManual": "Manual",
     "propertySelect": "Selecionar Imóvel",
-    "selectProperty": "Selecione um imóvel..."
+    "selectProperty": "Selecione um imóvel...",
+
+    "propostas": "Propostas",
+    "proposalOwner": "Proprietário",
+    "proposalApplicant": "Candidato",
+    "proposalPending": "Pendente",
+    "proposalPartiallySigned": "Parcialmente Assinada",
+    "proposalSigned": "Assinada",
+    "proposalCancelled": "Cancelada",
+    "proposalAwaitingSignature": "Aguarda Assinatura",
+    "proposalContract": "Contrato",
+    "proposalRequestSignature": "Solicitar Assinatura",
+    "proposalEventHistory": "Histórico de Eventos",
+    "proposalEventCreated": "Proposta criada",
+    "proposalEventSignatureRequested": "Assinatura solicitada",
+    "proposalEventOwnerSigned": "Proprietário assinou",
+    "proposalEventApplicantSigned": "Candidato assinou",
+    "proposalEventExpired": "Proposta expirada",
+    "proposalEventCancelled": "Proposta cancelada"
   }
 }

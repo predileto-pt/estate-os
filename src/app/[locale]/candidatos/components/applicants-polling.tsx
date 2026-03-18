@@ -47,7 +47,11 @@ export function ApplicantsPolling({
 }) {
   const { data: applicants = initialApplicants } = useQuery({
     queryKey: ["applicants", userId],
-    queryFn: () => fetchApplicants(userId),
+    queryFn: async () => {
+      const result = await fetchApplicants(userId);
+      if (result.error !== null) throw new Error(result.error);
+      return result.data;
+    },
     initialData: initialApplicants,
     refetchInterval: 5000,
   });
@@ -70,7 +74,6 @@ export function ApplicantsPolling({
                 applicants={[EXAMPLE_APPLICANT]}
                 dict={dict}
                 locale={locale}
-                isExample
               />
             </div>
           </div>
