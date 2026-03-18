@@ -39,12 +39,12 @@ export default function OrganizationPage() {
 
   useEffect(() => {
     getMe().then((result) => {
-      if (result.error === null && result.organization) {
-        setOrganization(result.organization);
+      if (result.error === null && result.data.organization) {
+        setOrganization(result.data.organization);
         reset({
-          name: result.organization.name ?? "",
-          nif: result.organization.nif ?? "",
-          address: result.organization.address ?? "",
+          name: result.data.organization.name ?? "",
+          nif: result.data.organization.nif ?? "",
+          address: result.data.organization.address ?? "",
         });
       }
       setLoading(false);

@@ -69,7 +69,7 @@ export function AIForm({
         return;
       }
 
-      const { job_id, files: presignedFiles } = presign;
+      const { job_id, files: presignedFiles } = presign.data;
 
       // 2. Upload files directly to S3 from the browser
       await Promise.all(

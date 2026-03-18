@@ -1,14 +1,20 @@
 import React from "react";
 import { render, type RenderOptions } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DictionaryProvider } from "@/components/dictionary-provider";
 import { FormPreviewProvider } from "@/app/[locale]/formularios/components/form-preview-context";
 import en from "@/dictionaries/en.json";
 
 function AllProviders({ children }: { children: React.ReactNode }) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return (
-    <DictionaryProvider dictionary={en}>
-      <FormPreviewProvider>{children}</FormPreviewProvider>
-    </DictionaryProvider>
+    <QueryClientProvider client={queryClient}>
+      <DictionaryProvider dictionary={en}>
+        <FormPreviewProvider>{children}</FormPreviewProvider>
+      </DictionaryProvider>
+    </QueryClientProvider>
   );
 }
 

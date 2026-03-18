@@ -27,7 +27,7 @@ export default async function PropertyDetailPage({
     <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
       <Suspense>
         <PropertyDetailContent
-          property={result.property}
+          property={result.data}
           dict={dict.dashboard}
           locale={locale as Locale}
         />

@@ -34,7 +34,7 @@ export default function OnboardingPage() {
       return;
     }
 
-    const organizationId = meResult.user.organization_id;
+    const organizationId = meResult.data.user.organization_id;
     if (!organizationId) {
       setError("No organization found");
       setLoading(false);
