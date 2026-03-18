@@ -13,9 +13,10 @@ const EXAMPLE_APPLICANT: Applicant = {
   name: "Joao Costa",
   email: "joao.costa@exemplo.pt",
   phone: "+351923456789",
-  owner_id: "example-agency",
+  organization_id: "example-agency",
   form_request_id: "example-intake-form-request",
-  property_type: "ARRENDAMENTO",
+  listing_type: "ARRENDAMENTO",
+  property_type: "APARTAMENTO",
   property_value: 185000,
   monthly_rent: 850,
   property_title: "Apartamento T2 em Cedofeita",
@@ -29,26 +30,27 @@ const EXAMPLE_APPLICANT: Applicant = {
     dti_ratio: 0.28,
     justification:
       "Histórico de emprego estável com rendimento consistente. Rácio DTI dentro do intervalo aceitável para imóvel de arrendamento.",
-    property_type: "ARRENDAMENTO",
+    listing_type: "ARRENDAMENTO",
+    property_type: "APARTAMENTO",
     average_monthly_income: 2400,
   },
 };
 
 export function ApplicantsPolling({
-  userId,
+  organizationId,
   initialApplicants,
   dict,
   locale,
 }: {
-  userId: string;
+  organizationId: string;
   initialApplicants: Applicant[];
   dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
   const { data: applicants = initialApplicants } = useQuery({
-    queryKey: ["applicants", userId],
+    queryKey: ["applicants", organizationId],
     queryFn: async () => {
-      const result = await fetchApplicants(userId);
+      const result = await fetchApplicants(organizationId);
       if (result.error !== null) throw new Error(result.error);
       return result.data;
     },

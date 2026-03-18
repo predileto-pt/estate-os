@@ -1,71 +1,59 @@
 "use server";
 
 import type { Applicant } from "@/lib/db-types";
+import {
+  applicantsGet,
+  applicantsPatch,
+  applicantsPost,
+} from "@/lib/api/applicants-client";
+import type { ActionResult, MutationResult } from "@/lib/api/types";
 
-export async function fetchApplicants(ownerId: string): Promise<Applicant[]> {
-  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
-  if (!serviceUrl) return [];
-
+export async function fetchApplicants(
+  organizationId: string,
+): Promise<ActionResult<Applicant[]>> {
   try {
-    const response = await fetch(
-      `${serviceUrl}/api/v1/applicants?owner_id=${ownerId}`,
-      { cache: "no-store" },
-    );
-    if (response.ok) {
-      return response.json();
-    }
-  } catch {
-    // Fall through
-  }
-  return [];
-}
-
-type ActionResult = { error: string } | { error: null };
-
-export async function approveApplicant(applicantId: string): Promise<ActionResult> {
-  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
-  if (!serviceUrl) return { error: "Service URL not configured" };
-
-  try {
-    const response = await fetch(
-      `${serviceUrl}/api/v1/applicants/${applicantId}/approve`,
-      { method: "PATCH" },
-    );
-    if (response.ok) return { error: null };
-    return { error: `Failed to approve applicant (${response.status})` };
-  } catch {
-    return { error: "Failed to connect to service" };
+    const data = await applicantsGet<Applicant[]>("/api/v1/applicants", {
+      organization_id: organizationId,
+    });
+    return { error: null, data };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Failed to fetch applicants",
+    };
   }
 }
 
-export async function denyApplicant(applicantId: string): Promise<ActionResult> {
-  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
-  if (!serviceUrl) return { error: "Service URL not configured" };
-
+export async function approveApplicant(
+  applicantId: string,
+): Promise<MutationResult> {
   try {
-    const response = await fetch(
-      `${serviceUrl}/api/v1/applicants/${applicantId}/deny`,
-      { method: "PATCH" },
-    );
-    if (response.ok) return { error: null };
-    return { error: `Failed to deny applicant (${response.status})` };
+    await applicantsPatch(`/api/v1/applicants/${applicantId}/approve`);
+    return { error: null };
   } catch {
-    return { error: "Failed to connect to service" };
+    return { error: "Failed to approve applicant" };
   }
 }
 
-export async function requestOwnerApproval(applicantId: string): Promise<ActionResult> {
-  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
-  if (!serviceUrl) return { error: "Service URL not configured" };
-
+export async function denyApplicant(
+  applicantId: string,
+): Promise<MutationResult> {
   try {
-    const response = await fetch(
-      `${serviceUrl}/api/v1/applicants/${applicantId}/request-owner-approval`,
-      { method: "POST" },
-    );
-    if (response.ok) return { error: null };
-    return { error: `Failed to request owner approval (${response.status})` };
+    await applicantsPatch(`/api/v1/applicants/${applicantId}/deny`);
+    return { error: null };
   } catch {
-    return { error: "Failed to connect to service" };
+    return { error: "Failed to deny applicant" };
+  }
+}
+
+export async function requestOwnerApproval(
+  applicantId: string,
+): Promise<MutationResult> {
+  try {
+    await applicantsPost(
+      `/api/v1/applicants/${applicantId}/request-owner-approval`,
+    );
+    return { error: null };
+  } catch {
+    return { error: "Failed to request owner approval" };
   }
 }

@@ -7,8 +7,8 @@ import { z } from "zod";
 import type { Dictionary } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { usePropertySummaries } from "@/lib/api/hooks/use-property-summaries";
 import { createIntakeFormRequest } from "../actions";
-import type { PropertySummary } from "../actions";
 import { useFormPreview } from "./form-preview-context";
 
 const schema = z.object({
@@ -36,7 +36,7 @@ export function CreateIntakeFormRequestForm({
 
   const [phoneMasked, setPhoneMasked] = useState("");
   const [propertyMode, setPropertyMode] = useState<"manual" | "select">("manual");
-  const [summaries, setSummaries] = useState<PropertySummary[]>([]);
+  const { data: summaries = [] } = usePropertySummaries();
   const skipWatchRef = useRef(false);
 
   const {
@@ -47,13 +47,6 @@ export function CreateIntakeFormRequestForm({
     watch,
     formState: { errors },
   } = useForm<FormValues>();
-
-  useEffect(() => {
-    fetch("/api/properties/summary")
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((properties: PropertySummary[]) => setSummaries(properties))
-      .catch(() => {});
-  }, []);
 
   function clearPropertyFields() {
     setValue("property_id", "");
@@ -208,10 +201,20 @@ export function CreateIntakeFormRequestForm({
                     : selected.typology === "land" ? "TERRENO" as const
                     : undefined;
 
+                  const typologyLabel: Record<string, string> = {
+                    house: dict.house,
+                    apartment: dict.apartment,
+                    land: dict.land,
+                  };
+                  const defaultTitle = selected.typology
+                    ? `${typologyLabel[selected.typology] ?? selected.typology} — ${selected.address}`
+                    : selected.address;
+
                   setValue("property_address", selected.address);
                   setValue("property_price", selected.price ?? undefined);
                   setValue("listing_type", listingType);
                   setValue("property_type", propertyType);
+                  setValue("property_title", defaultTitle);
 
                   setValues({
                     ...watch(),
@@ -220,6 +223,7 @@ export function CreateIntakeFormRequestForm({
                     listing_type: listingType,
                     property_price: selected.price ?? undefined,
                     property_address: selected.address,
+                    property_title: defaultTitle,
                   });
                 } else {
                   setValues({ ...watch(), property_id: val });

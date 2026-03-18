@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import { getOrganizationId } from "@/lib/api/auth";
 import { IntakeFormRequestCard } from "./components/intake-form-request-card";
 import { CreateIntakeFormRequestForm } from "./components/create-intake-form-request-form";
 import { FormPreviewProvider } from "./components/form-preview-context";
@@ -8,7 +8,7 @@ import type { IntakeFormRequestRow } from "@/lib/db-types";
 
 const EXAMPLE_INTAKE_FORM_REQUEST: IntakeFormRequestRow = {
   id: "example-intake-form-request",
-  agency_id: "example-agency",
+  organization_id: "example-agency",
   applicant_name: "Maria Silva",
   applicant_email: "maria.silva@exemplo.pt",
   applicant_phone: "+351912345678",
@@ -35,13 +35,9 @@ export default async function IntakeFormRequestsPage({
 }) {
   const { locale } = await params;
   const dict = await getDictionary(locale as Locale);
-  const supabase = await createClient();
+  const organizationId = await getOrganizationId();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  if (!organizationId) return null;
 
   const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
   let requests: IntakeFormRequestRow[] = [];
@@ -49,7 +45,7 @@ export default async function IntakeFormRequestsPage({
   if (serviceUrl) {
     try {
       const response = await fetch(
-        `${serviceUrl}/api/v1/intake-form-requests?agency_id=${user.id}&limit=50&offset=0`,
+        `${serviceUrl}/api/v1/intake-form-requests?organization_id=${organizationId}&limit=50&offset=0`,
         { cache: "no-store" }
       );
       if (response.ok) {

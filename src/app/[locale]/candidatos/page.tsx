@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import { getOrganizationId } from "@/lib/api/auth";
 import { ApplicantsPolling } from "./components/applicants-polling";
 import { fetchApplicants } from "./actions";
 
@@ -11,20 +11,17 @@ export default async function CandidatosPage({
 }) {
   const { locale } = await params;
   const dict = await getDictionary(locale as Locale);
-  const supabase = await createClient();
+  const organizationId = await getOrganizationId();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  if (!organizationId) return null;
 
-  if (!user) return null;
-
-  const applicants = await fetchApplicants(user.id);
+  const result = await fetchApplicants(organizationId);
+  const applicants = result.error === null ? result.data : [];
 
   return (
     <Suspense>
       <ApplicantsPolling
-        userId={user.id}
+        organizationId={organizationId}
         initialApplicants={applicants}
         dict={dict.dashboard}
         locale={locale as Locale}

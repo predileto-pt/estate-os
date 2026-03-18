@@ -1,65 +1,16 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { resend } from "@/lib/resend";
 import { getPostHogServer } from "@/lib/posthog-server";
+import {
+  applicantsPost,
+  applicantsGet,
+} from "@/lib/api/applicants-client";
+import { getAuthContext } from "@/lib/api/auth";
 
 const APPLICANT_INTAKE_FORM_URL =
   process.env.APPLICANT_INTAKE_FORM_URL || "http://localhost:5173";
-
-const CORE_API_URL = process.env.CORE_API_URL || "http://localhost:8000";
-
-export type PropertySummary = {
-  id: string;
-  address: string;
-  listing_type: string;
-  typology: string;
-  price: number | null;
-  owners: { full_name: string }[];
-};
-
-async function getAuthHeaders() {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) return null;
-
-  return {
-    Authorization: `Bearer ${session.access_token}`,
-    "Content-Type": "application/json",
-  };
-}
-
-async function getOrganizationId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const cached = cookieStore.get("organization_id")?.value;
-  if (cached) return cached;
-
-  const headers = await getAuthHeaders();
-  if (!headers) return null;
-
-  const res = await fetch(`${CORE_API_URL}/api/v1/auth/me`, { headers });
-  if (!res.ok) return null;
-
-  const data = await res.json();
-  const orgId = data.user.organization_id ?? null;
-
-  if (orgId) {
-    cookieStore.set("organization_id", orgId, {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30,
-    });
-  }
-
-  return orgId;
-}
 
 export async function createIntakeFormRequest(formData: {
   applicant_name: string;
@@ -72,24 +23,21 @@ export async function createIntakeFormRequest(formData: {
   property_price?: number | null;
   property_address?: string;
 }) {
-  const supabase = await createClient();
+  let authCtx: Awaited<ReturnType<typeof getAuthContext>>;
+  try {
+    authCtx = await getAuthContext();
+  } catch {
+    return { error: "Not authenticated" };
+  }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return { error: "Not authenticated" };
-
-  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
-  if (!serviceUrl) return { error: "Service URL not configured" };
+  const { organizationId } = authCtx;
 
   let data: { id: string };
   try {
-    const response = await fetch(`${serviceUrl}/api/v1/intake-form-requests`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        agency_id: user.id,
+    data = await applicantsPost<{ id: string }>(
+      "/api/v1/intake-form-requests",
+      {
+        organization_id: organizationId,
         applicant_name: formData.applicant_name,
         applicant_email: formData.applicant_email,
         applicant_phone: formData.applicant_phone || null,
@@ -99,15 +47,8 @@ export async function createIntakeFormRequest(formData: {
         property_title: formData.property_title || null,
         property_price: formData.property_price ?? null,
         property_address: formData.property_address || null,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      return { error: errorBody };
-    }
-
-    data = await response.json();
+      },
+    );
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Network error" };
   }
@@ -128,7 +69,7 @@ export async function createIntakeFormRequest(formData: {
 
   const posthog = getPostHogServer();
   posthog.capture({
-    distinctId: user.id,
+    distinctId: organizationId,
     event: "intake_form_request_created",
     properties: {
       property_id: formData.property_id,
@@ -143,29 +84,30 @@ export async function createIntakeFormRequest(formData: {
 }
 
 export async function resendIntakeFormEmail(requestId: string) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return { error: "Not authenticated" };
-
-  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
-  if (!serviceUrl) return { error: "Service URL not configured" };
-
-  let request: { id: string; applicant_name: string; applicant_email: string; agency_id: string };
+  let authCtx: Awaited<ReturnType<typeof getAuthContext>>;
   try {
-    const response = await fetch(
-      `${serviceUrl}/api/v1/intake-form-requests/${requestId}`
-    );
-    if (!response.ok) return { error: "Request not found" };
-    request = await response.json();
+    authCtx = await getAuthContext();
   } catch {
-    return { error: "Failed to fetch request" };
+    return { error: "Not authenticated" };
   }
 
-  if (request.agency_id !== user.id) return { error: "Request not found" };
+  const { organizationId } = authCtx;
+
+  let request: {
+    id: string;
+    applicant_name: string;
+    applicant_email: string;
+    organization_id: string;
+  };
+  try {
+    request = await applicantsGet<typeof request>(
+      `/api/v1/intake-form-requests/${requestId}`,
+    );
+  } catch {
+    return { error: "Request not found" };
+  }
+
+  if (request.organization_id !== organizationId) return { error: "Request not found" };
 
   const link = `${APPLICANT_INTAKE_FORM_URL}/${request.id}`;
 
@@ -183,7 +125,7 @@ export async function resendIntakeFormEmail(requestId: string) {
 
   const posthog = getPostHogServer();
   posthog.capture({
-    distinctId: user.id,
+    distinctId: organizationId,
     event: "intake_form_email_resent",
     properties: { request_id: requestId },
   });

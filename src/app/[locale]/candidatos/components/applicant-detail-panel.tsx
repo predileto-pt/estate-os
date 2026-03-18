@@ -31,8 +31,9 @@ export function ApplicantDetailPanel({
   };
 
   const propertyTypeLabel: Record<string, string> = {
-    ARRENDAMENTO: dict.rental,
-    VENDA: dict.purchase,
+    APARTAMENTO: dict.apartment,
+    MORADIA: dict.house,
+    TERRENO: dict.land,
   };
 
   return (
@@ -99,7 +100,7 @@ export function ApplicantDetailPanel({
               <div className="space-y-1.5 mt-1">
                 <div className="text-xs text-gray-500">
                   <span className="text-gray-400">{dict.propertyType}: </span>
-                  {propertyTypeLabel[selected.property_type] ?? selected.property_type}
+                  {selected.property_type ? (propertyTypeLabel[selected.property_type] ?? selected.property_type) : "—"}
                 </div>
                 {selected.property_value != null && (
                   <div className="text-xs text-gray-500">

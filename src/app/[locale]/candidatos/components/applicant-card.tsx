@@ -39,8 +39,9 @@ export function ApplicantCard({
   };
 
   const propertyTypeLabel: Record<string, string> = {
-    ARRENDAMENTO: dict.rental,
-    VENDA: dict.purchase,
+    APARTAMENTO: dict.apartment,
+    MORADIA: dict.house,
+    TERRENO: dict.land,
   };
 
   return (
@@ -97,7 +98,7 @@ export function ApplicantCard({
         <div className="grid grid-cols-2 gap-2 mt-1">
           <div className="text-xs text-gray-500">
             <span className="text-gray-400">{dict.propertyType}: </span>
-            {propertyTypeLabel[a.property_type] ?? a.property_type}
+            {a.property_type ? (propertyTypeLabel[a.property_type] ?? a.property_type) : "—"}
           </div>
           {a.property_value != null && (
             <div className="text-xs text-gray-500">

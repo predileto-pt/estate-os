@@ -7,7 +7,8 @@ export interface ScreeningReport {
   income_verified: boolean;
   dti_ratio: number;
   justification: string;
-  property_type: string;
+  listing_type: string;
+  property_type: string | null;
   average_monthly_income: number;
 }
 
@@ -16,9 +17,10 @@ export interface Applicant {
   name: string;
   email: string;
   phone: string | null;
-  owner_id: string;
+  organization_id: string;
   form_request_id: string;
-  property_type: string;
+  listing_type: string;
+  property_type: string | null;
   property_value: number | null;
   monthly_rent: number | null;
   property_title: string | null;
@@ -47,12 +49,12 @@ export interface IntakeFormSubmission {
 
 export interface IntakeFormRequestRow {
   id: string;
-  agency_id: string;
+  organization_id: string;
   applicant_name: string;
   applicant_email: string;
   applicant_phone: string | null;
   property_id: string;
-  property_type: string;
+  property_type: string | null;
   listing_type: string;
   property_title: string | null;
   property_price: number | null;
@@ -65,7 +67,7 @@ export interface IntakeFormRequestRow {
 
 export interface IntakeFormRequestInsert {
   id?: string;
-  agency_id: string;
+  organization_id: string;
   applicant_name: string;
   applicant_email: string;
   applicant_phone?: string | null;
