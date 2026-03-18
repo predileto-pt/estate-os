@@ -76,6 +76,71 @@ export async function getProperties(): Promise<
   }
 }
 
+export async function getPropertyPrices(
+  propertyId: string,
+): Promise<
+  | { error: string }
+  | { error: null; prices: components["schemas"]["PropertyPriceResponse"][] }
+> {
+  const headers = await getAuthHeaders();
+  if (!headers) return { error: "Not authenticated" };
+
+  const organizationId = await getOrganizationId();
+  if (!organizationId) return { error: "No organization found" };
+
+  try {
+    const url = new URL(`${CORE_API_URL}/api/v1/property-prices/`);
+    url.searchParams.set("property_id", propertyId);
+    url.searchParams.set("organization_id", organizationId);
+
+    const res = await fetch(url.toString(), { headers });
+
+    if (!res.ok) {
+      const body = await res.text();
+      return { error: `Failed to fetch prices: ${body}` };
+    }
+
+    const prices: components["schemas"]["PropertyPriceResponse"][] = await res.json();
+    return { error: null, prices };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
+export async function createPropertyPrice(params: {
+  property_id: string;
+  amount: number;
+  listing_type: string;
+}): Promise<{ error: string } | { error: null }> {
+  const headers = await getAuthHeaders();
+  if (!headers) return { error: "Not authenticated" };
+
+  const organizationId = await getOrganizationId();
+  if (!organizationId) return { error: "No organization found" };
+
+  try {
+    const res = await fetch(`${CORE_API_URL}/api/v1/property-prices/`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        organization_id: organizationId,
+        property_id: params.property_id,
+        amount: params.amount,
+        listing_type: params.listing_type,
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      return { error: `Failed to create price: ${body}` };
+    }
+
+    return { error: null };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
 export async function getProperty(
   propertyId: string,
 ): Promise<

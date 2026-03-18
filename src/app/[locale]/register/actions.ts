@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { components } from "@/lib/api-types";
 
@@ -36,6 +37,20 @@ export async function getMe(): Promise<
     }
 
     const data: components["schemas"]["UserWithOrganizationResponse"] = await res.json();
+
+    // Cache organization_id in cookie
+    const orgId = data.user.organization_id;
+    if (orgId) {
+      const cookieStore = await cookies();
+      cookieStore.set("organization_id", orgId, {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
+
     return { error: null, user: data.user, organization: data.organization };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Network error" };

@@ -106,9 +106,13 @@ export function ManualForm({
     { value: "titulo_residencia", label: dict.documentTypeResidencePermit },
   ];
 
-  function updateOwner(index: number, field: keyof OwnerFormData, value: string) {
+  function updateOwner(
+    index: number,
+    field: keyof OwnerFormData,
+    value: string
+  ) {
     setOwners((prev) =>
-      prev.map((o, i) => (i === index ? { ...o, [field]: value } : o)),
+      prev.map((o, i) => (i === index ? { ...o, [field]: value } : o))
     );
   }
 
@@ -162,7 +166,9 @@ export function ManualForm({
         </h2>
         <div className="border border-gray-200 border-l-4 border-l-gray-300 bg-white p-4 space-y-4">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">{dict.address} *</label>
+            <label className="block text-xs text-gray-500 mb-1">
+              {dict.address} *
+            </label>
             <input
               type="text"
               required
@@ -175,7 +181,9 @@ export function ManualForm({
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.listingType} *</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.listingType} *
+              </label>
               <Select
                 value={listingType}
                 onValueChange={(v) => setListingType(v as ListingType)}
@@ -184,7 +192,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.typology} *</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.typology} *
+              </label>
               <Select
                 value={typology}
                 onValueChange={(v) => setTypology(v as Typology)}
@@ -193,7 +203,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.status} *</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.status} *
+              </label>
               <Select
                 value={status}
                 onValueChange={(v) => setStatus(v as PropertyStatus)}
@@ -226,7 +238,9 @@ export function ManualForm({
         <div className="border border-gray-200 border-l-4 border-l-gray-300 bg-white p-4 space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.areaM2}</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.areaM2}
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -237,7 +251,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.bedrooms}</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.bedrooms}
+              </label>
               <input
                 type="number"
                 min="0"
@@ -247,7 +263,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.bathrooms}</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.bathrooms}
+              </label>
               <input
                 type="number"
                 min="0"
@@ -257,7 +275,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.builtAt}</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.builtAt}
+              </label>
               <input
                 type="number"
                 min="1000"
@@ -268,7 +288,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.energyRating}</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.energyRating}
+              </label>
               <input
                 type="text"
                 value={energyRating}
@@ -277,7 +299,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.floor}</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.floor}
+              </label>
               <input
                 type="number"
                 value={floor}
@@ -286,7 +310,9 @@ export function ManualForm({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{dict.parkingSpaces}</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                {dict.parkingSpaces}
+              </label>
               <input
                 type="number"
                 min="0"
@@ -370,7 +396,9 @@ export function ManualForm({
                     type="text"
                     required
                     value={owner.full_name}
-                    onChange={(e) => updateOwner(index, "full_name", e.target.value)}
+                    onChange={(e) =>
+                      updateOwner(index, "full_name", e.target.value)
+                    }
                     className={inputClass}
                   />
                 </div>
@@ -395,7 +423,9 @@ export function ManualForm({
                   type="text"
                   required
                   value={owner.address}
-                  onChange={(e) => updateOwner(index, "address", e.target.value)}
+                  onChange={(e) =>
+                    updateOwner(index, "address", e.target.value)
+                  }
                   className={inputClass}
                 />
               </div>
@@ -411,7 +441,13 @@ export function ManualForm({
                     maxLength={9}
                     pattern="\d{9}"
                     value={owner.nif}
-                    onChange={(e) => updateOwner(index, "nif", e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) =>
+                      updateOwner(
+                        index,
+                        "nif",
+                        e.target.value.replace(/\D/g, "")
+                      )
+                    }
                     className={inputClass}
                   />
                 </div>
@@ -423,7 +459,9 @@ export function ManualForm({
                     type="date"
                     required
                     value={owner.date_of_birth}
-                    onChange={(e) => updateOwner(index, "date_of_birth", e.target.value)}
+                    onChange={(e) =>
+                      updateOwner(index, "date_of_birth", e.target.value)
+                    }
                     className={inputClass}
                   />
                 </div>
@@ -436,7 +474,9 @@ export function ManualForm({
                   </label>
                   <Select
                     value={owner.document_type}
-                    onValueChange={(v) => updateOwner(index, "document_type", v)}
+                    onValueChange={(v) =>
+                      updateOwner(index, "document_type", v)
+                    }
                     options={documentTypeOptions}
                     className="w-full"
                   />
@@ -449,7 +489,9 @@ export function ManualForm({
                     type="text"
                     required
                     value={owner.document_id}
-                    onChange={(e) => updateOwner(index, "document_id", e.target.value)}
+                    onChange={(e) =>
+                      updateOwner(index, "document_id", e.target.value)
+                    }
                     className={inputClass}
                   />
                 </div>
@@ -464,7 +506,9 @@ export function ManualForm({
                     type="text"
                     required
                     value={owner.issued_by}
-                    onChange={(e) => updateOwner(index, "issued_by", e.target.value)}
+                    onChange={(e) =>
+                      updateOwner(index, "issued_by", e.target.value)
+                    }
                     className={inputClass}
                   />
                 </div>
@@ -476,7 +520,9 @@ export function ManualForm({
                   <input
                     type="text"
                     value={owner.issuing_district}
-                    onChange={(e) => updateOwner(index, "issuing_district", e.target.value)}
+                    onChange={(e) =>
+                      updateOwner(index, "issuing_district", e.target.value)
+                    }
                     className={inputClass}
                   />
                 </div>

@@ -50,36 +50,58 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${origin}/pt/login`);
     }
 
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     // Register user in backend if coming from the registration flow
     const isRegistrationFlow = registerName || next.includes("/register/onboarding");
-    if (isRegistrationFlow) {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    if (isRegistrationFlow && session) {
+      const userName = registerName || session.user.user_metadata?.full_name || session.user.user_metadata?.name || "";
+      const email = registerEmail || session.user.email || "";
+      try {
+        const res = await fetch(`${CORE_API_URL}/api/v1/auth/register`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: userName,
+            email,
+          }),
+        });
 
-      if (session) {
-        const userName = registerName || session.user.user_metadata?.full_name || session.user.user_metadata?.name || "";
-        const email = registerEmail || session.user.email || "";
-        try {
-          const res = await fetch(`${CORE_API_URL}/api/v1/auth/register`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: userName,
-              email,
-            }),
-          });
-
-          // 409 = already registered, that's fine
-          if (!res.ok && res.status !== 409) {
-            console.error("[auth/callback] Backend register failed:", res.status, await res.text());
-          }
-        } catch (err) {
-          console.error("[auth/callback] Backend register error:", err);
+        // 409 = already registered, that's fine
+        if (!res.ok && res.status !== 409) {
+          console.error("[auth/callback] Backend register failed:", res.status, await res.text());
         }
+      } catch (err) {
+        console.error("[auth/callback] Backend register error:", err);
+      }
+    }
+
+    // Fetch and cache organization_id in a cookie to avoid repeated /auth/me calls
+    if (session) {
+      try {
+        const meRes = await fetch(`${CORE_API_URL}/api/v1/auth/me`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (meRes.ok) {
+          const me = await meRes.json();
+          const orgId = me.user?.organization_id;
+          if (orgId) {
+            response.cookies.set("organization_id", orgId, {
+              path: "/",
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "lax",
+              maxAge: 60 * 60 * 24 * 30, // 30 days
+            });
+          }
+        }
+      } catch (err) {
+        console.error("[auth/callback] Failed to fetch organization_id:", err);
       }
     }
 

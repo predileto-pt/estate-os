@@ -61,7 +61,7 @@ export function AIForm({
         files.map((f) => ({
           filename: f.name,
           content_type: f.type || "application/pdf",
-        })),
+        }))
       );
 
       if (presign.error !== null) {
@@ -82,7 +82,7 @@ export function AIForm({
           if (!res.ok) {
             throw new Error(`Upload failed for ${file.name}: ${res.status}`);
           }
-        }),
+        })
       );
 
       // 3. Submit the extraction job (server action — lightweight)
@@ -130,7 +130,7 @@ export function AIForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Selects */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="border border-gray-200 border-l-4 border-l-gray-300 bg-white p-4 space-y-4 grid grid-cols-2 gap-4">
         <div>
           <label className="block text-xs text-gray-500 mb-1">
             {dict.listingType} *

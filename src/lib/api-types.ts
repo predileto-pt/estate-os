@@ -829,10 +829,51 @@ export interface components {
             has_garden?: boolean | null;
             /** Has Pool */
             has_pool?: boolean | null;
-            /** Latitude */
-            latitude?: number | null;
-            /** Longitude */
-            longitude?: number | null;
+        };
+        /** CreatePropertyPriceRequest */
+        CreatePropertyPriceRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /**
+             * Amount
+             * @description Price amount in euros
+             */
+            amount: number | string;
+            listing_type: components["schemas"]["ListingType"];
+        };
+        /** PropertyPriceResponse */
+        PropertyPriceResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** Amount */
+            amount: string;
+            listing_type: components["schemas"]["ListingType"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** PropertyOwnerResponse */
         PropertyOwnerResponse: {
@@ -893,6 +934,10 @@ export interface components {
             /** Description */
             description: string | null;
             characteristics?: components["schemas"]["PropertyCharacteristicsResponse"] | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
             /**
              * Created At
              * Format: date-time
@@ -905,6 +950,8 @@ export interface components {
             updated_at: string;
             /** Owners */
             owners: components["schemas"]["PropertyOwnerResponse"][];
+            /** Prices */
+            prices: components["schemas"]["PropertyPriceResponse"][];
         };
         /**
          * PropertyStatus

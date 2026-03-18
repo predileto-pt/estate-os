@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { components } from "@/lib/api-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { Small } from "@/components/ui/small";
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
+import { createPropertyPrice } from "../novo/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
+type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
+type ListingType = components["schemas"]["ListingType"];
 
 function formatNif(nif: string) {
   const digits = nif.replace(/\D/g, "");
@@ -177,6 +183,151 @@ function PoolIcon() {
   );
 }
 
+function formatCurrency(amount: string | number): string {
+  const num = typeof amount === "string" ? parseFloat(amount) : amount;
+  return new Intl.NumberFormat("pt-PT", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(num);
+}
+
+function PropertyPriceCard({
+  property,
+  prices,
+  dict,
+}: {
+  property: PropertyResponse;
+  prices: PropertyPriceResponse[];
+  dict: Dictionary["dashboard"];
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [isEditing, setIsEditing] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [listingType, setListingType] = useState<ListingType>(property.listing_type);
+  const [error, setError] = useState<string | null>(null);
+
+  const currentPrice = prices.length > 0 ? prices[0] : null;
+
+  const listingTypeOptions = [
+    { value: "sale", label: dict.sale },
+    { value: "purchase", label: dict.purchase },
+  ];
+
+  const listingTypeLabel: Record<string, string> = {
+    sale: dict.sale,
+    purchase: dict.purchase,
+  };
+
+  function handleEdit() {
+    setAmount(currentPrice?.amount ?? "");
+    setListingType(currentPrice?.listing_type ?? property.listing_type);
+    setError(null);
+    setIsEditing(true);
+  }
+
+  function handleCancel() {
+    setIsEditing(false);
+    setError(null);
+  }
+
+  function handleSave() {
+    const parsed = parseFloat(amount);
+    if (!amount || isNaN(parsed) || parsed <= 0) {
+      setError("Valor inválido");
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await createPropertyPrice({
+        property_id: property.id,
+        amount: parsed,
+        listing_type: listingType,
+      });
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setIsEditing(false);
+        router.refresh();
+      }
+    });
+  }
+
+  return (
+    <div className="border border-gray-200 bg-white overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+        <Small variant="label">{dict.propertyPrice}</Small>
+        {currentPrice && !isEditing && (
+          <button
+            onClick={handleEdit}
+            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <div className="px-4 py-4">
+        {isEditing ? (
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">{dict.listingType}</label>
+              <Select
+                value={listingType}
+                onValueChange={(v) => setListingType(v as ListingType)}
+                options={listingTypeOptions}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">Valor (EUR)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <div className="flex items-center gap-2">
+              <Button variant="primary" onClick={handleSave} disabled={isPending}>
+                {isPending ? "..." : "Guardar"}
+              </Button>
+              <Button variant="steel" onClick={handleCancel} disabled={isPending}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        ) : currentPrice ? (
+          <div className="space-y-1">
+            <div className="text-2xl font-bold text-gray-900">
+              {formatCurrency(currentPrice.amount)}
+            </div>
+            <div className="text-sm text-gray-500">
+              {listingTypeLabel[currentPrice.listing_type] ?? currentPrice.listing_type}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-gray-400">Nenhum preço configurado.</p>
+            <Button variant="primary" onClick={() => { setError(null); setIsEditing(true); }}>
+              Configurar
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function PropertyDetailContent({
   property,
   dict,
@@ -223,8 +374,8 @@ export function PropertyDetailContent({
   };
 
   const chars = property.characteristics;
-  const lat = chars?.latitude;
-  const lng = chars?.longitude;
+  const lat = property.latitude;
+  const lng = property.longitude;
   const hasCoords = lat != null && lng != null;
 
   const characteristicsGrid = [
@@ -426,6 +577,9 @@ export function PropertyDetailContent({
                 </div>
               )}
             </div>
+
+            {/* Price card */}
+            <PropertyPriceCard property={property} prices={property.prices} dict={dict} />
 
             {/* Dates + ID card */}
             <div className="border border-gray-200 bg-white overflow-hidden">
