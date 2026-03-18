@@ -14,9 +14,17 @@ function Value({
   field?: string;
 }) {
   if (!value && value !== 0)
-    return <Skeleton className={width} data-testid={field ? `skeleton-${field}` : undefined} />;
+    return (
+      <Skeleton
+        className={width}
+        data-testid={field ? `skeleton-${field}` : undefined}
+      />
+    );
   return (
-    <span className="text-gray-900" data-testid={field ? `value-${field}` : undefined}>
+    <span
+      className="text-gray-900"
+      data-testid={field ? `value-${field}` : undefined}
+    >
       {value}
     </span>
   );
@@ -30,6 +38,7 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
   const propertyTypeLabel: Record<string, string> = {
     MORADIA: dict.house,
     APARTAMENTO: dict.apartment,
+    TERRENO: dict.land,
   };
 
   const listingTypeLabel: Record<string, string> = {
@@ -44,7 +53,11 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
         <div className="bg-gray-50 px-4 py-3 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold font-heading text-gray-900">
-              <Value value={values.applicant_name} width="w-32" field="applicant_name" />
+              <Value
+                value={values.applicant_name}
+                width="w-32"
+                field="applicant_name"
+              />
             </h3>
             <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-600">
               {dict.pending}
@@ -69,7 +82,11 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
               <rect width="20" height="16" x="2" y="4" rx="2" />
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
-            <Value value={values.applicant_email} width="w-40" field="applicant_email" />
+            <Value
+              value={values.applicant_email}
+              width="w-40"
+              field="applicant_email"
+            />
           </div>
           <div className="flex items-center gap-1.5 text-xs text-gray-500">
             <svg
@@ -88,10 +105,9 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
             <Value
               value={
                 values.applicant_phone
-                  ? values.applicant_phone.replace(
-                      /^(\d{3})(\d{3})(\d{1,3})$/,
-                      "$1 $2 $3",
-                    ).replace(/^(\d{3})(\d{1,3})$/, "$1 $2")
+                  ? values.applicant_phone
+                      .replace(/^(\d{3})(\d{3})(\d{1,3})$/, "$1 $2 $3")
+                      .replace(/^(\d{3})(\d{1,3})$/, "$1 $2")
                   : undefined
               }
               width="w-28"
@@ -104,7 +120,11 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
         <div className="px-4 py-3 border-b border-gray-100 space-y-2">
           <div className="text-xs text-gray-500">
             <span className="text-gray-400">{dict.propertyId}: </span>
-            <Value value={values.property_id} width="w-20" field="property_id" />
+            <Value
+              value={values.property_id}
+              width="w-20"
+              field="property_id"
+            />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div className="text-xs text-gray-500">
@@ -112,8 +132,8 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
               <Value
                 value={
                   values.property_type
-                    ? propertyTypeLabel[values.property_type] ??
-                      values.property_type
+                    ? (propertyTypeLabel[values.property_type] ??
+                      values.property_type)
                     : undefined
                 }
                 width="w-16"
@@ -125,8 +145,8 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
               <Value
                 value={
                   values.listing_type
-                    ? listingTypeLabel[values.listing_type] ??
-                      values.listing_type
+                    ? (listingTypeLabel[values.listing_type] ??
+                      values.listing_type)
                     : undefined
                 }
                 width="w-16"
@@ -137,7 +157,11 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
           {(values.property_title || !values.property_id) && (
             <div className="text-xs text-gray-500">
               <span className="text-gray-400">{dict.propertyTitle}: </span>
-              <Value value={values.property_title} width="w-36" field="property_title" />
+              <Value
+                value={values.property_title}
+                width="w-36"
+                field="property_title"
+              />
             </div>
           )}
           {(values.property_price || !values.property_id) && (
@@ -173,7 +197,11 @@ export function FormPreviewCard({ dict }: { dict: Dictionary["dashboard"] }) {
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            <Value value={values.property_address} width="w-48" field="property_address" />
+            <Value
+              value={values.property_address}
+              width="w-48"
+              field="property_address"
+            />
           </div>
         </div>
       </div>

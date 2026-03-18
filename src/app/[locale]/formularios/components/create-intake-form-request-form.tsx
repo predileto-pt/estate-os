@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { createIntakeFormRequest } from "../actions";
+import type { PropertySummary } from "../actions";
 import { useFormPreview } from "./form-preview-context";
 
 const schema = z.object({
@@ -15,8 +16,8 @@ const schema = z.object({
   applicant_email: z.string().email({ message: "Invalid email" }),
   applicant_phone: z.string().optional(),
   property_id: z.string().min(1, { message: "Required" }),
-  property_type: z.enum(["MORADIA", "APARTAMENTO"], { message: "Required" }),
-  listing_type: z.enum(["VENDA", "ARRENDAMENTO"], { message: "Required" }),
+  property_type: z.enum(["MORADIA", "APARTAMENTO", "TERRENO"]).optional(),
+  listing_type: z.enum(["VENDA", "ARRENDAMENTO"]).optional(),
   property_title: z.string().optional(),
   property_price: z.coerce.number().positive().optional().catch(undefined),
   property_address: z.string().optional(),
@@ -34,6 +35,9 @@ export function CreateIntakeFormRequestForm({
   const router = useRouter();
 
   const [phoneMasked, setPhoneMasked] = useState("");
+  const [propertyMode, setPropertyMode] = useState<"manual" | "select">("manual");
+  const [summaries, setSummaries] = useState<PropertySummary[]>([]);
+  const skipWatchRef = useRef(false);
 
   const {
     register,
@@ -44,9 +48,26 @@ export function CreateIntakeFormRequestForm({
     formState: { errors },
   } = useForm<FormValues>();
 
+  useEffect(() => {
+    fetch("/api/properties/summary")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((properties: PropertySummary[]) => setSummaries(properties))
+      .catch(() => {});
+  }, []);
+
+  function clearPropertyFields() {
+    setValue("property_id", "");
+    setValue("property_type", undefined);
+    setValue("listing_type", undefined);
+    setValue("property_title", "");
+    setValue("property_price", undefined);
+    setValue("property_address", "");
+  }
+
   function reset() {
     resetForm();
     setPhoneMasked("");
+    setPropertyMode("manual");
   }
 
   function formatPhone(raw: string) {
@@ -63,7 +84,10 @@ export function CreateIntakeFormRequestForm({
   }
 
   useEffect(() => {
-    const sub = watch((values) => setValues(values));
+    const sub = watch((values) => {
+      if (skipWatchRef.current) return;
+      setValues(values);
+    });
     return () => sub.unsubscribe();
   }, [watch, setValues]);
 
@@ -92,6 +116,11 @@ export function CreateIntakeFormRequestForm({
 
   const inputClass =
     "w-full border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500";
+
+  const activeBtnClass =
+    "bg-white text-gray-900 shadow-sm border border-gray-300 px-3 py-1 text-sm font-medium";
+  const inactiveBtnClass =
+    "text-gray-500 bg-transparent border border-transparent px-3 py-1 text-sm";
 
   return (
     <form
@@ -136,94 +165,171 @@ export function CreateIntakeFormRequestForm({
         />
       </div>
 
-      <div>
-        <label className="block text-xs text-gray-500 mb-1">
-          {dict.propertyId} *
-        </label>
-        <input {...register("property_id")} className={inputClass} />
-        {errors.property_id && (
-          <p className="text-xs text-red-600 mt-0.5">{dict.required}</p>
+      <div className="bg-gray-100 border border-gray-200 p-3">
+        <div className="flex gap-1">
+          <button
+            type="button"
+            className={propertyMode === "manual" ? activeBtnClass : inactiveBtnClass}
+            onClick={() => {
+              setPropertyMode("manual");
+              clearPropertyFields();
+            }}
+          >
+            {dict.propertyManual}
+          </button>
+          <button
+            type="button"
+            className={propertyMode === "select" ? activeBtnClass : inactiveBtnClass}
+            onClick={() => {
+              setPropertyMode("select");
+              clearPropertyFields();
+            }}
+          >
+            {dict.propertySelect}
+          </button>
+        </div>
+
+        {propertyMode === "select" && (
+          <div className="mt-3">
+            <Select
+              value={watch("property_id") ?? ""}
+              onValueChange={(val) => {
+                const selected = summaries.find((s) => s.id === val) ?? null;
+                skipWatchRef.current = true;
+                setValue("property_id", val, { shouldValidate: true });
+                if (selected) {
+                  const listingType =
+                    selected.listing_type === "sale" ? "VENDA" as const
+                    : selected.listing_type === "purchase" ? "ARRENDAMENTO" as const
+                    : undefined;
+                  const propertyType =
+                    selected.typology === "house" ? "MORADIA" as const
+                    : selected.typology === "apartment" ? "APARTAMENTO" as const
+                    : selected.typology === "land" ? "TERRENO" as const
+                    : undefined;
+
+                  setValue("property_address", selected.address);
+                  setValue("property_price", selected.price ?? undefined);
+                  setValue("listing_type", listingType);
+                  setValue("property_type", propertyType);
+
+                  setValues({
+                    ...watch(),
+                    property_id: val,
+                    property_type: propertyType,
+                    listing_type: listingType,
+                    property_price: selected.price ?? undefined,
+                    property_address: selected.address,
+                  });
+                } else {
+                  setValues({ ...watch(), property_id: val });
+                }
+                queueMicrotask(() => { skipWatchRef.current = false; });
+              }}
+              options={[
+                { value: "", label: dict.selectProperty },
+                ...summaries.map((s) => ({
+                  value: s.id,
+                  label: s.address,
+                })),
+              ]}
+              placeholder={dict.selectProperty}
+              className="w-full border-gray-300 px-3 py-1.5 focus:ring-1 focus:ring-green-500 focus:border-green-500"
+            />
+            {errors.property_id && (
+              <p className="text-xs text-red-600 mt-0.5">{dict.required}</p>
+            )}
+          </div>
         )}
       </div>
 
-      <div>
-        <label className="block text-xs text-gray-500 mb-1">
-          {dict.propertyType} *
-        </label>
-        <Select
-          value={watch("property_type") ?? ""}
-          onValueChange={(val) =>
-            setValue("property_type", val as FormValues["property_type"], {
-              shouldValidate: true,
-            })
-          }
-          options={[
-            { value: "", label: dict.required },
-            { value: "MORADIA", label: dict.house },
-            { value: "APARTAMENTO", label: dict.apartment },
-          ]}
-          className="w-full border-gray-300 px-3 py-1.5 focus:ring-1 focus:ring-green-500 focus:border-green-500"
-        />
-        {errors.property_type && (
-          <p className="text-xs text-red-600 mt-0.5">{dict.required}</p>
-        )}
-      </div>
+      {propertyMode === "manual" && (
+        <>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">
+              {dict.propertyId} *
+            </label>
+            <input {...register("property_id")} className={inputClass} />
+            {errors.property_id && (
+              <p className="text-xs text-red-600 mt-0.5">{dict.required}</p>
+            )}
+          </div>
 
-      <div>
-        <label className="block text-xs text-gray-500 mb-1">
-          {dict.listingType} *
-        </label>
-        <Select
-          value={watch("listing_type") ?? ""}
-          onValueChange={(val) =>
-            setValue("listing_type", val as FormValues["listing_type"], {
-              shouldValidate: true,
-            })
-          }
-          options={[
-            { value: "", label: dict.required },
-            { value: "VENDA", label: dict.sale },
-            { value: "ARRENDAMENTO", label: dict.rental },
-          ]}
-          className="w-full border-gray-300 px-3 py-1.5 focus:ring-1 focus:ring-green-500 focus:border-green-500"
-        />
-        {errors.listing_type && (
-          <p className="text-xs text-red-600 mt-0.5">{dict.required}</p>
-        )}
-      </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">
+              {dict.propertyType}
+            </label>
+            <Select
+              value={watch("property_type") ?? ""}
+              onValueChange={(val) =>
+                setValue("property_type", val as FormValues["property_type"], {
+                  shouldValidate: true,
+                })
+              }
+              options={[
+                { value: "", label: dict.required },
+                { value: "MORADIA", label: dict.house },
+                { value: "APARTAMENTO", label: dict.apartment },
+                { value: "TERRENO", label: dict.land },
+              ]}
+              className="w-full border-gray-300 px-3 py-1.5 focus:ring-1 focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
 
-      <div>
-        <label className="block text-xs text-gray-500 mb-1">
-          {dict.propertyTitle}
-        </label>
-        <input {...register("property_title")} className={inputClass} />
-      </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">
+              {dict.listingType}
+            </label>
+            <Select
+              value={watch("listing_type") ?? ""}
+              onValueChange={(val) =>
+                setValue("listing_type", val as FormValues["listing_type"], {
+                  shouldValidate: true,
+                })
+              }
+              options={[
+                { value: "", label: dict.required },
+                { value: "VENDA", label: dict.sale },
+                { value: "ARRENDAMENTO", label: dict.rental },
+              ]}
+              className="w-full border-gray-300 px-3 py-1.5 focus:ring-1 focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
 
-      <div>
-        <label className="block text-xs text-gray-500 mb-1">
-          {dict.propertyPrice}
-        </label>
-        <input
-          {...register("property_price")}
-          type="number"
-          step="0.01"
-          className={inputClass}
-        />
-      </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">
+              {dict.propertyTitle}
+            </label>
+            <input {...register("property_title")} className={inputClass} />
+          </div>
 
-      <div>
-        <label className="block text-xs text-gray-500 mb-1">
-          {dict.propertyAddress}
-        </label>
-        <input
-          {...register("property_address")}
-          className={inputClass}
-          placeholder="RUA DO CARRAO N307 LJ D, FORNELOS, PONTE DE LIMA, 4990-620, PORTUGAL"
-        />
-        <p className="text-[10px] text-gray-400 mt-1">
-          {dict.propertyAddressHint}
-        </p>
-      </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">
+              {dict.propertyPrice}
+            </label>
+            <input
+              {...register("property_price")}
+              type="number"
+              step="0.01"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">
+              {dict.propertyAddress}
+            </label>
+            <input
+              {...register("property_address")}
+              className={inputClass}
+              placeholder="RUA DO CARRAO N307 LJ D, FORNELOS, PONTE DE LIMA, 4990-620, PORTUGAL"
+            />
+            <p className="text-[10px] text-gray-400 mt-1">
+              {dict.propertyAddressHint}
+            </p>
+          </div>
+        </>
+      )}
 
       <div className="flex gap-2 pt-1">
         <Button type="submit" variant="primary" disabled={pending}>

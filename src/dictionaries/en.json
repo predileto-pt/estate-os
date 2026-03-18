@@ -250,6 +250,10 @@
     "nifLabel": "NIF (Tax ID)",
     "organizationAddress": "Address",
     "onboardingTitle": "Complete your registration",
-    "onboardingSubtitle": "Tell us about your organization"
+    "onboardingSubtitle": "Tell us about your organization",
+    "requestOwnerApproval": "Request Owner Approval",
+    "propertyManual": "Manual",
+    "propertySelect": "Select Property",
+    "selectProperty": "Select a property..."
   }
 }

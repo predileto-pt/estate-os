@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { resend } from "@/lib/resend";
@@ -8,13 +9,65 @@ import { getPostHogServer } from "@/lib/posthog-server";
 const APPLICANT_INTAKE_FORM_URL =
   process.env.APPLICANT_INTAKE_FORM_URL || "http://localhost:5173";
 
+const CORE_API_URL = process.env.CORE_API_URL || "http://localhost:8000";
+
+export type PropertySummary = {
+  id: string;
+  address: string;
+  listing_type: string;
+  typology: string;
+  price: number | null;
+  owners: { full_name: string }[];
+};
+
+async function getAuthHeaders() {
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) return null;
+
+  return {
+    Authorization: `Bearer ${session.access_token}`,
+    "Content-Type": "application/json",
+  };
+}
+
+async function getOrganizationId(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const cached = cookieStore.get("organization_id")?.value;
+  if (cached) return cached;
+
+  const headers = await getAuthHeaders();
+  if (!headers) return null;
+
+  const res = await fetch(`${CORE_API_URL}/api/v1/auth/me`, { headers });
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  const orgId = data.user.organization_id ?? null;
+
+  if (orgId) {
+    cookieStore.set("organization_id", orgId, {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  }
+
+  return orgId;
+}
+
 export async function createIntakeFormRequest(formData: {
   applicant_name: string;
   applicant_email: string;
   applicant_phone?: string;
   property_id: string;
-  property_type: string;
-  listing_type: string;
+  property_type?: string;
+  listing_type?: string;
   property_title?: string;
   property_price?: number | null;
   property_address?: string;
@@ -41,8 +94,8 @@ export async function createIntakeFormRequest(formData: {
         applicant_email: formData.applicant_email,
         applicant_phone: formData.applicant_phone || null,
         property_id: formData.property_id,
-        property_type: formData.property_type,
-        listing_type: formData.listing_type,
+        property_type: formData.property_type || null,
+        listing_type: formData.listing_type || null,
         property_title: formData.property_title || null,
         property_price: formData.property_price ?? null,
         property_address: formData.property_address || null,

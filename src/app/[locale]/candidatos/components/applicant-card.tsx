@@ -1,11 +1,13 @@
 "use client";
 
+import { useTransition } from "react";
 import type { Applicant, RiskLevel } from "@/lib/db-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Small } from "@/components/ui/small";
 import { cn, formatPrice } from "@/lib/utils";
 import { useApplicantDetail } from "./applicant-detail-context";
+import { approveApplicant, denyApplicant, requestOwnerApproval } from "../actions";
 
 const riskBadgeStyles: Record<RiskLevel, string> = {
   LOW: "bg-green-100 text-green-700",
@@ -25,6 +27,9 @@ export function ApplicantCard({
   isExample?: boolean;
 }) {
   const { selectedId, select } = useApplicantDetail();
+  const [approvePending, startApprove] = useTransition();
+  const [denyPending, startDeny] = useTransition();
+  const [ownerApprovalPending, startOwnerApproval] = useTransition();
   const a = applicant;
   const r = a.screening_report;
   const isSelected = selectedId === a.id;
@@ -180,7 +185,30 @@ export function ApplicantCard({
 
       {/* Footer */}
       {!isExample && (
-        <div className="px-4 py-3 border-t border-gray-100 flex justify-end">
+        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="primary"
+              disabled={approvePending}
+              onClick={() => startApprove(async () => { await approveApplicant(a.id); })}
+            >
+              {dict.approve}
+            </Button>
+            <Button
+              variant="steel"
+              disabled={denyPending}
+              onClick={() => startDeny(async () => { await denyApplicant(a.id); })}
+            >
+              {dict.reject}
+            </Button>
+            <Button
+              variant="default"
+              disabled={ownerApprovalPending}
+              onClick={() => startOwnerApproval(async () => { await requestOwnerApproval(a.id); })}
+            >
+              {dict.requestOwnerApproval}
+            </Button>
+          </div>
           <Button variant="steel" onClick={() => select(a)}>
             {dict.details}
           </Button>

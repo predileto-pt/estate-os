@@ -8,10 +8,11 @@ const protectedSubpaths = ["/register/onboarding"];
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip static files and auth callback
+  // Skip static files, auth callback, and API routes
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/auth/") ||
+    pathname.startsWith("/api/") ||
     pathname.includes(".")
   ) {
     return NextResponse.next();

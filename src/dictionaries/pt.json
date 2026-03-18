@@ -250,6 +250,10 @@
     "nifLabel": "NIF",
     "organizationAddress": "Morada",
     "onboardingTitle": "Complete o seu registo",
-    "onboardingSubtitle": "Fale-nos sobre a sua organização"
+    "onboardingSubtitle": "Fale-nos sobre a sua organização",
+    "requestOwnerApproval": "Solicitar Aprovação",
+    "propertyManual": "Manual",
+    "propertySelect": "Selecionar Imóvel",
+    "selectProperty": "Selecione um imóvel..."
   }
 }

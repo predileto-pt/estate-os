@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 export interface FormPreviewValues {
   applicant_name?: string;
@@ -37,7 +43,7 @@ export function FormPreviewProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({ open, values, setOpen, setValues }),
-    [open, values],
+    [open, values]
   );
 
   return (
