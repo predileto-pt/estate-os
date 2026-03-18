@@ -1,6 +1,6 @@
 "use client";
 
-import type { components } from "@/lib/api-types";
+import type { components } from "@/lib/types/estate-os-api";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { PropertyCard } from "./property-card";
 

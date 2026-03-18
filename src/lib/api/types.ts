@@ -1,4 +1,4 @@
-import type { components } from "@/lib/api-types";
+import type { components } from "@/lib/types/estate-os-api";
 
 export type ActionResult<T> = { error: string } | { error: null; data: T };
 

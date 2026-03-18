@@ -7,7 +7,7 @@ import { z } from "zod";
 import { useDictionary } from "@/components/dictionary-provider";
 import { Button } from "@/components/ui/button";
 import { getMe, updateOrganization } from "@/app/[locale]/register/actions";
-import type { components } from "@/lib/api-types";
+import type { components } from "@/lib/types/estate-os-api";
 
 const organizationSchema = z.object({
   name: z.string().min(1),

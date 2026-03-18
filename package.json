@@ -12,7 +12,10 @@
     "test:coverage": "jest --forceExit --coverage",
     "cypress": "cypress open",
     "cypress:run": "cypress run",
-    "generate:api-types": "npx openapi-typescript http://localhost:8000/openapi.json -o src/lib/api-types.ts"
+    "generate:types": "npx openapi-typescript http://localhost:8000/openapi.json -o src/lib/types/estate-os-api.ts && npx openapi-typescript http://localhost:9000/openapi.json -o src/lib/types/applicants-intake-service-api.ts && curl -s http://localhost:6000/openapi.json -o /tmp/contract-intelligence-openapi.json && npx openapi-typescript /tmp/contract-intelligence-openapi.json -o src/lib/types/contract-intelligence-service-api.ts",
+    "generate:types:estate-os": "npx openapi-typescript http://localhost:8000/openapi.json -o src/lib/types/estate-os-api.ts",
+    "generate:types:applicants": "npx openapi-typescript http://localhost:9000/openapi.json -o src/lib/types/applicants-intake-service-api.ts",
+    "generate:types:contracts": "curl -s http://localhost:6000/openapi.json -o /tmp/contract-intelligence-openapi.json && npx openapi-typescript /tmp/contract-intelligence-openapi.json -o src/lib/types/contract-intelligence-service-api.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
