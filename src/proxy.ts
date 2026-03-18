@@ -5,7 +5,7 @@ import { locales, defaultLocale } from "@/lib/i18n";
 const publicPaths = ["/login", "/register"];
 const protectedSubpaths = ["/register/onboarding"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip static files and auth callback
