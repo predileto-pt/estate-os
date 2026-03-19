@@ -2,6 +2,7 @@
 
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { useDictionary } from "@/components/dictionary-provider";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/ui/feature-card";
 import { ContractModelCard } from "./contract-model-card";
@@ -75,7 +76,9 @@ export function ModelsPageContent({
           <h1 className="text-lg font-bold font-heading">
             {dict.contractModels}
           </h1>
-          <Button variant="primary">{dict.addContractModel}</Button>
+          <Link href={`/${locale}/contratos/modelos/novo`}>
+            <Button variant="primary">{dict.addContractModel}</Button>
+          </Link>
         </div>
         <div className="grid grid-cols-3 gap-4 mb-6">
           <FeatureCard

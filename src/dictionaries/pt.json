@@ -184,6 +184,18 @@
     "blockTypeSectionHeader": "Cabeçalho de Secção",
     "blockTypeFooter": "Rodapé",
 
+    "uploadContractModel": "Carregar Modelo de Contrato",
+    "uploadContractDescription": "Carregue um ficheiro PDF ou DOCX para criar um novo modelo de contrato.",
+    "dragDropHint": "Arraste e largue um ficheiro aqui, ou clique para selecionar",
+    "acceptedFormats": "Formatos aceites: PDF, DOCX",
+    "selectedFile": "Ficheiro selecionado",
+    "fileSize": "Tamanho",
+    "uploadButton": "Carregar",
+    "uploading": "A carregar...",
+    "uploadSuccess": "Documento carregado com sucesso!",
+    "uploadError": "Erro ao carregar o documento. Tente novamente.",
+    "removeFile": "Remover",
+
     "createProperty": "Registar Imóvel",
     "createPropertyManual": "Manual",
     "createPropertyAI": "Com IA",
