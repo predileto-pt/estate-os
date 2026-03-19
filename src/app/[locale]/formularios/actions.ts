@@ -35,7 +35,7 @@ export async function createIntakeFormRequest(formData: {
   let data: { id: string };
   try {
     data = await applicantsPost<{ id: string }>(
-      "/api/v1/intake-form-requests",
+      "/api/v1/applicants/intake-form-requests",
       {
         organization_id: organizationId,
         applicant_name: formData.applicant_name,
@@ -101,7 +101,7 @@ export async function resendIntakeFormEmail(requestId: string) {
   };
   try {
     request = await applicantsGet<typeof request>(
-      `/api/v1/intake-form-requests/${requestId}`,
+      `/api/v1/applicants/intake-form-requests/${requestId}`,
     );
   } catch {
     return { error: "Request not found" };

@@ -1,17 +1,12 @@
-import { ApiError, parseApiError } from "./errors";
+import { parseApiError } from "./errors";
 
-const SERVICE_URL = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
-
-function getServiceUrl(): string {
-  if (!SERVICE_URL) throw new ApiError("Service URL not configured", 500);
-  return SERVICE_URL;
-}
+const API_URL = process.env.API_URL || "http://localhost";
 
 export async function applicantsGet<T>(
   path: string,
-  params?: Record<string, string>,
+  params?: Record<string, string>
 ): Promise<T> {
-  const url = new URL(`${getServiceUrl()}${path}`);
+  const url = new URL(`${API_URL}${path}`);
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       url.searchParams.set(key, value);
@@ -25,7 +20,7 @@ export async function applicantsGet<T>(
 
 export async function applicantsPost<T>(
   path: string,
-  body?: unknown,
+  body?: unknown
 ): Promise<T> {
   const init: RequestInit = { method: "POST" };
   if (body !== undefined) {
@@ -33,13 +28,13 @@ export async function applicantsPost<T>(
     init.body = JSON.stringify(body);
   }
 
-  const res = await fetch(`${getServiceUrl()}${path}`, init);
+  const res = await fetch(`${API_URL}${path}`, init);
   if (!res.ok) throw await parseApiError(res);
   const text = await res.text();
   return text ? JSON.parse(text) : (undefined as T);
 }
 
 export async function applicantsPatch(path: string): Promise<void> {
-  const res = await fetch(`${getServiceUrl()}${path}`, { method: "PATCH" });
+  const res = await fetch(`${API_URL}${path}`, { method: "PATCH" });
   if (!res.ok) throw await parseApiError(res);
 }

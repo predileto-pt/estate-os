@@ -12,7 +12,7 @@ import type {
   UserWithOrganizationResponse,
 } from "@/lib/api/types";
 
-const CORE_API_URL = process.env.CORE_API_URL || "http://localhost:8000";
+const API_URL = process.env.API_URL || "http://localhost";
 
 export async function getMe(): Promise<
   ActionResult<{
@@ -24,7 +24,7 @@ export async function getMe(): Promise<
   if (!headers) return { error: "Not authenticated" };
 
   try {
-    const res = await fetch(`${CORE_API_URL}/api/v1/auth/me`, { headers });
+    const res = await fetch(`${API_URL}/api/v1/auth/me`, { headers });
 
     if (!res.ok) {
       return { error: `Failed to fetch user: ${res.status}` };

@@ -39,27 +39,25 @@ export default async function IntakeFormRequestsPage({
 
   if (!organizationId) return null;
 
-  const serviceUrl = process.env.APPLICANTS_MANAGEMENT_SERVICE_URL;
+  const apiUrl = process.env.API_URL || "http://localhost";
   let requests: IntakeFormRequestRow[] = [];
 
-  if (serviceUrl) {
-    try {
-      const response = await fetch(
-        `${serviceUrl}/api/v1/intake-form-requests?organization_id=${organizationId}&limit=50&offset=0`,
-        { cache: "no-store" }
+  try {
+    const response = await fetch(
+      `${apiUrl}/api/v1/applicants/intake-form-requests?organization_id=${organizationId}&limit=50&offset=0`,
+      { cache: "no-store" }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      requests = data.map(
+        (r: IntakeFormRequestRow & { status: string }) => ({
+          ...r,
+          status: r.status.toLowerCase() as IntakeFormRequestRow["status"],
+        })
       );
-      if (response.ok) {
-        const data = await response.json();
-        requests = data.map(
-          (r: IntakeFormRequestRow & { status: string }) => ({
-            ...r,
-            status: r.status.toLowerCase() as IntakeFormRequestRow["status"],
-          })
-        );
-      }
-    } catch {
-      // Fall through with empty requests
     }
+  } catch {
+    // Fall through with empty requests
   }
 
   return (

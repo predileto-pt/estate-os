@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/health/live": {
+    "/api/v1/contracts/health/live": {
         parameters: {
             query?: never;
             header?: never;
@@ -12,7 +12,7 @@ export interface paths {
             cookie?: never;
         };
         /** Liveness probe */
-        get: operations["live_health_live_get"];
+        get: operations["live_api_v1_contracts_health_live_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -21,7 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/health/ready": {
+    "/api/v1/contracts/health/ready": {
         parameters: {
             query?: never;
             header?: never;
@@ -29,7 +29,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness probe */
-        get: operations["ready_health_ready_get"];
+        get: operations["ready_api_v1_contracts_health_ready_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -38,7 +38,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/source-documents/upload": {
+    "/api/v1/contracts/source-documents/upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -51,14 +51,14 @@ export interface paths {
          * Upload a source document
          * @description Accepts a PDF or DOCX file, stores it in S3, computes a content hash for deduplication, and creates a `ContractSourceDocument` record with status `uploaded`.
          */
-        post: operations["upload_source_documents_upload_post"];
+        post: operations["upload_api_v1_contracts_source_documents_upload_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/source-documents/{document_id}": {
+    "/api/v1/contracts/source-documents/{document_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -69,7 +69,7 @@ export interface paths {
          * Get a source document
          * @description Returns the full metadata for a single source document, including current upload status.
          */
-        get: operations["get_document_source_documents__document_id__get"];
+        get: operations["get_document_api_v1_contracts_source_documents__document_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -78,7 +78,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/source-documents/": {
+    "/api/v1/contracts/source-documents/": {
         parameters: {
             query?: never;
             header?: never;
@@ -89,7 +89,7 @@ export interface paths {
          * List source documents
          * @description Returns a summary list of all source documents with contract name, page count, and section count.
          */
-        get: operations["list_documents_source_documents__get"];
+        get: operations["list_documents_api_v1_contracts_source_documents__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -98,7 +98,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/source-documents/{document_id}/detail": {
+    "/api/v1/contracts/source-documents/{document_id}/detail": {
         parameters: {
             query?: never;
             header?: never;
@@ -109,7 +109,7 @@ export interface paths {
          * Get source document detail with parse data
          * @description Returns full document metadata including the raw Reducto parse output JSON.
          */
-        get: operations["get_document_detail_source_documents__document_id__detail_get"];
+        get: operations["get_document_detail_api_v1_contracts_source_documents__document_id__detail_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -118,7 +118,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/source-documents/{document_id}/parse": {
+    "/api/v1/contracts/source-documents/{document_id}/parse": {
         parameters: {
             query?: never;
             header?: never;
@@ -131,14 +131,14 @@ export interface paths {
          * Request parsing of a source document
          * @description Enqueues an async parse job (OCR + layout analysis) for the given document. The document is split into ordered `SourceSection` rows once parsing completes.
          */
-        post: operations["parse_source_documents__document_id__parse_post"];
+        post: operations["parse_api_v1_contracts_source_documents__document_id__parse_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/source-documents/{document_id}/extract": {
+    "/api/v1/contracts/source-documents/{document_id}/extract": {
         parameters: {
             query?: never;
             header?: never;
@@ -151,14 +151,14 @@ export interface paths {
          * Request extraction from a source document
          * @description Enqueues an async extraction job that uses an LLM to pull structured field evidence from each parsed section. Results are stored as `SourceFieldEvidence` rows.
          */
-        post: operations["extract_source_documents__document_id__extract_post"];
+        post: operations["extract_api_v1_contracts_source_documents__document_id__extract_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/review/source-documents/{document_id}": {
+    "/api/v1/contracts/review/source-documents/{document_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -169,7 +169,7 @@ export interface paths {
          * Get review bundle for a source document
          * @description Returns the document's parsed sections together with all extracted field evidence so that a reviewer can inspect, accept, or correct them in one view.
          */
-        get: operations["get_review_bundle_review_source_documents__document_id__get"];
+        get: operations["get_review_bundle_api_v1_contracts_review_source_documents__document_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -178,7 +178,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/review/source-sections/{section_id}": {
+    "/api/v1/contracts/review/source-sections/{section_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -195,10 +195,10 @@ export interface paths {
          * Update source section review
          * @description Sets the review status of a parsed section (e.g. `accepted`, `corrected`, `rejected`) and optionally provides a corrected `normalized_text`.
          */
-        patch: operations["update_section_review_review_source_sections__section_id__patch"];
+        patch: operations["update_section_review_api_v1_contracts_review_source_sections__section_id__patch"];
         trace?: never;
     };
-    "/review/source-field-evidence/{evidence_id}": {
+    "/api/v1/contracts/review/source-field-evidence/{evidence_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -215,10 +215,10 @@ export interface paths {
          * Update field evidence review
          * @description Sets the review status of an extracted field (e.g. `accepted`, `corrected`) and optionally provides a `corrected_value_json`.
          */
-        patch: operations["update_field_evidence_review_review_source_field_evidence__evidence_id__patch"];
+        patch: operations["update_field_evidence_review_api_v1_contracts_review_source_field_evidence__evidence_id__patch"];
         trace?: never;
     };
-    "/template-versions/from-source/{source_document_id}": {
+    "/api/v1/contracts/template-versions/from-source/{source_document_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -231,14 +231,14 @@ export interface paths {
          * Create template version from source document
          * @description Promotes a fully reviewed source document into a new template version. Copies sections as `TemplateSection` rows with Jinja render slots, creates field bindings, conditions, and party slots derived from the extraction results.
          */
-        post: operations["create_from_source_template_versions_from_source__source_document_id__post"];
+        post: operations["create_from_source_api_v1_contracts_template_versions_from_source__source_document_id__post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/template-versions/{version_id}": {
+    "/api/v1/contracts/template-versions/{version_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -249,7 +249,7 @@ export interface paths {
          * Get a template version
          * @description Returns the full template version record including its schema, rules, and status.
          */
-        get: operations["get_version_template_versions__version_id__get"];
+        get: operations["get_version_api_v1_contracts_template_versions__version_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -259,10 +259,10 @@ export interface paths {
          * Update a template version
          * @description Partially updates a draft template version. Allowed fields: `review_notes`, `status`, `schema_json`, `computed_rules_json`.
          */
-        patch: operations["update_version_template_versions__version_id__patch"];
+        patch: operations["update_version_api_v1_contracts_template_versions__version_id__patch"];
         trace?: never;
     };
-    "/template-versions/template-sections/{section_id}": {
+    "/api/v1/contracts/template-versions/template-sections/{section_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -279,10 +279,10 @@ export interface paths {
          * Update a template section
          * @description Partially updates an individual template section — title, render template, condition expression, optionality, repeatability, or status.
          */
-        patch: operations["update_section_template_versions_template_sections__section_id__patch"];
+        patch: operations["update_section_api_v1_contracts_template_versions_template_sections__section_id__patch"];
         trace?: never;
     };
-    "/template-versions/{version_id}/publish": {
+    "/api/v1/contracts/template-versions/{version_id}/publish": {
         parameters: {
             query?: never;
             header?: never;
@@ -295,14 +295,14 @@ export interface paths {
          * Publish a template version
          * @description Transitions a template version from `draft` / `review` to `approved` and sets it as the current version on the parent `ContractTemplate`. Fails if the version is already published.
          */
-        post: operations["publish_version_template_versions__version_id__publish_post"];
+        post: operations["publish_version_api_v1_contracts_template_versions__version_id__publish_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/generated-contracts/from-crm": {
+    "/api/v1/contracts/generated-contracts/from-crm": {
         parameters: {
             query?: never;
             header?: never;
@@ -315,14 +315,14 @@ export interface paths {
          * Create generated contract from CRM data
          * @description Resolves CRM contact and property records, maps them onto the template version's field bindings and party slots, and creates a `GeneratedContract` in `draft` status.
          */
-        post: operations["create_from_crm_generated_contracts_from_crm_post"];
+        post: operations["create_from_crm_api_v1_contracts_generated_contracts_from_crm_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/generated-contracts/{contract_id}": {
+    "/api/v1/contracts/generated-contracts/{contract_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -333,7 +333,7 @@ export interface paths {
          * Get a generated contract
          * @description Returns the full generated contract including its rendered schema and current status.
          */
-        get: operations["get_contract_generated_contracts__contract_id__get"];
+        get: operations["get_contract_api_v1_contracts_generated_contracts__contract_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -342,7 +342,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/generated-contracts/{contract_id}/render": {
+    "/api/v1/contracts/generated-contracts/{contract_id}/render": {
         parameters: {
             query?: never;
             header?: never;
@@ -355,7 +355,7 @@ export interface paths {
          * Render a generated contract
          * @description Renders each section of the generated contract through the Jinja template engine, produces a PDF artifact, stores it in S3, and returns the artifact metadata.
          */
-        post: operations["render_contract_generated_contracts__contract_id__render_post"];
+        post: operations["render_contract_api_v1_contracts_generated_contracts__contract_id__render_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -366,8 +366,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Body_upload_source_documents_upload_post */
-        Body_upload_source_documents_upload_post: {
+        /** Body_upload_api_v1_contracts_source_documents_upload_post */
+        Body_upload_api_v1_contracts_source_documents_upload_post: {
             /** File */
             file: string;
             /**
@@ -998,7 +998,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    live_health_live_get: {
+    live_api_v1_contracts_health_live_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1020,7 +1020,7 @@ export interface operations {
             };
         };
     };
-    ready_health_ready_get: {
+    ready_api_v1_contracts_health_ready_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1042,7 +1042,7 @@ export interface operations {
             };
         };
     };
-    upload_source_documents_upload_post: {
+    upload_api_v1_contracts_source_documents_upload_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1051,7 +1051,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["Body_upload_source_documents_upload_post"];
+                "multipart/form-data": components["schemas"]["Body_upload_api_v1_contracts_source_documents_upload_post"];
             };
         };
         responses: {
@@ -1075,7 +1075,7 @@ export interface operations {
             };
         };
     };
-    get_document_source_documents__document_id__get: {
+    get_document_api_v1_contracts_source_documents__document_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1106,7 +1106,7 @@ export interface operations {
             };
         };
     };
-    list_documents_source_documents__get: {
+    list_documents_api_v1_contracts_source_documents__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1126,7 +1126,7 @@ export interface operations {
             };
         };
     };
-    get_document_detail_source_documents__document_id__detail_get: {
+    get_document_detail_api_v1_contracts_source_documents__document_id__detail_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1157,7 +1157,7 @@ export interface operations {
             };
         };
     };
-    parse_source_documents__document_id__parse_post: {
+    parse_api_v1_contracts_source_documents__document_id__parse_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1190,7 +1190,7 @@ export interface operations {
             };
         };
     };
-    extract_source_documents__document_id__extract_post: {
+    extract_api_v1_contracts_source_documents__document_id__extract_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1223,7 +1223,7 @@ export interface operations {
             };
         };
     };
-    get_review_bundle_review_source_documents__document_id__get: {
+    get_review_bundle_api_v1_contracts_review_source_documents__document_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1254,7 +1254,7 @@ export interface operations {
             };
         };
     };
-    update_section_review_review_source_sections__section_id__patch: {
+    update_section_review_api_v1_contracts_review_source_sections__section_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1287,7 +1287,7 @@ export interface operations {
             };
         };
     };
-    update_field_evidence_review_review_source_field_evidence__evidence_id__patch: {
+    update_field_evidence_review_api_v1_contracts_review_source_field_evidence__evidence_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1320,7 +1320,7 @@ export interface operations {
             };
         };
     };
-    create_from_source_template_versions_from_source__source_document_id__post: {
+    create_from_source_api_v1_contracts_template_versions_from_source__source_document_id__post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1351,7 +1351,7 @@ export interface operations {
             };
         };
     };
-    get_version_template_versions__version_id__get: {
+    get_version_api_v1_contracts_template_versions__version_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1382,7 +1382,7 @@ export interface operations {
             };
         };
     };
-    update_version_template_versions__version_id__patch: {
+    update_version_api_v1_contracts_template_versions__version_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1415,7 +1415,7 @@ export interface operations {
             };
         };
     };
-    update_section_template_versions_template_sections__section_id__patch: {
+    update_section_api_v1_contracts_template_versions_template_sections__section_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1448,7 +1448,7 @@ export interface operations {
             };
         };
     };
-    publish_version_template_versions__version_id__publish_post: {
+    publish_version_api_v1_contracts_template_versions__version_id__publish_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1477,7 +1477,7 @@ export interface operations {
             };
         };
     };
-    create_from_crm_generated_contracts_from_crm_post: {
+    create_from_crm_api_v1_contracts_generated_contracts_from_crm_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1510,7 +1510,7 @@ export interface operations {
             };
         };
     };
-    get_contract_generated_contracts__contract_id__get: {
+    get_contract_api_v1_contracts_generated_contracts__contract_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1541,7 +1541,7 @@ export interface operations {
             };
         };
     };
-    render_contract_generated_contracts__contract_id__render_post: {
+    render_contract_api_v1_contracts_generated_contracts__contract_id__render_post: {
         parameters: {
             query?: never;
             header?: never;

@@ -12,7 +12,7 @@ export async function fetchApplicants(
   organizationId: string,
 ): Promise<ActionResult<Applicant[]>> {
   try {
-    const data = await applicantsGet<Applicant[]>("/api/v1/applicants", {
+    const data = await applicantsGet<Applicant[]>("/api/v1/applicants/", {
       organization_id: organizationId,
     });
     return { error: null, data };

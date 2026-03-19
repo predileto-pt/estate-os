@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/v1/uploads/presign": {
+    "/api/v1/applicants/uploads/presign": {
         parameters: {
             query?: never;
             header?: never;
@@ -17,14 +17,14 @@ export interface paths {
          * Get presigned S3 URLs for document uploads
          * @description Returns presigned PUT URLs for uploading documents directly to S3. Call this before submitting — upload files to S3 first, then POST /submissions with the S3 keys.
          */
-        post: operations["presign_uploads_api_v1_uploads_presign_post"];
+        post: operations["presign_uploads_api_v1_applicants_uploads_presign_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/submissions": {
+    "/api/v1/applicants/submissions": {
         parameters: {
             query?: never;
             header?: never;
@@ -37,14 +37,14 @@ export interface paths {
          * Submit applicant documents for screening
          * @description Receives applicant data and document S3 keys as JSON. Documents must already be uploaded to S3 via presigned URLs from /uploads/presign. Creates the applicant record and enqueues extraction jobs.
          */
-        post: operations["create_submission_api_v1_submissions_post"];
+        post: operations["create_submission_api_v1_applicants_submissions_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/submissions/{applicant_id}/status": {
+    "/api/v1/applicants/submissions/{applicant_id}/status": {
         parameters: {
             query?: never;
             header?: never;
@@ -55,7 +55,7 @@ export interface paths {
          * Get screening status for a submission
          * @description Returns the current screening status for an applicant. Status is PROCESSING while documents are being extracted and screened, or COMPLETED with a full screening report once assessment finishes.
          */
-        get: operations["get_screening_status_api_v1_submissions__applicant_id__status_get"];
+        get: operations["get_screening_status_api_v1_applicants_submissions__applicant_id__status_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -64,7 +64,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/intake-form-requests": {
+    "/api/v1/applicants/intake-form-requests": {
         parameters: {
             query?: never;
             header?: never;
@@ -75,20 +75,20 @@ export interface paths {
          * List intake form requests for an agency
          * @description Returns paginated intake form requests filtered by agency ID.
          */
-        get: operations["list_intake_form_requests_api_v1_intake_form_requests_get"];
+        get: operations["list_intake_form_requests_api_v1_applicants_intake_form_requests_get"];
         put?: never;
         /**
          * Create an intake form request
          * @description Creates a new intake form request linking an applicant to a property. Agencies use this to invite prospective tenants or buyers to submit their documents.
          */
-        post: operations["create_intake_form_request_api_v1_intake_form_requests_post"];
+        post: operations["create_intake_form_request_api_v1_applicants_intake_form_requests_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/intake-form-requests/{request_id}": {
+    "/api/v1/applicants/intake-form-requests/{request_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -96,7 +96,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get an intake form request by ID */
-        get: operations["get_intake_form_request_api_v1_intake_form_requests__request_id__get"];
+        get: operations["get_intake_form_request_api_v1_applicants_intake_form_requests__request_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -105,7 +105,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/applicants": {
+    "/api/v1/applicants/": {
         parameters: {
             query?: never;
             header?: never;
@@ -116,7 +116,7 @@ export interface paths {
          * List applicants by owner
          * @description Returns all applicants belonging to the specified owner (agency user), including submission status and screening reports.
          */
-        get: operations["list_applicants_api_v1_applicants_get"];
+        get: operations["list_applicants_api_v1_applicants__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -470,7 +470,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    presign_uploads_api_v1_uploads_presign_post: {
+    presign_uploads_api_v1_applicants_uploads_presign_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -503,7 +503,7 @@ export interface operations {
             };
         };
     };
-    create_submission_api_v1_submissions_post: {
+    create_submission_api_v1_applicants_submissions_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -536,7 +536,7 @@ export interface operations {
             };
         };
     };
-    get_screening_status_api_v1_submissions__applicant_id__status_get: {
+    get_screening_status_api_v1_applicants_submissions__applicant_id__status_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -567,7 +567,7 @@ export interface operations {
             };
         };
     };
-    list_intake_form_requests_api_v1_intake_form_requests_get: {
+    list_intake_form_requests_api_v1_applicants_intake_form_requests_get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -600,7 +600,7 @@ export interface operations {
             };
         };
     };
-    create_intake_form_request_api_v1_intake_form_requests_post: {
+    create_intake_form_request_api_v1_applicants_intake_form_requests_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -633,7 +633,7 @@ export interface operations {
             };
         };
     };
-    get_intake_form_request_api_v1_intake_form_requests__request_id__get: {
+    get_intake_form_request_api_v1_applicants_intake_form_requests__request_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -664,7 +664,7 @@ export interface operations {
             };
         };
     };
-    list_applicants_api_v1_applicants_get: {
+    list_applicants_api_v1_applicants__get: {
         parameters: {
             query: {
                 organization_id: string;

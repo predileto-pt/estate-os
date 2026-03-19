@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ApiError } from "./errors";
 import type { UserWithOrganizationResponse } from "./types";
 
-const CORE_API_URL = process.env.CORE_API_URL || "http://localhost:8000";
+const API_URL = process.env.API_URL || "http://localhost";
 
 export async function getAuthHeaders(): Promise<Record<string, string> | null> {
   const supabase = await createClient();
@@ -27,7 +27,7 @@ export async function getOrganizationId(): Promise<string | null> {
   const headers = await getAuthHeaders();
   if (!headers) return null;
 
-  const res = await fetch(`${CORE_API_URL}/api/v1/auth/me`, { headers });
+  const res = await fetch(`${API_URL}/api/v1/auth/me`, { headers });
   if (!res.ok) return null;
 
   const data: UserWithOrganizationResponse = await res.json();
