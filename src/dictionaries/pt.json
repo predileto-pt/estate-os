@@ -121,6 +121,16 @@
     "ownerNif": "NIF",
     "ownerPhone": "Telefone",
     "ownerEmail": "Email",
+    "viewings": "Visitas",
+    "noViewings": "Sem visitas agendadas.",
+    "addViewing": "Agendar Visita",
+    "upcoming": "Próximas",
+    "viewingConfirmed": "Confirmada",
+    "viewingPending": "Pendente",
+    "viewingDone": "Realizada",
+    "viewingCancelled": "Cancelada",
+    "visitorName": "Nome do Visitante",
+    "notes": "Notas",
     "noProperties": "Não existem imóveis.",
     "addContractModel": "Adicionar Modelo de Contrato",
     "noContracts": "Não existem contratos.",
@@ -284,6 +294,18 @@
     "proposalEventOwnerSigned": "Proprietário assinou",
     "proposalEventApplicantSigned": "Candidato assinou",
     "proposalEventExpired": "Proposta expirada",
-    "proposalEventCancelled": "Proposta cancelada"
+    "proposalEventCancelled": "Proposta cancelada",
+
+    "images": "Imagens",
+    "manageImages": "Gerir Imagens",
+    "addImages": "Adicionar Imagens",
+    "deleteImage": "Eliminar",
+    "deleteImageConfirm": "Tem a certeza que pretende eliminar esta imagem?",
+    "dragToReorder": "Arraste para reordenar",
+    "uploadingImages": "A carregar imagens...",
+    "noImages": "Ainda não foram adicionadas imagens a este imóvel.",
+    "backToProperty": "Voltar ao Imóvel",
+    "dropImagesHere": "Arraste imagens ou clique para selecionar",
+    "acceptedFormats": "JPEG, PNG ou WebP"
   }
 }

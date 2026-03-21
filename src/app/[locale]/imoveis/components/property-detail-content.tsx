@@ -521,6 +521,318 @@ function PropertyPriceCard({
   );
 }
 
+type ViewingStatus = "confirmed" | "pending" | "done" | "cancelled";
+
+interface Viewing {
+  id: string;
+  date: string;
+  time: string;
+  visitor_name: string;
+  status: ViewingStatus;
+  notes?: string;
+}
+
+// TODO: Replace with real API data when backend is available
+const MOCK_VIEWINGS: Viewing[] = [
+  { id: "1", date: "2026-03-23", time: "10:00", visitor_name: "Ana Silva", status: "confirmed", notes: "Interessada em T2" },
+  { id: "2", date: "2026-03-23", time: "14:30", visitor_name: "João Costa", status: "pending" },
+  { id: "3", date: "2026-03-25", time: "11:00", visitor_name: "Maria Santos", status: "confirmed" },
+  { id: "4", date: "2026-03-28", time: "16:00", visitor_name: "Pedro Oliveira", status: "pending", notes: "Vem com a esposa" },
+  { id: "5", date: "2026-03-18", time: "09:30", visitor_name: "Sofia Pereira", status: "done" },
+  { id: "6", date: "2026-03-15", time: "15:00", visitor_name: "Carlos Mendes", status: "cancelled" },
+];
+
+const VIEWING_STATUS_STYLES: Record<ViewingStatus, { dot: string; text: string }> = {
+  confirmed: { dot: "bg-emerald-500", text: "text-emerald-700" },
+  pending: { dot: "bg-amber-400", text: "text-amber-700" },
+  done: { dot: "bg-blue-500", text: "text-blue-700" },
+  cancelled: { dot: "bg-gray-400", text: "text-gray-500" },
+};
+
+function getDaysInMonth(year: number, month: number) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getFirstDayOfWeek(year: number, month: number) {
+  const day = new Date(year, month, 1).getDay();
+  return day === 0 ? 6 : day - 1; // Monday = 0
+}
+
+function MiniCalendar({
+  viewings,
+  selectedDate,
+  onSelectDate,
+  month,
+  year,
+  onChangeMonth,
+}: {
+  viewings: Viewing[];
+  selectedDate: string | null;
+  onSelectDate: (date: string | null) => void;
+  month: number;
+  year: number;
+  onChangeMonth: (delta: number) => void;
+}) {
+  const daysInMonth = getDaysInMonth(year, month);
+  const firstDay = getFirstDayOfWeek(year, month);
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+  const viewingDates = new Set(viewings.map((v) => v.date));
+
+  const monthNames = [
+    "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+    "Jul", "Ago", "Set", "Out", "Nov", "Dez",
+  ];
+  const dayHeaders = ["S", "T", "Q", "Q", "S", "S", "D"];
+
+  const cells: (number | null)[] = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <button onClick={() => onChangeMonth(-1)} className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+        <span className="text-xs font-medium text-gray-700">
+          {monthNames[month]} {year}
+        </span>
+        <button onClick={() => onChangeMonth(1)} className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-7 gap-0">
+        {dayHeaders.map((d, i) => (
+          <div key={i} className="text-center text-[10px] text-gray-400 py-1">{d}</div>
+        ))}
+        {cells.map((day, i) => {
+          if (day === null) return <div key={`e-${i}`} />;
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          const hasViewing = viewingDates.has(dateStr);
+          const isToday = dateStr === todayStr;
+          const isSelected = dateStr === selectedDate;
+
+          return (
+            <button
+              key={dateStr}
+              onClick={() => hasViewing ? onSelectDate(isSelected ? null : dateStr) : undefined}
+              className={cn(
+                "relative flex flex-col items-center justify-center py-1 text-xs rounded transition-colors",
+                hasViewing ? "cursor-pointer hover:bg-gray-50" : "cursor-default",
+                isSelected && "bg-gray-900 text-white hover:bg-gray-800",
+                !isSelected && isToday && "font-bold text-gray-900",
+                !isSelected && !isToday && "text-gray-600",
+              )}
+            >
+              {day}
+              {hasViewing && (
+                <span className={cn(
+                  "absolute bottom-0.5 w-1 h-1 rounded-full",
+                  isSelected ? "bg-white" : "bg-emerald-500",
+                )} />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PropertyViewingsCard({ dict }: { dict: Dictionary["dashboard"] }) {
+  const [viewings, setViewings] = useState<Viewing[]>(MOCK_VIEWINGS);
+  const [isAdding, setIsAdding] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const now = new Date();
+  const [calMonth, setCalMonth] = useState(now.getMonth());
+  const [calYear, setCalYear] = useState(now.getFullYear());
+
+  // Form state
+  const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newNotes, setNewNotes] = useState("");
+
+  function handleChangeMonth(delta: number) {
+    let m = calMonth + delta;
+    let y = calYear;
+    if (m < 0) { m = 11; y--; }
+    if (m > 11) { m = 0; y++; }
+    setCalMonth(m);
+    setCalYear(y);
+  }
+
+  const statusLabel: Record<ViewingStatus, string> = {
+    confirmed: dict.viewingConfirmed,
+    pending: dict.viewingPending,
+    done: dict.viewingDone,
+    cancelled: dict.viewingCancelled,
+  };
+
+  const filtered = selectedDate
+    ? viewings.filter((v) => v.date === selectedDate)
+    : viewings
+        .filter((v) => v.status !== "cancelled")
+        .sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
+
+  function handleAdd() {
+    if (!newDate || !newTime || !newName.trim()) return;
+    const viewing: Viewing = {
+      id: String(Date.now()),
+      date: newDate,
+      time: newTime,
+      visitor_name: newName.trim(),
+      status: "pending",
+      notes: newNotes.trim() || undefined,
+    };
+    setViewings((prev) => [...prev, viewing]);
+    setIsAdding(false);
+    setNewDate("");
+    setNewTime("");
+    setNewName("");
+    setNewNotes("");
+  }
+
+  function handleCancelAdd() {
+    setIsAdding(false);
+    setNewDate("");
+    setNewTime("");
+    setNewName("");
+    setNewNotes("");
+  }
+
+  return (
+    <div className="border border-gray-200 bg-white overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+        <Small variant="label">{dict.viewings}</Small>
+        <span className="text-xs text-gray-400">{viewings.filter((v) => v.status !== "cancelled" && v.status !== "done").length}</span>
+      </div>
+
+      <div className="px-4 py-3">
+        <MiniCalendar
+          viewings={viewings}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+          month={calMonth}
+          year={calYear}
+          onChangeMonth={handleChangeMonth}
+        />
+      </div>
+
+      <div className="border-t border-gray-100">
+        <div className="px-4 py-2">
+          <div className="text-xs text-gray-400 mb-2">
+            {selectedDate
+              ? formatDateDMY(selectedDate)
+              : dict.upcoming}
+          </div>
+          {filtered.length > 0 ? (
+            <div className="space-y-2">
+              {filtered.map((v) => {
+                const style = VIEWING_STATUS_STYLES[v.status];
+                return (
+                  <div key={v.id} className="flex items-start gap-2 py-1">
+                    <div className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", style.dot)} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium text-gray-900 truncate">{v.visitor_name}</span>
+                        <span className={cn("text-[10px] font-medium shrink-0", style.text)}>
+                          {statusLabel[v.status]}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {!selectedDate && `${formatDateDMY(v.date)} · `}{v.time}
+                      </div>
+                      {v.notes && (
+                        <div className="text-xs text-gray-400 italic truncate">{v.notes}</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-400 py-1">{dict.noViewings}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="border-t border-gray-100 px-4 py-3">
+        {isAdding ? (
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">{dict.createdAt?.split(" ")[0] || "Data"}</label>
+                <input
+                  type="date"
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Hora</label>
+                <input
+                  type="time"
+                  value={newTime}
+                  onChange={(e) => setNewTime(e.target.value)}
+                  className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">{dict.visitorName}</label>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Nome"
+                className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">{dict.notes}</label>
+              <input
+                type="text"
+                value={newNotes}
+                onChange={(e) => setNewNotes(e.target.value)}
+                placeholder="Opcional"
+                className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="primary" onClick={handleAdd}>
+                Guardar
+              </Button>
+              <Button variant="steel" onClick={handleCancelAdd}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14" />
+              <path d="M5 12h14" />
+            </svg>
+            {dict.addViewing}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function PropertyDetailContent({
   property,
   dict,
@@ -612,7 +924,20 @@ export function PropertyDetailContent({
         {/* Left column */}
         <div className="col-span-8 space-y-6">
           {/* Image carousel */}
-          <ImageCarousel />
+          <div className="relative">
+            <ImageCarousel />
+            <Link
+              href={`/${locale}/imoveis/${property.id}/imagens`}
+              className="absolute top-3 left-3 bg-white/90 hover:bg-white text-xs text-gray-700 px-2.5 py-1 border border-gray-200 transition-colors flex items-center gap-1.5"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              {dict.manageImages}
+            </Link>
+          </div>
 
           {/* Map card */}
           <div className="border border-gray-200 bg-white overflow-hidden">
@@ -795,6 +1120,9 @@ export function PropertyDetailContent({
                 </div>
               </div>
             </div>
+
+            {/* Viewings card */}
+            <PropertyViewingsCard dict={dict} />
           </div>
         </div>
       </div>

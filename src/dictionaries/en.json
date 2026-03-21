@@ -121,6 +121,16 @@
     "ownerNif": "Tax ID",
     "ownerPhone": "Phone",
     "ownerEmail": "Email",
+    "viewings": "Viewings",
+    "noViewings": "No viewings scheduled.",
+    "addViewing": "Schedule Viewing",
+    "upcoming": "Upcoming",
+    "viewingConfirmed": "Confirmed",
+    "viewingPending": "Pending",
+    "viewingDone": "Done",
+    "viewingCancelled": "Cancelled",
+    "visitorName": "Visitor Name",
+    "notes": "Notes",
     "noProperties": "No properties.",
     "addContractModel": "Add Contract Model",
     "noContracts": "No contracts.",
@@ -284,6 +294,18 @@
     "proposalEventOwnerSigned": "Owner signed",
     "proposalEventApplicantSigned": "Applicant signed",
     "proposalEventExpired": "Proposal expired",
-    "proposalEventCancelled": "Proposal cancelled"
+    "proposalEventCancelled": "Proposal cancelled",
+
+    "images": "Images",
+    "manageImages": "Manage Images",
+    "addImages": "Add Images",
+    "deleteImage": "Delete",
+    "deleteImageConfirm": "Are you sure you want to delete this image?",
+    "dragToReorder": "Drag to reorder",
+    "uploadingImages": "Uploading images...",
+    "noImages": "No images have been added to this property yet.",
+    "backToProperty": "Back to Property",
+    "dropImagesHere": "Drag images or click to select",
+    "acceptedFormats": "JPEG, PNG or WebP"
   }
 }
