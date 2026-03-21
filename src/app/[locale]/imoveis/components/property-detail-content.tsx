@@ -9,6 +9,7 @@ import { Small } from "@/components/ui/small";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AgentInsightsPanel } from "@/components/deal/agent-insights-panel";
 import { MOCK_INTELLIGENCE } from "@/lib/mock-deal-data";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
@@ -41,70 +42,83 @@ const STATUS_STYLES: Record<PropertyStatus, string> = {
   withdrawn: "bg-red-50 text-red-600",
 };
 
-const FAKE_IMAGES = [
-  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800&h=500&fit=crop",
-];
+type PropertyImage = PropertyResponse["images"][number];
 
-function ImageCarousel() {
+function ImageCarousel({ images }: { images: PropertyImage[] }) {
   const [current, setCurrent] = useState(0);
+  const sorted = [...images].sort((a, b) => a.display_order - b.display_order);
+
+  if (sorted.length === 0) {
+    return (
+      <div className="bg-gray-100 aspect-[16/10] flex items-center justify-center">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+      </div>
+    );
+  }
 
   return (
     <div>
       {/* Main image */}
       <div className="relative overflow-hidden bg-gray-100 aspect-[16/10]">
         <img
-          src={FAKE_IMAGES[current]}
-          alt={`Property photo ${current + 1}`}
+          src={sorted[current].download_url}
+          alt={sorted[current].filename}
           className="w-full h-full object-cover"
         />
 
-        {/* Navigation arrows */}
-        <button
-          onClick={() => setCurrent((c) => (c - 1 + FAKE_IMAGES.length) % FAKE_IMAGES.length)}
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors cursor-pointer"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-        <button
-          onClick={() => setCurrent((c) => (c + 1) % FAKE_IMAGES.length)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors cursor-pointer"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
+        {sorted.length > 1 && (
+          <>
+            {/* Navigation arrows */}
+            <button
+              onClick={() => setCurrent((c) => (c - 1 + sorted.length) % sorted.length)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setCurrent((c) => (c + 1) % sorted.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
 
-        {/* Counter */}
-        <span className="absolute top-3 right-3 bg-black/50 text-white text-xs px-2 py-0.5 rounded">
-          {current + 1} / {FAKE_IMAGES.length}
-        </span>
+            {/* Counter */}
+            <span className="absolute top-3 right-3 bg-black/50 text-white text-xs px-2 py-0.5 rounded">
+              {current + 1} / {sorted.length}
+            </span>
+          </>
+        )}
       </div>
 
       {/* Thumbnails */}
-      <div className="flex gap-1.5 mt-3">
-        {FAKE_IMAGES.map((src, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={cn(
-              "flex-1 aspect-[16/10] overflow-hidden bg-gray-100 cursor-pointer transition-opacity",
-              i === current ? "scale-95 border-2 border-gray-400" : "opacity-60 hover:opacity-100",
-            )}
-          >
-            <img
-              src={src}
-              alt={`Thumbnail ${i + 1}`}
-              className="w-full h-full object-cover"
-            />
-          </button>
-        ))}
-      </div>
+      {sorted.length > 1 && (
+        <div className="flex gap-1.5 mt-3">
+          {sorted.map((img, i) => (
+            <button
+              key={img.id}
+              onClick={() => setCurrent(i)}
+              className={cn(
+                "flex-1 aspect-[16/10] overflow-hidden bg-gray-100 cursor-pointer transition-opacity",
+                i === current ? "scale-95 border-2 border-gray-400" : "opacity-60 hover:opacity-100",
+              )}
+            >
+              <img
+                src={img.download_url}
+                alt={img.filename}
+                className="w-full h-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -646,8 +660,169 @@ function MiniCalendar({
   );
 }
 
-function PropertyViewingsCard({ dict }: { dict: Dictionary["dashboard"] }) {
-  const [viewings, setViewings] = useState<Viewing[]>(MOCK_VIEWINGS);
+function BookingsTabContent({
+  viewings,
+  setViewings,
+  dict,
+}: {
+  viewings: Viewing[];
+  setViewings: React.Dispatch<React.SetStateAction<Viewing[]>>;
+  dict: Dictionary["dashboard"];
+}) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDate, setEditDate] = useState("");
+  const [editTime, setEditTime] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+
+  const statusLabel: Record<ViewingStatus, string> = {
+    confirmed: dict.viewingConfirmed,
+    pending: dict.viewingPending,
+    done: dict.viewingDone,
+    cancelled: dict.viewingCancelled,
+  };
+
+  function startEdit(v: Viewing) {
+    setEditingId(v.id);
+    setEditDate(v.date);
+    setEditTime(v.time);
+    setEditName(v.visitor_name);
+    setEditNotes(v.notes ?? "");
+  }
+
+  function saveEdit() {
+    if (!editDate || !editTime || !editName.trim()) return;
+    setViewings((prev) =>
+      prev.map((v) =>
+        v.id === editingId
+          ? { ...v, date: editDate, time: editTime, visitor_name: editName.trim(), notes: editNotes.trim() || undefined }
+          : v,
+      ),
+    );
+    setEditingId(null);
+  }
+
+  function handleDelete(id: string) {
+    if (!confirm(dict.deleteViewingConfirm)) return;
+    setViewings((prev) => prev.filter((v) => v.id !== id));
+  }
+
+  const sorted = [...viewings].sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
+
+  return (
+    <div className="space-y-2">
+      {sorted.length === 0 ? (
+        <p className="text-sm text-gray-400 py-4">{dict.noViewings}</p>
+      ) : (
+        sorted.map((v) => {
+          const style = VIEWING_STATUS_STYLES[v.status];
+          const isEditing = editingId === v.id;
+
+          if (isEditing) {
+            return (
+              <div key={v.id} className="border border-gray-200 rounded-lg p-3 space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs text-gray-400 block mb-1">Data</label>
+                    <input
+                      type="date"
+                      value={editDate}
+                      onChange={(e) => setEditDate(e.target.value)}
+                      className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-400 block mb-1">Hora</label>
+                    <input
+                      type="time"
+                      value={editTime}
+                      onChange={(e) => setEditTime(e.target.value)}
+                      className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">{dict.visitorName}</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">{dict.notes}</label>
+                  <input
+                    type="text"
+                    value={editNotes}
+                    onChange={(e) => setEditNotes(e.target.value)}
+                    placeholder="Opcional"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="primary" onClick={saveEdit}>Guardar</Button>
+                  <Button variant="steel" onClick={() => setEditingId(null)}>Cancelar</Button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div key={v.id} className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 group transition-colors">
+              <div className={cn("w-2 h-2 rounded-full shrink-0", style.dot)} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-900 truncate">{v.visitor_name}</span>
+                  <span className={cn("text-[10px] font-medium shrink-0", style.text)}>
+                    {statusLabel[v.status]}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-400">
+                  {formatDateDMY(v.date)} · {v.time}
+                  {v.notes && <span className="italic"> — {v.notes}</span>}
+                </div>
+              </div>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => startEdit(v)}
+                  className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer"
+                  title={dict.editViewing}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    <path d="m15 5 4 4" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => handleDelete(v.id)}
+                  className="p-1 text-gray-400 hover:text-red-500 cursor-pointer"
+                  title={dict.deleteViewing}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+}
+
+function PropertyViewingsCard({
+  viewings,
+  setViewings,
+  dict,
+}: {
+  viewings: Viewing[];
+  setViewings: React.Dispatch<React.SetStateAction<Viewing[]>>;
+  dict: Dictionary["dashboard"];
+}) {
   const [isAdding, setIsAdding] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const now = new Date();
@@ -842,6 +1017,9 @@ export function PropertyDetailContent({
   dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
+  const [viewings, setViewings] = useState<Viewing[]>(MOCK_VIEWINGS);
+  const [activeTab, setActiveTab] = useState("insights");
+
   const listingTypeLabel: Record<string, string> = {
     sale: dict.sale,
     purchase: dict.purchase,
@@ -925,7 +1103,7 @@ export function PropertyDetailContent({
         <div className="col-span-8 space-y-6">
           {/* Image carousel */}
           <div className="relative">
-            <ImageCarousel />
+            <ImageCarousel images={property.images} />
             <Link
               href={`/${locale}/imoveis/${property.id}/imagens`}
               className="absolute top-3 left-3 bg-white/90 hover:bg-white text-xs text-gray-700 px-2.5 py-1 border border-gray-200 transition-colors flex items-center gap-1.5"
@@ -994,8 +1172,19 @@ export function PropertyDetailContent({
             </div>
           </div>
 
-          {/* Agent Insights */}
-          <AgentInsightsPanel intelligence={MOCK_INTELLIGENCE} locale={locale} />
+          {/* Agent Insights + Bookings Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="insights">{dict.agentInsights}</TabsTrigger>
+              <TabsTrigger value="bookings">{dict.bookings}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="insights">
+              <AgentInsightsPanel intelligence={MOCK_INTELLIGENCE} locale={locale} />
+            </TabsContent>
+            <TabsContent value="bookings">
+              <BookingsTabContent viewings={viewings} setViewings={setViewings} dict={dict} />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Right column — sidebar */}
@@ -1122,7 +1311,7 @@ export function PropertyDetailContent({
             </div>
 
             {/* Viewings card */}
-            <PropertyViewingsCard dict={dict} />
+            <PropertyViewingsCard viewings={viewings} setViewings={setViewings} dict={dict} />
           </div>
         </div>
       </div>
