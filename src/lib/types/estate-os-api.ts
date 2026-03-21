@@ -299,6 +299,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/properties/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List properties summary */
+        get: operations["list_properties_summary_api_v1_properties_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/properties/{property_id}": {
         parameters: {
             query?: never;
@@ -362,6 +379,41 @@ export interface paths {
         get: operations["get_property_owner_api_v1_property_owners__owner_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/property-owners/{owner_id}/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update property owner contact info */
+        patch: operations["update_property_owner_contact_api_v1_property_owners__owner_id__contact_patch"];
+        trace?: never;
+    };
+    "/api/v1/property-prices/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List property prices */
+        get: operations["list_property_prices_api_v1_property_prices__get"];
+        put?: never;
+        /** Create property price */
+        post: operations["create_property_price_api_v1_property_prices__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -532,6 +584,25 @@ export interface components {
              * Format: date
              */
             date_of_birth: string;
+        };
+        /** CreatePropertyPriceRequest */
+        CreatePropertyPriceRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /**
+             * Amount
+             * @description Price amount in euros
+             */
+            amount: number | string;
+            listing_type: components["schemas"]["ListingType"];
         };
         /** CreatePropertyRequest */
         CreatePropertyRequest: {
@@ -830,51 +901,6 @@ export interface components {
             /** Has Pool */
             has_pool?: boolean | null;
         };
-        /** CreatePropertyPriceRequest */
-        CreatePropertyPriceRequest: {
-            /**
-             * Organization Id
-             * Format: uuid
-             */
-            organization_id: string;
-            /**
-             * Property Id
-             * Format: uuid
-             */
-            property_id: string;
-            /**
-             * Amount
-             * @description Price amount in euros
-             */
-            amount: number | string;
-            listing_type: components["schemas"]["ListingType"];
-        };
-        /** PropertyPriceResponse */
-        PropertyPriceResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Property Id
-             * Format: uuid
-             */
-            property_id: string;
-            /** Amount */
-            amount: string;
-            listing_type: components["schemas"]["ListingType"];
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
-            updated_at: string;
-        };
         /** PropertyOwnerResponse */
         PropertyOwnerResponse: {
             /**
@@ -903,6 +929,46 @@ export interface components {
             issuing_district: string | null;
             /** Date Of Birth */
             date_of_birth: string | null;
+            /** Email */
+            email?: string | null;
+            /** Phone Number */
+            phone_number?: string | null;
+            /**
+             * Email Verified
+             * @default false
+             */
+            email_verified: boolean;
+            /**
+             * Phone Verified
+             * @default false
+             */
+            phone_verified: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** PropertyPriceResponse */
+        PropertyPriceResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** Amount */
+            amount: string;
+            listing_type: components["schemas"]["ListingType"];
             /**
              * Created At
              * Format: date-time
@@ -958,6 +1024,27 @@ export interface components {
          * @enum {string}
          */
         PropertyStatus: "draft" | "active" | "sold" | "rented" | "withdrawn";
+        /** PropertySummaryOwnerResponse */
+        PropertySummaryOwnerResponse: {
+            /** Full Name */
+            full_name: string;
+        };
+        /** PropertySummaryResponse */
+        PropertySummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Address */
+            address: string;
+            listing_type: components["schemas"]["ListingType"];
+            typology: components["schemas"]["Typology"];
+            /** Price */
+            price: string | null;
+            /** Owners */
+            owners: components["schemas"]["PropertySummaryOwnerResponse"][];
+        };
         /** RegisterRequest */
         RegisterRequest: {
             /** Name */
@@ -1077,6 +1164,13 @@ export interface components {
             nif?: string | null;
             /** Address */
             address?: string | null;
+        };
+        /** UpdatePropertyOwnerContactRequest */
+        UpdatePropertyOwnerContactRequest: {
+            /** Email */
+            email?: string | null;
+            /** Phone Number */
+            phone_number?: string | null;
         };
         /** UpdateSubscriptionRequest */
         UpdateSubscriptionRequest: {
@@ -2160,6 +2254,44 @@ export interface operations {
             };
         };
     };
+    list_properties_summary_api_v1_properties_summary_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertySummaryResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_property_api_v1_properties__property_id__get: {
         parameters: {
             query: {
@@ -2402,6 +2534,165 @@ export interface operations {
                 content?: never;
             };
             /** @description Property owner not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_property_owner_contact_api_v1_property_owners__owner_id__contact_patch: {
+        parameters: {
+            query: {
+                property_id: string;
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                owner_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyOwnerContactRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property owner not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_property_prices_api_v1_property_prices__get: {
+        parameters: {
+            query: {
+                property_id: string;
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyPriceResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_property_price_api_v1_property_prices__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePropertyPriceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
             404: {
                 headers: {
                     [name: string]: unknown;

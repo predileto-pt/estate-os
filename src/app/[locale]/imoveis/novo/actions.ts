@@ -1,6 +1,6 @@
 "use server";
 
-import { coreGet, corePost, coreAuthPost } from "@/lib/api/core-client";
+import { coreGet, corePost, coreAuthPost, corePatch } from "@/lib/api/core-client";
 import { ApiError } from "@/lib/api/errors";
 import type {
   ActionResult,
@@ -101,6 +101,24 @@ export async function submitExtractionJob(params: {
 }): Promise<MutationResult> {
   try {
     await corePost("/api/v1/extraction-jobs/batch", params);
+    return { error: null };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
+export async function updateOwnerContact(params: {
+  owner_id: string;
+  property_id: string;
+  email?: string | null;
+  phone_number?: string | null;
+}): Promise<MutationResult> {
+  try {
+    await corePatch(
+      `/api/v1/property-owners/${params.owner_id}/contact`,
+      { email: params.email, phone_number: params.phone_number },
+      { property_id: params.property_id },
+    );
     return { error: null };
   } catch (err) {
     return { error: err instanceof ApiError ? err.message : "Network error" };

@@ -11,9 +11,10 @@ import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { AgentInsightsPanel } from "@/components/deal/agent-insights-panel";
 import { MOCK_INTELLIGENCE } from "@/lib/mock-deal-data";
-import { createPropertyPrice } from "../novo/actions";
+import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
+type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
 type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
 type ListingType = components["schemas"]["ListingType"];
@@ -202,6 +203,124 @@ function formatCurrency(amount: string | number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(num);
+}
+
+function OwnerContactSection({
+  owner,
+  propertyId,
+  dict,
+}: {
+  owner: PropertyOwnerResponse;
+  propertyId: string;
+  dict: Dictionary["dashboard"];
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [isEditing, setIsEditing] = useState(false);
+  const [email, setEmail] = useState(owner.email ?? "");
+  const [phone, setPhone] = useState(owner.phone_number ?? "");
+  const [error, setError] = useState<string | null>(null);
+
+  function handleEdit() {
+    setEmail(owner.email ?? "");
+    setPhone(owner.phone_number ?? "");
+    setError(null);
+    setIsEditing(true);
+  }
+
+  function handleCancel() {
+    setIsEditing(false);
+    setError(null);
+  }
+
+  function handleSave() {
+    startTransition(async () => {
+      const result = await updateOwnerContact({
+        owner_id: owner.id,
+        property_id: propertyId,
+        email: email || null,
+        phone_number: phone || null,
+      });
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setIsEditing(false);
+        router.refresh();
+      }
+    });
+  }
+
+  return (
+    <div className="border-t border-gray-100 pt-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-gray-400">{dict.ownerEmail}</div>
+        {!isEditing && (
+          <button
+            onClick={handleEdit}
+            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {isEditing ? (
+        <div className="space-y-2">
+          <div>
+            <label className="text-xs text-gray-400 block mb-1">{dict.ownerEmail}</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="email@exemplo.com"
+              className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 block mb-1">{dict.ownerPhone}</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+351 912 345 678"
+              className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          {error && <p className="text-xs text-red-500">{error}</p>}
+          <div className="flex items-center gap-2">
+            <Button variant="primary" onClick={handleSave} disabled={isPending}>
+              {isPending ? "..." : "Guardar"}
+            </Button>
+            <Button variant="steel" onClick={handleCancel} disabled={isPending}>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            <span className="text-sm text-gray-700">{owner.email ?? "–"}</span>
+          </div>
+          <div>
+            <div className="text-xs text-gray-400">{dict.ownerPhone}</div>
+            <div className="flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              <span className="text-sm text-gray-700">{owner.phone_number ?? "–"}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function PropertyPriceCard({
@@ -582,6 +701,12 @@ export function PropertyDetailContent({
                         <div className="text-xs text-gray-400">{dict.ownerAddress}</div>
                         <div className="text-sm text-gray-700">{owner.address}</div>
                       </div>
+
+                      <OwnerContactSection
+                        owner={owner}
+                        propertyId={property.id}
+                        dict={dict}
+                      />
                     </div>
                   ))}
                 </div>

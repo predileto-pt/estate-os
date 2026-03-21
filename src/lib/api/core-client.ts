@@ -55,11 +55,18 @@ export async function coreAuthPost<T>(
 export async function corePatch<T>(
   path: string,
   body: unknown,
+  params?: Record<string, string>,
 ): Promise<T> {
-  const headers = await getAuthHeaders();
-  if (!headers) throw new ApiError("Not authenticated", 401);
+  const { headers, organizationId } = await getAuthContext();
+  const url = new URL(`${API_URL}${path}`);
+  url.searchParams.set("organization_id", organizationId);
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(key, value);
+    }
+  }
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(url.toString(), {
     method: "PATCH",
     headers,
     body: JSON.stringify(body),
