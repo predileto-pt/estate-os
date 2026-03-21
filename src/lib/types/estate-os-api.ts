@@ -420,6 +420,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/property-images/presign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate presigned upload URLs for property images */
+        post: operations["presign_image_uploads_api_v1_property_images_presign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/property-images/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record property image metadata after upload */
+        post: operations["record_property_image_api_v1_property_images__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/property-images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a property image */
+        delete: operations["delete_property_image_api_v1_property_images__image_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/property-images/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Reorder property images */
+        put: operations["reorder_property_images_api_v1_property_images_reorder_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/extraction-jobs/presign": {
         parameters: {
             query?: never;
@@ -859,6 +927,36 @@ export interface components {
              */
             content_type: string;
         };
+        /** PresignImageFileSpec */
+        PresignImageFileSpec: {
+            /** Filename */
+            filename: string;
+            /**
+             * Content Type
+             * @default image/jpeg
+             */
+            content_type: string;
+        };
+        /** PresignImageRequest */
+        PresignImageRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** Files */
+            files: components["schemas"]["PresignImageFileSpec"][];
+        };
+        /** PresignImageResponse */
+        PresignImageResponse: {
+            /** Files */
+            files: components["schemas"]["PresignedImageFileResponse"][];
+        };
         /** PresignRequest */
         PresignRequest: {
             /** Files */
@@ -873,6 +971,18 @@ export interface components {
         };
         /** PresignedFileResponse */
         PresignedFileResponse: {
+            /** S3 Key */
+            s3_key: string;
+            /** Upload Url */
+            upload_url: string;
+        };
+        /** PresignedImageFileResponse */
+        PresignedImageFileResponse: {
+            /**
+             * Image Id
+             * Format: uuid
+             */
+            image_id: string;
             /** S3 Key */
             s3_key: string;
             /** Upload Url */
@@ -900,6 +1010,41 @@ export interface components {
             has_garden?: boolean | null;
             /** Has Pool */
             has_pool?: boolean | null;
+        };
+        /** PropertyImageResponse */
+        PropertyImageResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** S3 Key */
+            s3_key: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Display Order */
+            display_order: number;
+            /** Download Url */
+            download_url: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** PropertyOwnerResponse */
         PropertyOwnerResponse: {
@@ -1018,6 +1163,11 @@ export interface components {
             owners: components["schemas"]["PropertyOwnerResponse"][];
             /** Prices */
             prices: components["schemas"]["PropertyPriceResponse"][];
+            /**
+             * Images
+             * @default []
+             */
+            images: components["schemas"]["PropertyImageResponse"][];
         };
         /**
          * PropertyStatus
@@ -1045,6 +1195,32 @@ export interface components {
             /** Owners */
             owners: components["schemas"]["PropertySummaryOwnerResponse"][];
         };
+        /** RecordPropertyImageRequest */
+        RecordPropertyImageRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /**
+             * Image Id
+             * Format: uuid
+             */
+            image_id: string;
+            /** S3 Key */
+            s3_key: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+        };
         /** RegisterRequest */
         RegisterRequest: {
             /** Name */
@@ -1060,6 +1236,21 @@ export interface components {
             phone_country_code?: string | null;
             /** Phone Number */
             phone_number?: string | null;
+        };
+        /** ReorderPropertyImagesRequest */
+        ReorderPropertyImagesRequest: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** Image Ids */
+            image_ids: string[];
         };
         /** SendEmailRequest */
         SendEmailRequest: {
@@ -2677,6 +2868,237 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PropertyResponse"];
                 };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    presign_image_uploads_api_v1_property_images_presign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresignImageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PresignImageResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_property_image_api_v1_property_images__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecordPropertyImageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Max images reached or file not found */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_property_image_api_v1_property_images__image_id__delete: {
+        parameters: {
+            query: {
+                property_id: string;
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property or image not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_property_images_api_v1_property_images_reorder_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderPropertyImagesRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Invalid image IDs */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not authenticated */
             401: {

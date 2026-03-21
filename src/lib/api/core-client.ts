@@ -74,3 +74,46 @@ export async function corePatch<T>(
   if (!res.ok) throw await parseApiError(res);
   return res.json();
 }
+
+export async function corePut<T>(
+  path: string,
+  body: unknown,
+  params?: Record<string, string>,
+): Promise<T> {
+  const { headers, organizationId } = await getAuthContext();
+  const url = new URL(`${API_URL}${path}`);
+  url.searchParams.set("organization_id", organizationId);
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(key, value);
+    }
+  }
+
+  const res = await fetch(url.toString(), {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw await parseApiError(res);
+  return res.json();
+}
+
+export async function coreDelete(
+  path: string,
+  params?: Record<string, string>,
+): Promise<void> {
+  const { headers, organizationId } = await getAuthContext();
+  const url = new URL(`${API_URL}${path}`);
+  url.searchParams.set("organization_id", organizationId);
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(key, value);
+    }
+  }
+
+  const res = await fetch(url.toString(), {
+    method: "DELETE",
+    headers,
+  });
+  if (!res.ok) throw await parseApiError(res);
+}
