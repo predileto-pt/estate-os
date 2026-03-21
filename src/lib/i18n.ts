@@ -13,10 +13,14 @@ const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
   en: () => import("@/dictionaries/en.json"),
 };
 
-export async function getDictionary(locale: Locale): Promise<Dictionary> {
-  const mod = await dictionaries[locale]();
-  return { ...mod };
-}
+import { cache } from "react";
+
+export const getDictionary = cache(
+  async (locale: Locale): Promise<Dictionary> => {
+    const mod = await dictionaries[locale]();
+    return { ...mod };
+  },
+);
 
 export const localeNames: Record<Locale, string> = {
   pt: "PT",

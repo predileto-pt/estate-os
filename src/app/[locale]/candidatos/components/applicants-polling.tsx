@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { Applicant } from "@/lib/db-types";
-import type { Dictionary, Locale } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n";
+import { useDictionary } from "@/components/dictionary-provider";
 import { ApplicantList } from "./applicant-list";
 import { ApplicantDetailProvider } from "./applicant-detail-context";
 import { ApplicantDetailPanel } from "./applicant-detail-panel";
@@ -39,14 +40,13 @@ const EXAMPLE_APPLICANT: Applicant = {
 export function ApplicantsPolling({
   organizationId,
   initialApplicants,
-  dict,
   locale,
 }: {
   organizationId: string;
   initialApplicants: Applicant[];
-  dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
+  const { dashboard: dict } = useDictionary();
   const { data: applicants = initialApplicants } = useQuery({
     queryKey: ["applicants", organizationId],
     queryFn: async () => {
@@ -74,7 +74,6 @@ export function ApplicantsPolling({
             <div className="relative opacity-70">
               <ApplicantList
                 applicants={[EXAMPLE_APPLICANT]}
-                dict={dict}
                 locale={locale}
               />
             </div>
@@ -82,7 +81,6 @@ export function ApplicantsPolling({
         ) : (
           <ApplicantList
             applicants={applicants}
-            dict={dict}
             locale={locale}
           />
         )}

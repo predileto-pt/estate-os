@@ -2,7 +2,8 @@
 
 import { useTransition } from "react";
 import type { Applicant, RiskLevel } from "@/lib/db-types";
-import type { Dictionary, Locale } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n";
+import { useDictionary } from "@/components/dictionary-provider";
 import { Button } from "@/components/ui/button";
 import { Small } from "@/components/ui/small";
 import { cn, formatPrice } from "@/lib/utils";
@@ -17,13 +18,12 @@ const riskBadgeStyles: Record<RiskLevel, string> = {
 
 export function ApplicantCard({
   applicant,
-  dict,
   locale,
 }: {
   applicant: Applicant;
-  dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
+  const { dashboard: dict } = useDictionary();
   const { selectedId, select } = useApplicantDetail();
   const [approvePending, startApprove] = useTransition();
   const [denyPending, startDeny] = useTransition();
