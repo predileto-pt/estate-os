@@ -1,5 +1,6 @@
 "use client";
 
+import type { ContractModel } from "@/lib/db-types";
 import type { Dictionary, Locale } from "@/lib/i18n";
 import { useDictionary } from "@/components/dictionary-provider";
 import Link from "next/link";
@@ -8,7 +9,6 @@ import { FeatureCard } from "@/components/ui/feature-card";
 import { ContractModelCard } from "./contract-model-card";
 import { ContractModelDetailProvider } from "./contract-model-detail-context";
 import { ContractModelDetailPanel } from "./contract-model-detail-panel";
-import { FAKE_CONTRACT_MODELS } from "./fake-data";
 
 const sparkleIcon = (
   <svg
@@ -60,13 +60,14 @@ const focusIcon = (
 );
 
 export function ModelsPageContent({
+  models,
   dict,
   locale,
 }: {
+  models: ContractModel[];
   dict: Dictionary["dashboard"];
   locale: Locale;
 }) {
-  const models = FAKE_CONTRACT_MODELS;
   const d = useDictionary().dashboard;
 
   return (
@@ -118,7 +119,7 @@ export function ModelsPageContent({
           </div>
         )}
       </div>
-      <ContractModelDetailPanel />
+      <ContractModelDetailPanel models={models} />
     </ContractModelDetailProvider>
   );
 }

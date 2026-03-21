@@ -9,6 +9,8 @@ import { Small } from "@/components/ui/small";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
+import { AgentInsightsPanel } from "@/components/deal/agent-insights-panel";
+import { MOCK_INTELLIGENCE } from "@/lib/mock-deal-data";
 import { createPropertyPrice } from "../novo/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
@@ -484,6 +486,9 @@ export function PropertyDetailContent({
               ))}
             </div>
           </div>
+
+          {/* Agent Insights */}
+          <AgentInsightsPanel intelligence={MOCK_INTELLIGENCE} locale={locale} />
         </div>
 
         {/* Right column — sidebar */}

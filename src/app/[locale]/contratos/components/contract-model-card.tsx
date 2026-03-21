@@ -18,7 +18,7 @@ export function ContractModelCard({
 }) {
   const { selectedId, select } = useContractModelDetail();
   const isSelected = selectedId === model.uuid;
-  const filename = model.url.split("/").pop() ?? model.url;
+  const filename = model.source_document?.filename ?? model.url.split("/").pop()?.split("?")[0] ?? model.url;
 
   return (
     <div

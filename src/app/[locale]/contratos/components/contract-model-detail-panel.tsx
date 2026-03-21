@@ -15,7 +15,6 @@ import type {
   TemplateVersionStatus,
   UploadStatus,
 } from "@/lib/db-types";
-import { FAKE_CONTRACT_MODELS } from "./fake-data";
 
 const PdfPreview = dynamic(() => import("./pdf-preview"), { ssr: false });
 
@@ -34,8 +33,7 @@ const uploadStatusColors: Record<UploadStatus, string> = {
   failed: "bg-red-100 text-red-600",
 };
 
-export function ContractModelDetailPanel() {
-  const models = FAKE_CONTRACT_MODELS;
+export function ContractModelDetailPanel({ models }: { models: ContractModel[] }) {
   const selected = useSelectedContractModel(models);
   const { close } = useContractModelDetail();
   const dict = useDictionary().dashboard;

@@ -44,7 +44,7 @@ export function ContractModelPageContent({
   locale: Locale;
 }) {
   const d = useDictionary().dashboard;
-  const filename = model.url.split("/").pop() ?? model.url;
+  const filename = model.source_document?.filename ?? model.url.split("/").pop()?.split("?")[0] ?? model.url;
   const [activeTab, setActiveTab] = useState<Tab>("preview");
   const [selectedChunkIndex, setSelectedChunkIndex] = useState<number | null>(
     null,
