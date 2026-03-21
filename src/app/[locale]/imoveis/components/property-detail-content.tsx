@@ -18,6 +18,7 @@ type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
 type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
 type ListingType = components["schemas"]["ListingType"];
+type Typology = components["schemas"]["Typology"];
 
 function formatNif(nif: string) {
   const digits = nif.replace(/\D/g, "");
@@ -323,6 +324,62 @@ function OwnerContactSection({
   );
 }
 
+// TODO: Replace with real API endpoint when available
+const MOCK_PRICE_STATS: Record<Typology, { min: number; avg: number; max: number }> = {
+  apartment: { min: 120000, avg: 245000, max: 450000 },
+  house: { min: 180000, avg: 350000, max: 650000 },
+  land: { min: 30000, avg: 85000, max: 200000 },
+  ruin: { min: 15000, avg: 55000, max: 120000 },
+};
+
+function PriceComparisonBar({ price, typology }: { price: number; typology: Typology }) {
+  const stats = MOCK_PRICE_STATS[typology];
+  if (!stats) return null;
+
+  const range = stats.max - stats.min;
+  const position = Math.max(0, Math.min(1, (price - stats.min) / range));
+
+  const label =
+    position <= 0.33
+      ? "Abaixo da média"
+      : position <= 0.66
+        ? "Na média"
+        : "Acima da média";
+
+  const dotColor =
+    position <= 0.33
+      ? "bg-emerald-500"
+      : position <= 0.66
+        ? "bg-amber-400"
+        : "bg-red-500";
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-gray-400">Comparação de mercado</span>
+        <span className="text-xs font-medium text-gray-600">{label}</span>
+      </div>
+      <div className="relative">
+        <div
+          className="h-2 rounded-full"
+          style={{ background: "linear-gradient(to right, #34d399, #fbbf24, #f87171)" }}
+        />
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
+          style={{ left: `${position * 100}%` }}
+        >
+          <div className={cn("w-3.5 h-3.5 rounded-full border-2 border-white shadow", dotColor)} />
+        </div>
+      </div>
+      <div className="flex justify-between text-[10px] text-gray-400">
+        <span>{formatCurrency(stats.min)}</span>
+        <span>{formatCurrency(stats.avg)}</span>
+        <span>{formatCurrency(stats.max)}</span>
+      </div>
+    </div>
+  );
+}
+
 function PropertyPriceCard({
   property,
   prices,
@@ -437,13 +494,19 @@ function PropertyPriceCard({
             </div>
           </div>
         ) : currentPrice ? (
-          <div className="space-y-1">
-            <div className="text-2xl font-bold text-gray-900">
-              {formatCurrency(currentPrice.amount)}
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <div className="text-2xl font-bold text-gray-900">
+                {formatCurrency(currentPrice.amount)}
+              </div>
+              <div className="text-sm text-gray-500">
+                {listingTypeLabel[currentPrice.listing_type] ?? currentPrice.listing_type}
+              </div>
             </div>
-            <div className="text-sm text-gray-500">
-              {listingTypeLabel[currentPrice.listing_type] ?? currentPrice.listing_type}
-            </div>
+            <PriceComparisonBar
+              price={parseFloat(currentPrice.amount)}
+              typology={property.typology}
+            />
           </div>
         ) : (
           <div className="space-y-3">
