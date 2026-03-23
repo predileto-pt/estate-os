@@ -12,6 +12,10 @@ export type OrganizationResponse = components["schemas"]["OrganizationResponse"]
 export type UserWithOrganizationResponse =
   components["schemas"]["UserWithOrganizationResponse"];
 
+export type PropertyAmenityResponse =
+  components["schemas"]["PropertyAmenityResponse"];
+export type AmenityCategory = components["schemas"]["AmenityCategory"];
+
 export type PropertySummary = {
   id: string;
   address: string;

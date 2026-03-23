@@ -488,6 +488,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/property-amenities/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List property amenities */
+        get: operations["get_property_amenities_api_v1_property_amenities__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/property-amenities/discover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trigger amenity discovery for a property */
+        post: operations["discover_property_amenities_api_v1_property_amenities_discover_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/extraction-jobs/presign": {
         parameters: {
             query?: never;
@@ -578,6 +612,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AmenityCategory
+         * @enum {string}
+         */
+        AmenityCategory: "hospital" | "bank" | "grocery" | "school" | "laundry" | "coffee_shop" | "pharmacy" | "gym" | "restaurant";
         /** Body_extract_from_document_api_v1_property_owners_extract_from_document_post */
         Body_extract_from_document_api_v1_property_owners_extract_from_document_post: {
             /**
@@ -842,6 +881,21 @@ export interface components {
          * @enum {string}
          */
         MembershipRole: "owner" | "admin" | "member";
+        /** NearbyPlaceResponse */
+        NearbyPlaceResponse: {
+            /** Name */
+            name: string;
+            /** Distance Meters */
+            distance_meters: number;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Place Id */
+            place_id?: string | null;
+            /** Google Maps Url */
+            google_maps_url?: string | null;
+        };
         /** NotificationResponse */
         NotificationResponse: {
             /**
@@ -987,6 +1041,49 @@ export interface components {
             s3_key: string;
             /** Upload Url */
             upload_url: string;
+        };
+        /** PropertyAmenityResponse */
+        PropertyAmenityResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            category: components["schemas"]["AmenityCategory"];
+            /** Nearest Name */
+            nearest_name: string;
+            /** Nearest Distance Meters */
+            nearest_distance_meters: number;
+            /** Nearest Latitude */
+            nearest_latitude: number;
+            /** Nearest Longitude */
+            nearest_longitude: number;
+            /** Total Count */
+            total_count: number;
+            /** Nearest Place Id */
+            nearest_place_id?: string | null;
+            /** Nearest Google Maps Url */
+            nearest_google_maps_url?: string | null;
+            /**
+             * Top Places
+             * @default []
+             */
+            top_places: components["schemas"]["NearbyPlaceResponse"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** PropertyCharacteristicsResponse */
         PropertyCharacteristicsResponse: {
@@ -3129,6 +3226,110 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    get_property_amenities_api_v1_property_amenities__get: {
+        parameters: {
+            query: {
+                property_id: string;
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyAmenityResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discover_property_amenities_api_v1_property_amenities_discover_post: {
+        parameters: {
+            query: {
+                property_id: string;
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property missing coordinates */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

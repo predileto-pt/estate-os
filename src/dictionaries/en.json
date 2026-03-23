@@ -301,6 +301,8 @@
     "proposalEventExpired": "Proposal expired",
     "proposalEventCancelled": "Proposal cancelled",
 
+    "nearbyAmenities": "Nearby Amenities",
+    "nearby": "nearby",
     "images": "Images",
     "manageImages": "Manage Images",
     "addImages": "Add Images",
