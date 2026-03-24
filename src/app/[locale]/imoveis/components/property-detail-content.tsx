@@ -1194,13 +1194,29 @@ export function PropertyDetailContent({
           </svg>
           {dict.imoveis}
         </Link>
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold font-heading text-gray-900">
-            {property.address}
-          </h1>
-          <span className={cn("inline-block px-2 py-0.5 text-xs font-medium rounded", STATUS_STYLES[property.status])}>
-            {statusLabel[property.status]}
-          </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold font-heading text-gray-900">
+              {property.address}
+            </h1>
+            {property.status === "active" && (
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+              </span>
+            )}
+            <span className={cn("inline-block px-2 py-0.5 text-xs font-medium rounded", STATUS_STYLES[property.status])}>
+              {statusLabel[property.status]}
+            </span>
+          </div>
+          {(property.status === "draft" || property.status === "active") && (
+            <Button
+              variant={property.status === "draft" ? "primary" : "steel"}
+              onClick={() => {/* TODO: wire to PATCH /api/v1/properties/{id} when available */}}
+            >
+              {property.status === "draft" ? dict.publish : dict.unpublish}
+            </Button>
+          )}
         </div>
       </div>
 

@@ -301,6 +301,8 @@
     "proposalEventExpired": "Proposal expired",
     "proposalEventCancelled": "Proposal cancelled",
 
+    "publish": "Publish",
+    "unpublish": "Unpublish",
     "nearbyAmenities": "Nearby Amenities",
     "nearby": "nearby",
     "images": "Images",
