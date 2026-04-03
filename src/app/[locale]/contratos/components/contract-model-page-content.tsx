@@ -11,9 +11,17 @@ import type {
   TemplateVersionStatus,
   UploadStatus,
 } from "@/lib/db-types";
+import type { components } from "@/lib/types/contract-intelligence-service-api";
 import type { Dictionary, Locale } from "@/lib/i18n";
+import type { SourceSectionAnalysisBundleRead } from "./fake-data";
 import { ChunkCard } from "./chunk-card";
 import { ChunkDetailSidebar } from "./chunk-detail-sidebar";
+import { SectionsTabContent } from "./sections-tab-content";
+import { FieldEvidenceTabContent } from "./field-evidence-tab-content";
+import { AnalysisTabContent } from "./analysis-tab-content";
+
+type SourceSectionRead = components["schemas"]["SourceSectionRead"];
+type FieldEvidenceRead = components["schemas"]["FieldEvidenceRead"];
 
 const PdfPreview = dynamic(() => import("./pdf-preview"), { ssr: false });
 
@@ -32,16 +40,22 @@ const uploadStatusColors: Record<UploadStatus, string> = {
   failed: "bg-red-100 text-red-600",
 };
 
-type Tab = "preview" | "parsed";
+type Tab = "preview" | "parsed" | "sections" | "fields" | "analysis";
 
 export function ContractModelPageContent({
   model,
   dict,
   locale,
+  sections = [],
+  fieldEvidence = [],
+  analysisBundle = null,
 }: {
   model: ContractModel;
   dict: Dictionary["dashboard"];
   locale: Locale;
+  sections?: SourceSectionRead[];
+  fieldEvidence?: FieldEvidenceRead[];
+  analysisBundle?: SourceSectionAnalysisBundleRead | null;
 }) {
   const d = useDictionary().dashboard;
   const filename = model.source_document?.filename ?? model.url.split("/").pop()?.split("?")[0] ?? model.url;
@@ -72,6 +86,14 @@ export function ContractModelPageContent({
   function handleChunkClick(index: number) {
     setSelectedChunkIndex(selectedChunkIndex === index ? null : index);
   }
+
+  const tabs: { key: Tab; label: string; show: boolean }[] = [
+    { key: "preview", label: d.preview, show: true },
+    { key: "parsed", label: d.parsedResult, show: chunks.length > 0 },
+    { key: "sections", label: d.sections, show: sections.length > 0 },
+    { key: "fields", label: d.fieldEvidence, show: fieldEvidence.length > 0 },
+    { key: "analysis", label: d.analysis, show: analysisBundle !== null },
+  ];
 
   return (
     <div>
@@ -118,35 +140,26 @@ export function ContractModelPageContent({
 
       {/* Tab bar */}
       <div className="flex border-b border-gray-200 mb-4">
-        <button
-          type="button"
-          onClick={() => {
-            setActiveTab("preview");
-            setSelectedChunkIndex(null);
-          }}
-          className={cn(
-            "px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
-            activeTab === "preview"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-500 hover:text-gray-700",
-          )}
-        >
-          {d.preview}
-        </button>
-        {chunks.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setActiveTab("parsed")}
-            className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
-              activeTab === "parsed"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700",
-            )}
-          >
-            {d.parsedResult}
-          </button>
-        )}
+        {tabs
+          .filter((t) => t.show)
+          .map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => {
+                setActiveTab(tab.key);
+                if (tab.key !== "parsed") setSelectedChunkIndex(null);
+              }}
+              className={cn(
+                "px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
+                activeTab === tab.key
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
       </div>
 
       {/* Preview tab — 8 + 4 grid with metadata sidebar */}
@@ -381,6 +394,21 @@ export function ContractModelPageContent({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Sections tab */}
+      {activeTab === "sections" && (
+        <SectionsTabContent sections={sections} />
+      )}
+
+      {/* Field Evidence tab */}
+      {activeTab === "fields" && (
+        <FieldEvidenceTabContent fields={fieldEvidence} />
+      )}
+
+      {/* Analysis tab */}
+      {activeTab === "analysis" && (
+        <AnalysisTabContent bundle={analysisBundle ?? null} sections={sections} />
       )}
     </div>
   );
