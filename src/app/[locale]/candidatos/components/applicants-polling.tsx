@@ -55,7 +55,9 @@ export function ApplicantsPolling({
       return result.data;
     },
     initialData: initialApplicants,
-    refetchInterval: 5000,
+    refetchInterval: (query) => (query.state.error ? 15_000 : 5_000),
+    refetchIntervalInBackground: false,
+    retry: 3,
   });
 
   const showExample = applicants.length === 0;

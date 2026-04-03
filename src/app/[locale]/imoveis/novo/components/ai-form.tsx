@@ -71,19 +71,18 @@ export function AIForm({
 
       const { job_id, files: presignedFiles } = presign.data;
 
-      // 2. Upload files directly to S3 from the browser
-      await Promise.all(
-        files.map(async (file, i) => {
-          const res = await fetch(presignedFiles[i].upload_url, {
-            method: "PUT",
-            headers: { "Content-Type": file.type || "application/pdf" },
-            body: file,
-          });
-          if (!res.ok) {
-            throw new Error(`Upload failed for ${file.name}: ${res.status}`);
-          }
-        })
-      );
+      // 2. Upload files directly to S3 from the browser (sequential to avoid partial uploads)
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const res = await fetch(presignedFiles[i].upload_url, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/pdf" },
+          body: file,
+        });
+        if (!res.ok) {
+          throw new Error(`Upload failed for ${file.name}: ${res.status}`);
+        }
+      }
 
       // 3. Submit the extraction job (server action — lightweight)
       const result = await submitExtractionJob({

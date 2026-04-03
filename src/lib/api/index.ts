@@ -1,6 +1,6 @@
 export { getAuthHeaders, getOrganizationId, getAuthContext } from "./auth";
 export { ApiError, parseApiError, formatValidationErrors } from "./errors";
-export { coreGet, corePost, coreAuthPost, corePatch } from "./core-client";
+export { coreGet, corePost, coreAuthPost, corePatch, corePut, coreDelete } from "./core-client";
 export {
   applicantsGet,
   applicantsPost,

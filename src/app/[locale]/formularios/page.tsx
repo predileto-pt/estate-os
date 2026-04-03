@@ -1,5 +1,5 @@
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { getOrganizationId } from "@/lib/api/auth";
+import { getOrganizationId, getAuthHeaders } from "@/lib/api/auth";
 import { IntakeFormRequestCard } from "./components/intake-form-request-card";
 import { CreateIntakeFormRequestForm } from "./components/create-intake-form-request-form";
 import { FormPreviewProvider } from "./components/form-preview-context";
@@ -43,9 +43,10 @@ export default async function IntakeFormRequestsPage({
   let requests: IntakeFormRequestRow[] = [];
 
   try {
+    const authHeaders = await getAuthHeaders();
     const response = await fetch(
       `${apiUrl}/api/v1/applicants/intake-form-requests?organization_id=${organizationId}&limit=50&offset=0`,
-      { cache: "no-store" }
+      { cache: "no-store", headers: authHeaders ?? undefined }
     );
     if (response.ok) {
       const data = await response.json();

@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { resend } from "@/lib/resend";
-import { getPostHogServer } from "@/lib/posthog-server";
 import {
   applicantsPost,
   applicantsGet,
@@ -67,19 +66,7 @@ export async function createIntakeFormRequest(formData: {
     `,
   });
 
-  const posthog = getPostHogServer();
-  posthog.capture({
-    distinctId: organizationId,
-    event: "intake_form_request_created",
-    properties: {
-      property_id: formData.property_id,
-      property_type: formData.property_type,
-      listing_type: formData.listing_type,
-    },
-  });
-  await posthog.flush();
-
-  revalidatePath("/");
+  revalidatePath("/[locale]/formularios", "page");
   return { success: true };
 }
 
@@ -122,14 +109,6 @@ export async function resendIntakeFormEmail(requestId: string) {
       <p>Obrigado por utilizar o Predileto.</p>
     `,
   });
-
-  const posthog = getPostHogServer();
-  posthog.capture({
-    distinctId: organizationId,
-    event: "intake_form_email_resent",
-    properties: { request_id: requestId },
-  });
-  await posthog.flush();
 
   return { success: true };
 }

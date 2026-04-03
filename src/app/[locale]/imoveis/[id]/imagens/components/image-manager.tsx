@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
 import type { PropertyResponse } from "@/lib/api/types";
@@ -33,6 +33,13 @@ export function ImageManager({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const dragIndexRef = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
@@ -40,6 +47,10 @@ export function ImageManager({
         ACCEPTED_TYPES.includes(f.type),
       );
       if (fileArray.length === 0) return;
+
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
 
       setUploading(true);
       try {
@@ -50,14 +61,19 @@ export function ImageManager({
         if (presignResult.error !== null) return;
 
         for (let i = 0; i < fileArray.length; i++) {
+          if (controller.signal.aborted) return;
+
           const file = fileArray[i];
           const presigned = presignResult.data.files[i];
 
-          await fetch(presigned.upload_url, {
+          const uploadRes = await fetch(presigned.upload_url, {
             method: "PUT",
             headers: { "Content-Type": file.type },
             body: file,
+            signal: controller.signal,
           });
+
+          if (!uploadRes.ok) continue;
 
           const recordResult = await recordPropertyImage({
             property_id: property.id,
@@ -68,7 +84,7 @@ export function ImageManager({
             size_bytes: file.size,
           });
 
-          if (recordResult.error === null) {
+          if (!controller.signal.aborted && recordResult.error === null) {
             setImages(
               [...recordResult.data.images].sort(
                 (a, b) => a.display_order - b.display_order,
@@ -76,8 +92,12 @@ export function ImageManager({
             );
           }
         }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
       } finally {
-        setUploading(false);
+        if (!controller.signal.aborted) {
+          setUploading(false);
+        }
         if (fileInputRef.current) fileInputRef.current.value = "";
       }
     },

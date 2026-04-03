@@ -2,6 +2,18 @@ import { getAuthContext, getAuthHeaders } from "./auth";
 import { ApiError, parseApiError } from "./errors";
 
 const API_URL = process.env.API_URL || "http://localhost";
+const DEFAULT_TIMEOUT_MS = 10_000;
+
+function fetchWithTimeout(
+  input: string | URL,
+  init?: RequestInit,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+): Promise<Response> {
+  return fetch(input, {
+    ...init,
+    signal: init?.signal ?? AbortSignal.timeout(timeoutMs),
+  });
+}
 
 export async function coreGet<T>(
   path: string,
@@ -16,7 +28,7 @@ export async function coreGet<T>(
     }
   }
 
-  const res = await fetch(url.toString(), { headers });
+  const res = await fetchWithTimeout(url.toString(), { headers });
   if (!res.ok) throw await parseApiError(res);
   return res.json();
 }
@@ -27,7 +39,7 @@ export async function corePost<T>(
 ): Promise<T> {
   const { headers, organizationId } = await getAuthContext();
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetchWithTimeout(`${API_URL}${path}`, {
     method: "POST",
     headers,
     body: JSON.stringify({ organization_id: organizationId, ...body }),
@@ -43,7 +55,7 @@ export async function coreAuthPost<T>(
   const headers = await getAuthHeaders();
   if (!headers) throw new ApiError("Not authenticated", 401);
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetchWithTimeout(`${API_URL}${path}`, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -66,7 +78,7 @@ export async function corePatch<T>(
     }
   }
 
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithTimeout(url.toString(), {
     method: "PATCH",
     headers,
     body: JSON.stringify(body),
@@ -89,7 +101,7 @@ export async function corePut<T>(
     }
   }
 
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithTimeout(url.toString(), {
     method: "PUT",
     headers,
     body: JSON.stringify(body),
@@ -111,7 +123,7 @@ export async function coreDelete(
     }
   }
 
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithTimeout(url.toString(), {
     method: "DELETE",
     headers,
   });

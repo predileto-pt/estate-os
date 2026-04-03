@@ -55,11 +55,9 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  // DEBUG: remove after fixing auth
-  if (authError) {
+  if (authError && process.env.NODE_ENV === "development") {
     console.error("[middleware] getUser error:", authError.message);
   }
-  console.log("[middleware]", pathname, "user:", user?.email ?? "null", "cookies:", request.cookies.getAll().map(c => c.name).join(", "));
 
   // Extract the path after locale (e.g. /pt/login → /login)
   const localeSegment = pathname.split("/")[1];

@@ -1,8 +1,7 @@
 "use server";
 
-import { corePost, corePut, coreDelete } from "@/lib/api/core-client";
-import { ApiError } from "@/lib/api/errors";
-import type { ActionResult, MutationResult, PropertyResponse } from "@/lib/api/types";
+import { corePost, corePut, coreDelete, ApiError } from "@/lib/api";
+import type { ActionResult, MutationResult, PropertyResponse } from "@/lib/api";
 
 export async function presignImageUploads(
   propertyId: string,
