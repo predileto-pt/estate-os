@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { isValidLocale, getDictionary } from "@/lib/i18n";
 import { DictionaryProvider } from "@/components/dictionary-provider";
 import { QueryProvider } from "@/components/query-provider";
+import { GlobalLoadingProvider } from "@/components/ui/global-loading-overlay";
 import { DashboardTopNav } from "@/components/dashboard-top-nav";
 import { createClient } from "@/lib/supabase/server";
 
@@ -25,8 +26,10 @@ export default async function LocaleLayout({
   return (
     <QueryProvider>
       <DictionaryProvider dictionary={dictionary}>
-        {user && <DashboardTopNav locale={locale} email={user.email ?? ""} />}
-        {children}
+        <GlobalLoadingProvider>
+          {user && <DashboardTopNav locale={locale} email={user.email ?? ""} />}
+          {children}
+        </GlobalLoadingProvider>
       </DictionaryProvider>
     </QueryProvider>
   );
