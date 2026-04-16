@@ -1,7 +1,18 @@
 "use server";
 
 import { coreGet, corePost, coreDelete, ApiError } from "@/lib/api";
-import type { ActionResult } from "@/lib/api";
+import type { ActionResult, MutationResult } from "@/lib/api";
+
+export async function deleteProperty(
+  propertyId: string,
+): Promise<MutationResult> {
+  try {
+    await coreDelete(`/api/v1/admin/properties/${propertyId}`);
+    return { error: null };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
 
 // Types
 export interface SlotResponse {

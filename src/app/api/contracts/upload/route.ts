@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     upstreamForm.append("file", file);
     upstreamForm.append("organization_id", organizationId);
 
-    const res = await fetch(`${API_URL}/api/v1/contracts/source-documents/upload`, {
+    const res = await fetch(`${API_URL}/api/v1/admin/contracts/source-documents`, {
       method: "POST",
       headers: { Authorization: authHeaders.Authorization },
       body: upstreamForm,

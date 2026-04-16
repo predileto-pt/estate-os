@@ -6,7 +6,7 @@ import type { PropertySummary } from "@/lib/api/types";
 export async function GET() {
   try {
     const properties = await coreGet<PropertySummary[]>(
-      "/api/v1/properties/summary",
+      "/api/v1/admin/properties/summary",
     );
     return NextResponse.json(properties);
   } catch (err) {

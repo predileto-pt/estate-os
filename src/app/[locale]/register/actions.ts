@@ -24,7 +24,7 @@ export async function getMe(): Promise<
   if (!headers) return { error: "Not authenticated" };
 
   try {
-    const res = await fetch(`${API_URL}/api/v1/auth/me`, { headers });
+    const res = await fetch(`${API_URL}/api/v1/admin/auth/me`, { headers });
 
     if (!res.ok) {
       return { error: `Failed to fetch user: ${res.status}` };
@@ -61,7 +61,7 @@ export async function updateOrganization(data: {
   address?: string;
 }): Promise<MutationResult> {
   try {
-    await corePatch(`/api/v1/organizations/${data.organization_id}`, {
+    await corePatch(`/api/v1/admin/organizations/${data.organization_id}`, {
       name: data.name || null,
       nif: data.nif || null,
       address: data.address || null,

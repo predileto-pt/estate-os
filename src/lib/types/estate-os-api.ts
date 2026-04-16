@@ -21,7 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/auth/register": {
+    "/api/v1/admin/auth/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -38,7 +38,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/auth/me": {
+    "/api/v1/admin/auth/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -55,7 +55,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/users/me": {
+    "/api/v1/admin/users/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -73,7 +73,7 @@ export interface paths {
         patch: operations["update_user_profile_api_v1_users_me_patch"];
         trace?: never;
     };
-    "/api/v1/organizations/{organization_id}": {
+    "/api/v1/admin/organizations/{organization_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -91,7 +91,7 @@ export interface paths {
         patch: operations["update_organization_api_v1_organizations__organization_id__patch"];
         trace?: never;
     };
-    "/api/v1/memberships": {
+    "/api/v1/admin/memberships": {
         parameters: {
             query?: never;
             header?: never;
@@ -108,7 +108,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/memberships/{membership_id}": {
+    "/api/v1/admin/memberships/{membership_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -126,7 +126,7 @@ export interface paths {
         patch: operations["update_member_role_api_v1_memberships__membership_id__patch"];
         trace?: never;
     };
-    "/api/v1/invitations": {
+    "/api/v1/admin/invitations": {
         parameters: {
             query?: never;
             header?: never;
@@ -144,7 +144,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/invitations/{invitation_id}": {
+    "/api/v1/admin/invitations/{invitation_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -161,7 +161,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/subscriptions/plans": {
+    "/api/v1/admin/subscriptions/plans": {
         parameters: {
             query?: never;
             header?: never;
@@ -178,7 +178,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/subscriptions/current": {
+    "/api/v1/admin/subscriptions/current": {
         parameters: {
             query?: never;
             header?: never;
@@ -195,7 +195,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/subscriptions": {
+    "/api/v1/admin/subscriptions": {
         parameters: {
             query?: never;
             header?: never;
@@ -212,7 +212,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/subscriptions/{subscription_id}": {
+    "/api/v1/admin/subscriptions/{subscription_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -229,7 +229,7 @@ export interface paths {
         patch: operations["update_subscription_api_v1_subscriptions__subscription_id__patch"];
         trace?: never;
     };
-    "/api/v1/notifications": {
+    "/api/v1/admin/notifications": {
         parameters: {
             query?: never;
             header?: never;
@@ -247,7 +247,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/notifications/read": {
+    "/api/v1/admin/notifications/read": {
         parameters: {
             query?: never;
             header?: never;
@@ -264,7 +264,7 @@ export interface paths {
         patch: operations["mark_notifications_read_api_v1_notifications_read_patch"];
         trace?: never;
     };
-    "/api/v1/email/send": {
+    "/api/v1/admin/email/send": {
         parameters: {
             query?: never;
             header?: never;
@@ -281,7 +281,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/properties/": {
+    "/api/v1/admin/properties/": {
         parameters: {
             query?: never;
             header?: never;
@@ -299,7 +299,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/properties/summary": {
+    "/api/v1/admin/properties/summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -316,7 +316,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/properties/{property_id}": {
+    "/api/v1/admin/properties/{property_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -333,7 +333,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-owners/": {
+    "/api/v1/admin/property-owners/": {
         parameters: {
             query?: never;
             header?: never;
@@ -351,7 +351,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-owners/extract-from-document": {
+    "/api/v1/admin/property-owners/extract-from-document": {
         parameters: {
             query?: never;
             header?: never;
@@ -368,7 +368,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-owners/{owner_id}": {
+    "/api/v1/admin/property-owners/{owner_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -385,7 +385,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-owners/{owner_id}/contact": {
+    "/api/v1/admin/property-owners/{owner_id}/contact": {
         parameters: {
             query?: never;
             header?: never;
@@ -402,7 +402,7 @@ export interface paths {
         patch: operations["update_property_owner_contact_api_v1_property_owners__owner_id__contact_patch"];
         trace?: never;
     };
-    "/api/v1/property-prices/": {
+    "/api/v1/admin/property-prices/": {
         parameters: {
             query?: never;
             header?: never;
@@ -420,7 +420,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-images/presign": {
+    "/api/v1/admin/property-images/presign": {
         parameters: {
             query?: never;
             header?: never;
@@ -437,7 +437,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-images/": {
+    "/api/v1/admin/property-images/": {
         parameters: {
             query?: never;
             header?: never;
@@ -454,7 +454,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-images/{image_id}": {
+    "/api/v1/admin/property-images/{image_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -471,7 +471,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-images/reorder": {
+    "/api/v1/admin/property-images/reorder": {
         parameters: {
             query?: never;
             header?: never;
@@ -488,7 +488,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-amenities/": {
+    "/api/v1/admin/property-amenities/": {
         parameters: {
             query?: never;
             header?: never;
@@ -505,7 +505,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/property-amenities/discover": {
+    "/api/v1/admin/property-amenities/discover": {
         parameters: {
             query?: never;
             header?: never;
@@ -522,7 +522,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/extraction-jobs/presign": {
+    "/api/v1/admin/extraction-jobs/presign": {
         parameters: {
             query?: never;
             header?: never;
@@ -539,7 +539,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/extraction-jobs/": {
+    "/api/v1/admin/extraction-jobs/": {
         parameters: {
             query?: never;
             header?: never;
@@ -557,7 +557,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/extraction-jobs/batch": {
+    "/api/v1/admin/extraction-jobs/batch": {
         parameters: {
             query?: never;
             header?: never;
@@ -574,7 +574,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/extraction-jobs/{job_id}/retry": {
+    "/api/v1/admin/extraction-jobs/{job_id}/retry": {
         parameters: {
             query?: never;
             header?: never;
@@ -591,7 +591,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/extraction-jobs/{job_id}": {
+    "/api/v1/admin/extraction-jobs/{job_id}": {
         parameters: {
             query?: never;
             header?: never;

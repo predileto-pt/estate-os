@@ -27,7 +27,7 @@ export async function getOrganizationId(): Promise<string | null> {
   const headers = await getAuthHeaders();
   if (!headers) return null;
 
-  const res = await fetch(`${API_URL}/api/v1/auth/me`, { headers });
+  const res = await fetch(`${API_URL}/api/v1/admin/auth/me`, { headers });
   if (!res.ok) return null;
 
   const data: UserWithOrganizationResponse = await res.json();

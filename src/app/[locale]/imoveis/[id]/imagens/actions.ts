@@ -14,7 +14,7 @@ export async function presignImageUploads(
   try {
     const data = await corePost<{
       files: { image_id: string; s3_key: string; upload_url: string }[];
-    }>("/api/v1/property-images/presign", {
+    }>("/api/v1/admin/property-images/presign", {
       property_id: propertyId,
       files,
     });
@@ -34,7 +34,7 @@ export async function recordPropertyImage(params: {
 }): Promise<ActionResult<PropertyResponse>> {
   try {
     const data = await corePost<PropertyResponse>(
-      "/api/v1/property-images/",
+      "/api/v1/admin/property-images/",
       params,
     );
     return { error: null, data };
@@ -48,7 +48,7 @@ export async function deletePropertyImage(
   propertyId: string,
 ): Promise<MutationResult> {
   try {
-    await coreDelete(`/api/v1/property-images/${imageId}`, {
+    await coreDelete(`/api/v1/admin/property-images/${imageId}`, {
       property_id: propertyId,
     });
     return { error: null };
@@ -63,7 +63,7 @@ export async function reorderPropertyImages(
 ): Promise<ActionResult<PropertyResponse>> {
   try {
     const data = await corePut<PropertyResponse>(
-      "/api/v1/property-images/reorder",
+      "/api/v1/admin/property-images/reorder",
       { property_id: propertyId, image_ids: imageIds },
     );
     return { error: null, data };

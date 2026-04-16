@@ -15,7 +15,7 @@ export async function getProperties(): Promise<
   ActionResult<PropertyResponse[]>
 > {
   try {
-    const data = await coreGet<PropertyResponse[]>("/api/v1/properties/");
+    const data = await coreGet<PropertyResponse[]>("/api/v1/admin/properties/");
     return { error: null, data };
   } catch (err) {
     return { error: err instanceof ApiError ? err.message : "Network error" };
@@ -27,7 +27,7 @@ export async function getPropertyPrices(
 ): Promise<ActionResult<PropertyPriceResponse[]>> {
   try {
     const data = await coreGet<PropertyPriceResponse[]>(
-      "/api/v1/property-prices/",
+      "/api/v1/admin/property-prices/",
       { property_id: propertyId },
     );
     return { error: null, data };
@@ -41,7 +41,7 @@ export async function getPropertyAmenities(
 ): Promise<ActionResult<PropertyAmenityResponse[]>> {
   try {
     const data = await coreGet<PropertyAmenityResponse[]>(
-      "/api/v1/property-amenities/",
+      "/api/v1/admin/property-amenities/",
       { property_id: propertyId },
     );
     return { error: null, data };
@@ -56,7 +56,7 @@ export async function createPropertyPrice(params: {
   listing_type: string;
 }): Promise<MutationResult> {
   try {
-    await corePost("/api/v1/property-prices/", params);
+    await corePost("/api/v1/admin/property-prices/", params);
     return { error: null };
   } catch (err) {
     return { error: err instanceof ApiError ? err.message : "Network error" };
@@ -68,7 +68,7 @@ export async function getProperty(
 ): Promise<ActionResult<PropertyResponse>> {
   try {
     const data = await coreGet<PropertyResponse>(
-      `/api/v1/properties/${propertyId}`,
+      `/api/v1/admin/properties/${propertyId}`,
     );
     return { error: null, data };
   } catch (err) {
@@ -88,7 +88,7 @@ export async function presignExtractionFiles(
     const data = await coreAuthPost<{
       job_id: string;
       files: { s3_key: string; upload_url: string }[];
-    }>("/api/v1/extraction-jobs/presign", { files });
+    }>("/api/v1/admin/extraction-jobs/presign", { files });
     return { error: null, data };
   } catch (err) {
     return { error: err instanceof ApiError ? err.message : "Network error" };
@@ -100,7 +100,7 @@ export async function getExtractionJobs(): Promise<
 > {
   try {
     const data = await coreGet<ExtractionJobResponse[]>(
-      "/api/v1/extraction-jobs/",
+      "/api/v1/admin/extraction-jobs/",
     );
     return { error: null, data };
   } catch (err) {
@@ -115,7 +115,7 @@ export async function submitExtractionJob(params: {
   typology: string;
 }): Promise<MutationResult> {
   try {
-    await corePost("/api/v1/extraction-jobs/batch", params);
+    await corePost("/api/v1/admin/extraction-jobs/batch", params);
     return { error: null };
   } catch (err) {
     return { error: err instanceof ApiError ? err.message : "Network error" };
@@ -130,7 +130,7 @@ export async function updateOwnerContact(params: {
 }): Promise<MutationResult> {
   try {
     await corePatch(
-      `/api/v1/property-owners/${params.owner_id}/contact`,
+      `/api/v1/admin/property-owners/${params.owner_id}/contact`,
       { email: params.email, phone_number: params.phone_number },
       { property_id: params.property_id },
     );

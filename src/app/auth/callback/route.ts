@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       const userName = registerName || session.user.user_metadata?.full_name || session.user.user_metadata?.name || "";
       const email = registerEmail || session.user.email || "";
       try {
-        const res = await fetch(`${API_URL}/api/v1/auth/register`, {
+        const res = await fetch(`${API_URL}/api/v1/admin/auth/register`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${session.access_token}`,
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     // Fetch and cache organization_id in a cookie to avoid repeated /auth/me calls
     if (session) {
       try {
-        const meRes = await fetch(`${API_URL}/api/v1/auth/me`, {
+        const meRes = await fetch(`${API_URL}/api/v1/admin/auth/me`, {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
         if (meRes.ok) {
