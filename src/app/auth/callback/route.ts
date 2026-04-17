@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
   const error = searchParams.get("error_description");
-  const next = searchParams.get("next") ?? "/pt/dashboard";
+  const next = searchParams.get("next") ?? "/dashboard";
 
   // Registration params passed from the register page
   const registerName = searchParams.get("name");
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error("[auth/callback] OAuth error:", error);
-    const url = new URL(`${origin}/pt/login`);
+    const url = new URL(`${origin}/login`);
     url.searchParams.set("error", error);
     return NextResponse.redirect(url);
   }
@@ -28,10 +28,10 @@ export async function GET(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
       {
         cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          getAll: () => request.cookies.getAll(),
+          setAll: (
+            cookiesToSet: { name: string; value: string; options: CookieOptions }[],
+          ) => {
             cookiesToSet.forEach(({ name, value, options }) =>
               response.cookies.set(name, value, options),
             );
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     if (exchangeError) {
-      return NextResponse.redirect(`${origin}/pt/login`);
+      return NextResponse.redirect(`${origin}/login`);
     }
 
     const {
@@ -74,10 +74,31 @@ export async function GET(request: NextRequest) {
 
         // 409 = already registered, that's fine
         if (!res.ok && res.status !== 409) {
-          console.error("[auth/callback] Backend register failed:", res.status, await res.text());
+          console.error(
+            "[auth/callback] Backend register failed:",
+            res.status,
+            await res.text(),
+          );
+          // Clear the dangling Supabase session so the user can retry cleanly.
+          await supabase.auth.signOut();
+          const errorUrl = new URL(`${origin}/login`);
+          errorUrl.searchParams.set("error", "registration_failed");
+          const errorResponse = NextResponse.redirect(errorUrl);
+          response.cookies
+            .getAll()
+            .forEach((cookie) => errorResponse.cookies.set(cookie));
+          return errorResponse;
         }
       } catch (err) {
         console.error("[auth/callback] Backend register error:", err);
+        await supabase.auth.signOut();
+        const errorUrl = new URL(`${origin}/login`);
+        errorUrl.searchParams.set("error", "registration_failed");
+        const errorResponse = NextResponse.redirect(errorUrl);
+        response.cookies
+          .getAll()
+          .forEach((cookie) => errorResponse.cookies.set(cookie));
+        return errorResponse;
       }
     }
 
@@ -108,5 +129,5 @@ export async function GET(request: NextRequest) {
     return response;
   }
 
-  return NextResponse.redirect(`${origin}/pt/login`);
+  return NextResponse.redirect(`${origin}/login`);
 }

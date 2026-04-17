@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { getAuthContext, getAuthHeaders } from "./auth";
 import { ApiError, parseApiError } from "./errors";
 
@@ -15,6 +16,28 @@ function fetchWithTimeout(
   });
 }
 
+// On 401, force a Supabase refresh and retry the request once with the
+// rotated access token. Covers the window where a token expires between
+// getAuthHeaders() and the upstream fetch.
+async function fetchWithAuthRetry(
+  url: string,
+  headers: Record<string, string>,
+  init: Omit<RequestInit, "headers"> = {},
+): Promise<Response> {
+  const res = await fetchWithTimeout(url, { ...init, headers });
+  if (res.status !== 401) return res;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.refreshSession();
+  if (error || !data.session) return res;
+
+  const retryHeaders = {
+    ...headers,
+    Authorization: `Bearer ${data.session.access_token}`,
+  };
+  return fetchWithTimeout(url, { ...init, headers: retryHeaders });
+}
+
 export async function coreGet<T>(
   path: string,
   params?: Record<string, string>,
@@ -28,7 +51,7 @@ export async function coreGet<T>(
     }
   }
 
-  const res = await fetchWithTimeout(url.toString(), { headers });
+  const res = await fetchWithAuthRetry(url.toString(), headers);
   if (!res.ok) throw await parseApiError(res);
   return res.json();
 }
@@ -39,9 +62,8 @@ export async function corePost<T>(
 ): Promise<T> {
   const { headers, organizationId } = await getAuthContext();
 
-  const res = await fetchWithTimeout(`${API_URL}${path}`, {
+  const res = await fetchWithAuthRetry(`${API_URL}${path}`, headers, {
     method: "POST",
-    headers,
     body: JSON.stringify({ organization_id: organizationId, ...body }),
   });
   if (!res.ok) throw await parseApiError(res);
@@ -55,9 +77,8 @@ export async function coreAuthPost<T>(
   const headers = await getAuthHeaders();
   if (!headers) throw new ApiError("Not authenticated", 401);
 
-  const res = await fetchWithTimeout(`${API_URL}${path}`, {
+  const res = await fetchWithAuthRetry(`${API_URL}${path}`, headers, {
     method: "POST",
-    headers,
     body: JSON.stringify(body),
   });
   if (!res.ok) throw await parseApiError(res);
@@ -78,9 +99,8 @@ export async function corePatch<T>(
     }
   }
 
-  const res = await fetchWithTimeout(url.toString(), {
+  const res = await fetchWithAuthRetry(url.toString(), headers, {
     method: "PATCH",
-    headers,
     body: JSON.stringify(body),
   });
   if (!res.ok) throw await parseApiError(res);
@@ -101,9 +121,8 @@ export async function corePut<T>(
     }
   }
 
-  const res = await fetchWithTimeout(url.toString(), {
+  const res = await fetchWithAuthRetry(url.toString(), headers, {
     method: "PUT",
-    headers,
     body: JSON.stringify(body),
   });
   if (!res.ok) throw await parseApiError(res);
@@ -123,9 +142,8 @@ export async function coreDelete(
     }
   }
 
-  const res = await fetchWithTimeout(url.toString(), {
+  const res = await fetchWithAuthRetry(url.toString(), headers, {
     method: "DELETE",
-    headers,
   });
   if (!res.ok) throw await parseApiError(res);
 }

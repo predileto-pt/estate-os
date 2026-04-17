@@ -6,13 +6,10 @@ import { cn } from "@/lib/utils";
 import { useDictionary } from "@/components/dictionary-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { createClient } from "@/lib/supabase/client";
-import type { Locale } from "@/lib/i18n";
 
 export function DashboardTopNav({
-  locale,
   email,
 }: {
-  locale: Locale;
   email: string;
 }) {
   const dict = useDictionary();
@@ -20,22 +17,22 @@ export function DashboardTopNav({
   const pathname = usePathname();
   const router = useRouter();
 
-  const applicantsHref = `/${locale}/candidatos`;
+  const applicantsHref = "/candidatos";
   const applicantsActive = pathname.startsWith(applicantsHref);
-  const intakeFormsHref = `/${locale}/formularios`;
+  const intakeFormsHref = "/formularios";
   const intakeFormsActive = pathname.startsWith(intakeFormsHref);
-  const imoveisHref = `/${locale}/imoveis`;
+  const imoveisHref = "/imoveis";
   const imoveisActive = pathname.startsWith(imoveisHref);
-  const propostasHref = `/${locale}/propostas`;
+  const propostasHref = "/propostas";
   const propostasActive = pathname.startsWith(propostasHref);
-  const contratosHref = `/${locale}/contratos`;
+  const contratosHref = "/contratos";
   const contratosActive = pathname.startsWith(contratosHref);
-  const settingsActive = pathname.startsWith(`/${locale}/dashboard/settings`);
+  const settingsActive = pathname.startsWith("/dashboard/settings");
 
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push(`/${locale}/login`);
+    router.push("/login");
     router.refresh();
   }
 
@@ -44,7 +41,7 @@ export function DashboardTopNav({
       <div className="max-w-7xl mx-auto px-4 lg:px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4 lg:gap-6">
           <Link
-            href={`/${locale}/dashboard`}
+            href="/dashboard"
             className="text-sm font-bold font-heading"
           >
             Predileto Dashboard
@@ -122,7 +119,7 @@ export function DashboardTopNav({
         <div className="flex items-center gap-4">
           <span className="text-xs text-gray-400">{email}</span>
           <Link
-            href={`/${locale}/dashboard/settings`}
+            href="/dashboard/settings"
             className={cn(
               settingsActive
                 ? "text-gray-900"
@@ -150,7 +147,7 @@ export function DashboardTopNav({
           >
             {d.logout}
           </button>
-          <LanguageSwitcher locale={locale} />
+          <LanguageSwitcher />
         </div>
       </div>
     </nav>

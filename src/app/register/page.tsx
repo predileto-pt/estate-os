@@ -1,0 +1,172 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { useDictionary } from "@/components/dictionary-provider";
+import { GoogleIcon } from "@/components/ui/google-icon";
+
+export default function RegisterPage() {
+  const dict = useDictionary();
+  const d = dict.dashboard;
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  function buildCallbackParams(overrideEmail?: string) {
+    const params = new URLSearchParams();
+    params.set("next", "/register/onboarding");
+    params.set("name", name);
+    params.set("email", overrideEmail || email);
+    return params.toString();
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError(d.passwordMismatch);
+      return;
+    }
+
+    if (!name.trim()) {
+      setError(d.required);
+      return;
+    }
+
+    setLoading(true);
+
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?${buildCallbackParams()}`,
+      },
+    });
+
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
+    }
+
+    setSuccess(true);
+    setLoading(false);
+  }
+
+  async function handleGoogleSignUp() {
+    setError("");
+
+    const supabase = createClient();
+    const params = new URLSearchParams();
+    params.set("next", "/register/onboarding");
+
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?${params.toString()}`,
+      },
+    });
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-sm border border-gray-200 bg-white p-6 text-center">
+          <h1 className="text-lg font-bold font-heading mb-4">{d.registrationSuccess}</h1>
+          <p className="text-sm text-gray-500 mb-6">{d.checkEmailMessage}</p>
+          <Link
+            href="/login"
+            className="inline-block bg-gray-900 text-white px-4 py-2 text-sm font-heading hover:bg-gray-800"
+          >
+            {d.login}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-sm border border-gray-200 bg-white p-6">
+        <h1 className="text-lg font-bold font-heading mb-6">{d.register}</h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{d.fullName}</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{d.email}</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{d.password}</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">{d.confirmPassword}</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+            />
+          </div>
+          {error && <p className="text-xs text-red-600">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gray-900 text-white py-2 text-sm font-heading hover:bg-gray-800 disabled:opacity-50"
+          >
+            {d.register}
+          </button>
+        </form>
+
+        <div className="my-4 border-t border-gray-200" />
+
+        <button
+          onClick={handleGoogleSignUp}
+          className="w-full flex items-center justify-center gap-2 border border-gray-200 py-2 text-sm font-heading hover:bg-gray-50"
+        >
+          <GoogleIcon />
+          {d.signInWithGoogle}
+        </button>
+
+        <p className="mt-4 text-xs text-gray-400 text-center">
+          {d.hasAccount}{" "}
+          <Link href="/login" className="text-blue-600 underline underline-offset-2">
+            {d.login}
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,6 +1,10 @@
+import { cache } from "react";
+import { cookies } from "next/headers";
+
 export const locales = ["pt", "en"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "pt";
+export const LOCALE_COOKIE = "locale";
 
 export function isValidLocale(locale: string): locale is Locale {
   return locales.includes(locale as Locale);
@@ -13,14 +17,18 @@ const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
   en: () => import("@/dictionaries/en.json"),
 };
 
-import { cache } from "react";
-
 export const getDictionary = cache(
   async (locale: Locale): Promise<Dictionary> => {
     const mod = await dictionaries[locale]();
     return { ...mod };
   },
 );
+
+export async function getLocaleFromCookie(): Promise<Locale> {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get(LOCALE_COOKIE)?.value;
+  return raw && isValidLocale(raw) ? raw : defaultLocale;
+}
 
 export const localeNames: Record<Locale, string> = {
   pt: "PT",

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { locales, defaultLocale } from "@/lib/i18n";
 
 const publicPaths = ["/login", "/register"];
 const protectedSubpaths = ["/register/onboarding"];
@@ -8,28 +7,14 @@ const protectedSubpaths = ["/register/onboarding"];
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip static files, auth callback, and API routes
-  if (
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/auth/") ||
-    pathname.startsWith("/api/") ||
-    pathname.includes(".")
-  ) {
+  // Skip static assets (files with extensions)
+  if (pathname.includes(".")) {
     return NextResponse.next();
   }
 
-  // --- Locale redirect for bare paths ---
-  const hasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
-  );
+  const isApi = pathname.startsWith("/api/");
 
-  if (!hasLocale) {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
-    return NextResponse.redirect(url);
-  }
-
-  // --- Supabase session refresh ---
+  // --- Supabase session refresh (runs for both UI and /api/*) ---
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -37,10 +22,10 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+        getAll: () => request.cookies.getAll(),
+        setAll: (
+          cookiesToSet: { name: string; value: string; options: CookieOptions }[],
+        ) => {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
@@ -56,39 +41,50 @@ export async function proxy(request: NextRequest) {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError && process.env.NODE_ENV === "development") {
-    console.error("[middleware] getUser error:", authError.message);
+    console.error("[proxy] getUser error:", authError.message);
   }
 
-  // Extract the path after locale (e.g. /pt/login → /login)
-  const localeSegment = pathname.split("/")[1];
-  const pathAfterLocale =
-    pathname.replace(`/${localeSegment}`, "") || "/";
+  // API requests: session is refreshed, let them pass through
+  if (isApi) {
+    return response;
+  }
 
+  // --- Auth gates (UI only) ---
   const isProtectedSubpath = protectedSubpaths.some(
-    (p) => pathAfterLocale === p || pathAfterLocale.startsWith(`${p}/`),
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 
   const isPublicPath =
     !isProtectedSubpath &&
     publicPaths.some(
-      (p) => pathAfterLocale === p || pathAfterLocale.startsWith(`${p}/`),
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
     );
 
   // Authenticated users on login/register → redirect to dashboard
   if (user && isPublicPath) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${localeSegment}/dashboard`;
-    return NextResponse.redirect(url);
+    url.pathname = "/dashboard";
+    return withRefreshedCookies(NextResponse.redirect(url), response);
   }
 
   // Unauthenticated users on protected paths → redirect to login
   if (!user && !isPublicPath) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${localeSegment}/login`;
-    return NextResponse.redirect(url);
+    url.pathname = "/login";
+    return withRefreshedCookies(NextResponse.redirect(url), response);
   }
 
   return response;
+}
+
+// Propagate any cookies Supabase wrote during getUser() (token rotation)
+// onto a redirect response so the new tokens reach the client.
+function withRefreshedCookies(
+  target: NextResponse,
+  source: NextResponse,
+): NextResponse {
+  source.cookies.getAll().forEach((cookie) => target.cookies.set(cookie));
+  return target;
 }
 
 export const config = {

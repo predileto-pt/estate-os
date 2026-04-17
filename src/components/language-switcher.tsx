@@ -1,19 +1,20 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { locales, localeNames, type Locale } from "@/lib/i18n";
+import { useRouter } from "next/navigation";
+import { locales, localeNames, LOCALE_COOKIE, type Locale } from "@/lib/i18n";
+import { useLocale } from "@/components/dictionary-provider";
 import { Select } from "@/components/ui/select";
 
-export function LanguageSwitcher({ locale }: { locale: Locale }) {
-  const pathname = usePathname();
+export function LanguageSwitcher() {
+  const router = useRouter();
+  const locale = useLocale();
 
   function switchLocale(newLocale: string) {
-    const segments = pathname.split("/");
-    segments[1] = newLocale;
-    window.location.href = segments.join("/");
+    document.cookie = `${LOCALE_COOKIE}=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    router.refresh();
   }
 
-  const options = locales.map((l) => ({
+  const options = locales.map((l: Locale) => ({
     value: l,
     label: localeNames[l],
   }));

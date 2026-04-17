@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { BookOpen, Check, AlertTriangle, Info, ChevronDown } from "lucide-react";
+import { useLocale } from "@/components/dictionary-provider";
 import { cn, formatPrice } from "@/lib/utils";
 import type { PropertyIntelligence, BuyerScore, PropertyAlert, SuggestedAction, IntentLevel } from "@/lib/mock-deal-data";
 
 interface AgentInsightsPanelProps {
   intelligence: PropertyIntelligence;
-  locale: string;
 }
 
 const INTENT_LABELS: Record<IntentLevel, string> = {
@@ -92,7 +92,8 @@ function ActionCard({ action }: { action: SuggestedAction }) {
   );
 }
 
-export function AgentInsightsPanel({ intelligence, locale }: AgentInsightsPanelProps) {
+export function AgentInsightsPanel({ intelligence }: AgentInsightsPanelProps) {
+  const locale = useLocale();
   const [expanded, setExpanded] = useState(true);
 
   return (

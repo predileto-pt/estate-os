@@ -7,10 +7,17 @@ const API_URL = process.env.API_URL || "http://localhost";
 
 export async function getAuthHeaders(): Promise<Record<string, string> | null> {
   const supabase = await createClient();
+
+  // getUser() validates the token against Supabase and rotates cookies on
+  // refresh; getSession() alone never triggers rotation.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
   if (!session) return null;
 
   return {
