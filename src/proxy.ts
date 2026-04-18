@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient, type CookieMethodsServer } from "@supabase/ssr";
 
 const publicPaths = ["/login", "/register"];
 const protectedSubpaths = ["/register/onboarding"];
@@ -17,25 +17,23 @@ export async function proxy(request: NextRequest) {
   // --- Supabase session refresh (runs for both UI and /api/*) ---
   let response = NextResponse.next({ request });
 
+  const cookieMethods: CookieMethodsServer = {
+    getAll: () => request.cookies.getAll(),
+    setAll: (cookiesToSet) => {
+      cookiesToSet.forEach(({ name, value }) =>
+        request.cookies.set(name, value),
+      );
+      response = NextResponse.next({ request });
+      cookiesToSet.forEach(({ name, value, options }) =>
+        response.cookies.set(name, value, options),
+      );
+    },
+  };
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-    {
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: (
-          cookiesToSet: { name: string; value: string; options: CookieOptions }[],
-        ) => {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
-          );
-        },
-      },
-    },
+    { cookies: cookieMethods },
   );
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();

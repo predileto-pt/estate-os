@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient, type CookieMethodsServer } from "@supabase/ssr";
 
 const API_URL = process.env.API_URL || "http://localhost";
 
@@ -23,21 +23,19 @@ export async function GET(request: NextRequest) {
   if (code) {
     const response = NextResponse.redirect(`${origin}${next}`);
 
+    const cookieMethods: CookieMethodsServer = {
+      getAll: () => request.cookies.getAll(),
+      setAll: (cookiesToSet) => {
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
+      },
+    };
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-      {
-        cookies: {
-          getAll: () => request.cookies.getAll(),
-          setAll: (
-            cookiesToSet: { name: string; value: string; options: CookieOptions }[],
-          ) => {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              response.cookies.set(name, value, options),
-            );
-          },
-        },
-      },
+      { cookies: cookieMethods },
     );
 
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
