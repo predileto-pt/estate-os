@@ -7,6 +7,10 @@ import { GlobalLoadingProvider } from "@/components/ui/global-loading-overlay";
 import { DashboardTopNav } from "@/components/dashboard-top-nav";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Predileto Dashboard",
@@ -27,7 +31,7 @@ export default async function RootLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={cn("font-sans", geist.variable)}>
       <body className="min-h-screen">
         <QueryProvider>
           <DictionaryProvider dictionary={dictionary} locale={locale}>
