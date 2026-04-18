@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getDictionary, getLocaleFromCookie } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
+import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { DictionaryProvider } from "@/components/dictionary-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { GlobalLoadingProvider } from "@/components/ui/global-loading-overlay";

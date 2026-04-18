@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { getDictionary, getLocaleFromCookie } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
+import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { getProperty, getPropertyAmenities } from "../novo/actions";
 import { notFound } from "next/navigation";
 import { PropertyDetailContent } from "../components/property-detail-content";

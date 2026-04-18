@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { getDictionary, getLocaleFromCookie } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
+import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { coreGet } from "@/lib/api";
 import { ContractModelPageContent } from "../../../components/contract-model-page-content";
 import {

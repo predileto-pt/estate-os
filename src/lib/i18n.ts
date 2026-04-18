@@ -1,5 +1,4 @@
 import { cache } from "react";
-import { cookies } from "next/headers";
 
 export const locales = ["pt", "en"] as const;
 export type Locale = (typeof locales)[number];
@@ -23,12 +22,6 @@ export const getDictionary = cache(
     return { ...mod };
   },
 );
-
-export async function getLocaleFromCookie(): Promise<Locale> {
-  const cookieStore = await cookies();
-  const raw = cookieStore.get(LOCALE_COOKIE)?.value;
-  return raw && isValidLocale(raw) ? raw : defaultLocale;
-}
 
 export const localeNames: Record<Locale, string> = {
   pt: "PT",

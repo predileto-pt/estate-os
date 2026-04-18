@@ -1,4 +1,5 @@
-import { getDictionary, getLocaleFromCookie } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
+import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { ProposalsList } from "./components/proposals-list";
 
 export default async function ProposalsPage() {

@@ -1,4 +1,5 @@
-import { getDictionary, getLocaleFromCookie } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
+import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { DeleteAccountButton } from "./components/delete-account-button";
 
 export default async function PrivacyPage() {

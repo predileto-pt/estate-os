@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getDictionary, getLocaleFromCookie } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
+import { getLocaleFromCookie } from "@/lib/i18n-server";
 
 export default async function DashboardPage() {
   const locale = await getLocaleFromCookie();

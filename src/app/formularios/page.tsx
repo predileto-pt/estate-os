@@ -1,4 +1,5 @@
-import { getDictionary, getLocaleFromCookie } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
+import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { getOrganizationId, getAuthHeaders } from "@/lib/api/auth";
 import { IntakeFormRequestCard } from "./components/intake-form-request-card";
 import { CreateIntakeFormRequestForm } from "./components/create-intake-form-request-form";
