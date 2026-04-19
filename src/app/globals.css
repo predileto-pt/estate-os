@@ -30,6 +30,25 @@
 @theme {
   --font-heading: "Bernino", sans-serif;
   --font-body: "Bernino", sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.375rem;
+  --text-3xl: 1.625rem;
+  --text-4xl: 1.75rem;
+  --text-5xl: 2rem;
+
+  --font-weight-body: 400;
+  --font-weight-heading: 700;
+
+  --leading-body: 1.5;
+  --leading-heading: 1.2;
+
+  --tracking-body: 0em;
+  --tracking-heading: -0.02em;
 }
 
 body {

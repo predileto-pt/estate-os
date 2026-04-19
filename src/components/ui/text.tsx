@@ -1,16 +1,44 @@
 import { cn } from "@/lib/utils";
 
-const variants = {
-  default: "text-sm text-gray-600 leading-relaxed",
-  muted: "text-sm text-gray-400",
-} as const;
+type TextSize = "sm" | "base" | "lg";
+type TextVariant = "default" | "muted";
+
+const sizeClass: Record<TextSize, string> = {
+  sm: "text-sm",
+  base: "text-base",
+  lg: "text-lg",
+};
+
+const variantClass: Record<TextVariant, string> = {
+  default: "text-gray-600",
+  muted: "text-gray-400",
+};
 
 interface TextProps {
   children: React.ReactNode;
-  variant?: keyof typeof variants;
+  variant?: TextVariant;
+  size?: TextSize;
+  as?: "p" | "span" | "div";
   className?: string;
 }
 
-export function Text({ children, variant = "default", className }: TextProps) {
-  return <p className={cn(variants[variant], className)}>{children}</p>;
+export function Text({
+  children,
+  variant = "default",
+  size = "sm",
+  as: Tag = "p",
+  className,
+}: TextProps) {
+  return (
+    <Tag
+      className={cn(
+        "leading-body tracking-body",
+        sizeClass[size],
+        variantClass[variant],
+        className,
+      )}
+    >
+      {children}
+    </Tag>
+  );
 }

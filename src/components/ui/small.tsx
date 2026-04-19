@@ -1,14 +1,17 @@
 import { cn } from "@/lib/utils";
 
-const variants = {
-  default: "text-xs text-gray-400",
-  label: "text-xs text-gray-400 uppercase",
-} as const;
+type SmallVariant = "default" | "label" | "muted";
+
+const variantClass: Record<SmallVariant, string> = {
+  default: "text-xs text-gray-500",
+  muted: "text-xs text-gray-400",
+  label: "text-xs text-gray-400 uppercase tracking-wide",
+};
 
 interface SmallProps {
   children: React.ReactNode;
-  variant?: keyof typeof variants;
-  as?: "span" | "time" | "label";
+  variant?: SmallVariant;
+  as?: "span" | "time" | "label" | "p";
   className?: string;
 }
 
@@ -18,5 +21,9 @@ export function Small({
   as: Tag = "span",
   className,
 }: SmallProps) {
-  return <Tag className={cn(variants[variant], className)}>{children}</Tag>;
+  return (
+    <Tag className={cn("leading-body", variantClass[variant], className)}>
+      {children}
+    </Tag>
+  );
 }
