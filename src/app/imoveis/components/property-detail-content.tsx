@@ -11,12 +11,10 @@ import { Button } from "@/components/ui/button";
 import { useGlobalLoading } from "@/components/ui/global-loading-overlay";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { AgentInsightsPanel } from "@/components/deal/agent-insights-panel";
-import { MOCK_INTELLIGENCE } from "@/lib/mock-deal-data";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
 import { deleteProperty } from "../[id]/actions";
 import { SlotsTabContent } from "./slots-tab-content";
+import { AnnouncementSummary } from "./announcement-summary";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
@@ -106,14 +104,14 @@ function ImageCarousel({ images }: { images: PropertyImage[] }) {
 
       {/* Thumbnails */}
       {sorted.length > 1 && (
-        <div className="flex gap-1.5 mt-3">
+        <div className="flex flex-wrap gap-1.5 mt-3">
           {sorted.map((img, i) => (
             <button
               key={img.id}
               onClick={() => setCurrent(i)}
               className={cn(
-                "flex-1 aspect-[16/10] overflow-hidden bg-gray-100 cursor-pointer transition-opacity",
-                i === current ? "scale-95 border-2 border-gray-400" : "opacity-60 hover:opacity-100",
+                "w-20 aspect-[16/10] shrink-0 overflow-hidden bg-gray-100 cursor-pointer transition-opacity",
+                i === current ? "ring-2 ring-gray-900" : "opacity-60 hover:opacity-100",
               )}
             >
               <img
@@ -657,7 +655,6 @@ export function PropertyDetailContent({
   dict: Dictionary["dashboard"];
 }) {
   const locale = useLocale();
-  const [activeTab, setActiveTab] = useState("insights");
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const detailRouter = useRouter();
@@ -814,27 +811,6 @@ export function PropertyDetailContent({
             </Link>
           </div>
 
-          {/* Map card */}
-          <div className="border border-gray-200 bg-white overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100">
-              <Small variant="label">Localização</Small>
-            </div>
-            {hasCoords ? (
-              <iframe
-                title="Property location"
-                width="100%"
-                height="300"
-                className="border-0"
-                loading="lazy"
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.005}%2C${lat - 0.005}%2C${lng + 0.005}%2C${lat + 0.005}&layer=mapnik&marker=${lat}%2C${lng}`}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-48 text-sm text-gray-400">
-                Coordenadas não disponíveis
-              </div>
-            )}
-          </div>
-
           {/* Description card */}
           <div className="border border-gray-200 bg-white overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100">
@@ -845,6 +821,110 @@ export function PropertyDetailContent({
                 {property.description || "Sem descrição disponível."}
               </p>
             </div>
+          </div>
+
+          {/* Owners card */}
+          <div className="border border-gray-200 bg-white overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <Small variant="label">{dict.owners}</Small>
+            </div>
+            {property.owners.length > 0 ? (
+              <div className="divide-y divide-gray-100">
+                {property.owners.map((owner) => (
+                  <div key={owner.id} className="px-4 py-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500">
+                        {owner.full_name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{owner.full_name}</div>
+                        <div className="text-xs text-gray-400">{formatNif(owner.nif)}</div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      {owner.civil_status && (
+                        <div>
+                          <div className="text-xs text-gray-400">{dict.civilStatus}</div>
+                          <div className="text-sm text-gray-700">
+                            {civilStatusLabel[owner.civil_status] ?? owner.civil_status}
+                          </div>
+                        </div>
+                      )}
+                      {owner.date_of_birth && (
+                        <div>
+                          <div className="text-xs text-gray-400">{dict.dateOfBirth}</div>
+                          <div className="text-sm text-gray-700">{formatDateDMY(owner.date_of_birth)}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Document info — conditional per type */}
+                    {owner.document_type && (
+                      <div className="border-t border-gray-100 pt-3 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <div className="text-xs text-gray-400">{dict.documentType}</div>
+                            <div className="text-sm text-gray-700">
+                              {documentTypeLabel[owner.document_type] ?? owner.document_type}
+                            </div>
+                          </div>
+                          {owner.document_id && (
+                            <div>
+                              <div className="text-xs text-gray-400">{dict.documentId}</div>
+                              <div className="text-sm text-gray-700">{owner.document_id}</div>
+                            </div>
+                          )}
+                        </div>
+
+                        {(owner.document_type === "cartao_cidadao" || owner.document_type === "passport") && (
+                          <div className="grid grid-cols-2 gap-3">
+                            {owner.issued_by && (
+                              <div>
+                                <div className="text-xs text-gray-400">{dict.issuedBy}</div>
+                                <div className="text-sm text-gray-700">{owner.issued_by}</div>
+                              </div>
+                            )}
+                            {owner.document_type === "cartao_cidadao" && owner.issuing_district && (
+                              <div>
+                                <div className="text-xs text-gray-400">{dict.issuingDistrict}</div>
+                                <div className="text-sm text-gray-700">{owner.issuing_district}</div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {(owner.document_type === "visto_residencia" || owner.document_type === "titulo_residencia") && (
+                          <div className="grid grid-cols-2 gap-3">
+                            {owner.issued_by && (
+                              <div>
+                                <div className="text-xs text-gray-400">{dict.issuedBy}</div>
+                                <div className="text-sm text-gray-700">{owner.issued_by}</div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div>
+                      <div className="text-xs text-gray-400">{dict.ownerAddress}</div>
+                      <div className="text-sm text-gray-700">{owner.address}</div>
+                    </div>
+
+                    <OwnerContactSection
+                      owner={owner}
+                      propertyId={property.id}
+                      dict={dict}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="px-4 py-4 text-sm text-gray-400">
+                Sem proprietários registados.
+              </div>
+            )}
           </div>
 
           {/* Characteristics card */}
@@ -869,23 +949,22 @@ export function PropertyDetailContent({
             </div>
           </div>
 
-          {/* Agent Insights + Bookings Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList>
-              <TabsTrigger value="insights">{dict.agentInsights}</TabsTrigger>
-              <TabsTrigger value="bookings">{dict.bookings}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="insights">
-              <AgentInsightsPanel intelligence={MOCK_INTELLIGENCE} />
-            </TabsContent>
-            <TabsContent value="bookings">
+          {/* Announcement summary */}
+          <AnnouncementSummary property={property} dict={dict} />
+
+          {/* Bookings */}
+          <div className="border border-gray-200 bg-white overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <Small variant="label">{dict.bookings}</Small>
+            </div>
+            <div className="px-4 py-4">
               <SlotsTabContent
                 propertyId={property.id}
                 organizationId={property.organization_id}
                 dict={dict}
               />
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </div>
 
         {/* Right column — sidebar */}
@@ -922,106 +1001,23 @@ export function PropertyDetailContent({
               </div>
             </div>
 
-            {/* Owners card */}
+            {/* Map card */}
             <div className="border border-gray-200 bg-white overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100">
-                <Small variant="label">{dict.owners}</Small>
+                <Small variant="label">Localização</Small>
               </div>
-              {property.owners.length > 0 ? (
-                <div className="divide-y divide-gray-100">
-                  {property.owners.map((owner) => (
-                    <div key={owner.id} className="px-4 py-4 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500">
-                          {owner.full_name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{owner.full_name}</div>
-                          <div className="text-xs text-gray-400">{formatNif(owner.nif)}</div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        {owner.civil_status && (
-                          <div>
-                            <div className="text-xs text-gray-400">{dict.civilStatus}</div>
-                            <div className="text-sm text-gray-700">
-                              {civilStatusLabel[owner.civil_status] ?? owner.civil_status}
-                            </div>
-                          </div>
-                        )}
-                        {owner.date_of_birth && (
-                          <div>
-                            <div className="text-xs text-gray-400">{dict.dateOfBirth}</div>
-                            <div className="text-sm text-gray-700">{formatDateDMY(owner.date_of_birth)}</div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Document info — conditional per type */}
-                      {owner.document_type && (
-                        <div className="border-t border-gray-100 pt-3 space-y-3">
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <div className="text-xs text-gray-400">{dict.documentType}</div>
-                              <div className="text-sm text-gray-700">
-                                {documentTypeLabel[owner.document_type] ?? owner.document_type}
-                              </div>
-                            </div>
-                            {owner.document_id && (
-                              <div>
-                                <div className="text-xs text-gray-400">{dict.documentId}</div>
-                                <div className="text-sm text-gray-700">{owner.document_id}</div>
-                              </div>
-                            )}
-                          </div>
-
-                          {(owner.document_type === "cartao_cidadao" || owner.document_type === "passport") && (
-                            <div className="grid grid-cols-2 gap-3">
-                              {owner.issued_by && (
-                                <div>
-                                  <div className="text-xs text-gray-400">{dict.issuedBy}</div>
-                                  <div className="text-sm text-gray-700">{owner.issued_by}</div>
-                                </div>
-                              )}
-                              {owner.document_type === "cartao_cidadao" && owner.issuing_district && (
-                                <div>
-                                  <div className="text-xs text-gray-400">{dict.issuingDistrict}</div>
-                                  <div className="text-sm text-gray-700">{owner.issuing_district}</div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {(owner.document_type === "visto_residencia" || owner.document_type === "titulo_residencia") && (
-                            <div className="grid grid-cols-2 gap-3">
-                              {owner.issued_by && (
-                                <div>
-                                  <div className="text-xs text-gray-400">{dict.issuedBy}</div>
-                                  <div className="text-sm text-gray-700">{owner.issued_by}</div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      <div>
-                        <div className="text-xs text-gray-400">{dict.ownerAddress}</div>
-                        <div className="text-sm text-gray-700">{owner.address}</div>
-                      </div>
-
-                      <OwnerContactSection
-                        owner={owner}
-                        propertyId={property.id}
-                        dict={dict}
-                      />
-                    </div>
-                  ))}
-                </div>
+              {hasCoords ? (
+                <iframe
+                  title="Property location"
+                  width="100%"
+                  height="240"
+                  className="border-0"
+                  loading="lazy"
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.005}%2C${lat - 0.005}%2C${lng + 0.005}%2C${lat + 0.005}&layer=mapnik&marker=${lat}%2C${lng}`}
+                />
               ) : (
-                <div className="px-4 py-4 text-sm text-gray-400">
-                  Sem proprietários registados.
+                <div className="flex items-center justify-center h-48 text-sm text-gray-400">
+                  Coordenadas não disponíveis
                 </div>
               )}
             </div>

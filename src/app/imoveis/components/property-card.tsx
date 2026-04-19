@@ -1,27 +1,55 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { Building2 } from "lucide-react";
 import type { components } from "@/lib/types/estate-os-api";
 import type { Dictionary } from "@/lib/i18n";
 import { useLocale } from "@/components/dictionary-provider";
-import { Button } from "@/components/ui/button";
-import { cn, formatDate } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { cn, formatPrice } from "@/lib/utils";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
+type PropertyImageResponse = components["schemas"]["PropertyImageResponse"];
+type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
 
-function formatNif(nif: string) {
-  const digits = nif.replace(/\D/g, "");
-  return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6, 9)}`;
+const STATUS_BORDER: Record<PropertyStatus, string> = {
+  draft: "border-b-gray-400",
+  active: "border-b-emerald-500",
+  sold: "border-b-blue-500",
+  rented: "border-b-violet-500",
+  withdrawn: "border-b-red-400",
+};
+
+const STATUS_LABEL_KEY: Record<PropertyStatus, keyof Dictionary["dashboard"]> =
+  {
+    draft: "propertyStatusDraft",
+    active: "propertyStatusActive",
+    sold: "propertyStatusSold",
+    rented: "propertyStatusRented",
+    withdrawn: "propertyStatusWithdrawn",
+  };
+
+function primaryImage(
+  images: PropertyImageResponse[]
+): PropertyImageResponse | null {
+  if (images.length === 0) return null;
+  return [...images].sort((a, b) => a.display_order - b.display_order)[0];
 }
 
-const STATUS_STYLES: Record<PropertyStatus, string> = {
-  draft: "bg-gray-100 text-gray-600",
-  active: "bg-emerald-50 text-emerald-700",
-  sold: "bg-blue-50 text-blue-700",
-  rented: "bg-violet-50 text-violet-700",
-  withdrawn: "bg-red-50 text-red-600",
-};
+function matchingPrice(
+  prices: PropertyPriceResponse[],
+  listingType: PropertyResponse["listing_type"]
+): PropertyPriceResponse | null {
+  const matches = prices.filter((p) => p.listing_type === listingType);
+  if (matches.length === 0) return null;
+  return matches.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )[0];
+}
 
 export function PropertyCard({
   property,
@@ -31,11 +59,11 @@ export function PropertyCard({
   dict: Dictionary["dashboard"];
 }) {
   const locale = useLocale();
+
   const listingTypeLabel: Record<string, string> = {
     sale: dict.sale,
     purchase: dict.purchase,
   };
-
   const typologyLabel: Record<string, string> = {
     house: dict.house,
     apartment: dict.apartment,
@@ -43,111 +71,85 @@ export function PropertyCard({
     ruin: dict.ruin,
   };
 
-  const statusLabel: Record<PropertyStatus, string> = {
-    draft: dict.propertyStatusDraft,
-    active: dict.propertyStatusActive,
-    sold: dict.propertyStatusSold,
-    rented: dict.propertyStatusRented,
-    withdrawn: dict.propertyStatusWithdrawn,
-  };
+  const image = primaryImage(property.images);
+  const price = matchingPrice(property.prices, property.listing_type);
+  // Backend enum quirk: `purchase` is the rental value. Spec §3.
+  const isRental = property.listing_type === "purchase";
 
-  const chars = property.characteristics;
+  const firstOwner = property.owners[0];
+  const extraOwners = property.owners.length - 1;
+
+  const [imageBroken, setImageBroken] = useState(false);
+  const showImage = image && !imageBroken;
 
   return (
-    <div
+    <Link
+      href={`/imoveis/${property.id}`}
+      title={dict[STATUS_LABEL_KEY[property.status]]}
       className={cn(
-        "border border-gray-200 border-l-4 bg-white transition-shadow",
-        STATUS_STYLES[property.status]
-          ? `border-l-current`
-          : "border-l-gray-300",
-        property.status === "active" && "border-l-emerald-500",
-        property.status === "draft" && "border-l-gray-400",
-        property.status === "sold" && "border-l-blue-500",
-        property.status === "rented" && "border-l-violet-500",
-        property.status === "withdrawn" && "border-l-red-400",
+        "group flex w-full min-w-0 flex-row border border-gray-200 bg-white transition-colors hover:border-gray-400",
+        "border-b-4",
+        STATUS_BORDER[property.status]
       )}
     >
-      {/* Header */}
-      <div className="bg-gray-50 px-4 py-3 border-b border-gray-100">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-bold font-heading text-gray-900 truncate">
-            {property.address}
-          </h3>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className={cn("inline-block px-2 py-0.5 text-xs font-medium rounded", STATUS_STYLES[property.status])}>
-              {statusLabel[property.status]}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Type + Characteristics row */}
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-3 flex-wrap">
-        <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
-          {listingTypeLabel[property.listing_type] ?? property.listing_type}
-        </span>
-        <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
-          {typologyLabel[property.typology] ?? property.typology}
-        </span>
-
-        {chars && (
-          <div className="flex items-center gap-3 ml-auto text-xs text-gray-500">
-            {chars.area_in_m2 != null && (
-              <span className="flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                </svg>
-                {chars.area_in_m2} m²
-              </span>
-            )}
-            {chars.num_of_bedrooms != null && (
-              <span className="flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <path d="M2 4v16" /><path d="M2 8h18a2 2 0 0 1 2 2v10" /><path d="M2 17h20" /><path d="M6 8v9" />
-                </svg>
-                {chars.num_of_bedrooms}
-              </span>
-            )}
-            {chars.num_of_bathrooms != null && (
-              <span className="flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                  <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
-                  <line x1="10" x2="8" y1="5" y2="7" /><line x1="2" x2="22" y1="12" y2="12" />
-                  <line x1="7" x2="7" y1="19" y2="21" /><line x1="17" x2="17" y1="19" y2="21" />
-                </svg>
-                {chars.num_of_bathrooms}
-              </span>
-            )}
+      <div className="relative h-64 w-64 shrink-0 bg-gray-100 overflow-hidden">
+        {showImage ? (
+          <Image
+            src={image.download_url}
+            alt={property.address}
+            fill
+            sizes="256px"
+            className="object-cover"
+            unoptimized
+            onError={() => setImageBroken(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Building2 className="size-16 text-gray-300" />
           </div>
         )}
       </div>
 
-      {/* Owners */}
-      {property.owners.length > 0 && (
-        <div className="px-4 py-3 border-b border-gray-100 space-y-1">
-          <span className="text-xs text-gray-400">{dict.owners}</span>
-          {property.owners.map((owner) => (
-            <div key={owner.id} className="flex items-center gap-2 text-xs">
-              <span className="font-medium text-gray-700">{owner.full_name}</span>
-              <span className="inline-block px-2 py-0.5 font-medium rounded bg-blue-50 text-blue-600">
-                {formatNif(owner.nif)}
-              </span>
-            </div>
-          ))}
+      <div className="flex flex-1 min-w-0 flex-col gap-2 p-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
+            {listingTypeLabel[property.listing_type] ?? property.listing_type}
+          </span>
+          <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
+            {typologyLabel[property.typology] ?? property.typology}
+          </span>
         </div>
-      )}
 
-      {/* Footer */}
-      <div className="px-4 py-3 flex items-center justify-between">
-        <span className="text-xs text-gray-400">
-          {formatDate(property.created_at, locale)}
-        </span>
-        <Link href={`/imoveis/${property.id}`}>
-          <Button variant="steel">
+        {price && (
+          <p className="text-base font-bold font-heading text-gray-900">
+            {formatPrice(Number(price.amount), locale)}
+            {isRental && (
+              <span className="text-sm font-medium text-gray-500">
+                {dict.perMonth}
+              </span>
+            )}
+          </p>
+        )}
+
+        <p className="text-sm text-gray-700 truncate" title={property.address}>
+          {property.address}
+        </p>
+
+        {firstOwner && (
+          <p className="text-xs text-gray-500 truncate">
+            {firstOwner.full_name}
+            {extraOwners > 0 && ` +${extraOwners}`}
+          </p>
+        )}
+
+        <div className="mt-auto pt-2">
+          <span
+            className={cn(buttonVariants({ variant: "steel", size: "sm" }))}
+          >
             {dict.details}
-          </Button>
-        </Link>
+          </span>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

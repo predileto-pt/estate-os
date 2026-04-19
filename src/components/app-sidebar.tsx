@@ -59,7 +59,7 @@ function resolveItems(pathname: string, d: Dashboard): MenuItem[] {
   if (propertyMatch && propertyMatch[1] !== "novo") {
     const id = propertyMatch[1];
     return [
-      { key: "property", href: `/imoveis/${id}`, label: d.property, icon: Home },
+      { key: "overview", href: `/imoveis/${id}`, label: d.overview, icon: Home },
       { key: "images", href: `/imoveis/${id}/imagens`, label: d.images, icon: ImageIcon },
       { key: "documents", href: `/imoveis/${id}/documents`, label: d.documents, icon: FileText },
       { key: "analytics", href: `/imoveis/${id}/analytics`, label: d.analytics, icon: BarChart3 },
@@ -100,9 +100,23 @@ function resolveItems(pathname: string, d: Dashboard): MenuItem[] {
   ];
 }
 
-function isActive(pathname: string, href: string): boolean {
-  if (pathname === href || pathname === `${href}/`) return true;
-  return pathname.startsWith(`${href}/`);
+function matchLength(pathname: string, href: string): number {
+  if (pathname === href || pathname === `${href}/`) return href.length;
+  if (pathname.startsWith(`${href}/`)) return href.length;
+  return -1;
+}
+
+function resolveActiveKey(pathname: string, items: MenuItem[]): string | null {
+  let bestKey: string | null = null;
+  let bestLength = -1;
+  for (const item of items) {
+    const len = matchLength(pathname, item.href);
+    if (len > bestLength) {
+      bestLength = len;
+      bestKey = item.key;
+    }
+  }
+  return bestKey;
 }
 
 export function AppSidebar({ email }: { email: string }) {
@@ -111,6 +125,7 @@ export function AppSidebar({ email }: { email: string }) {
   const d = dict.dashboard;
 
   const items = resolveItems(pathname, d);
+  const activeKey = resolveActiveKey(pathname, items);
 
   return (
     <Sidebar collapsible="icon">
@@ -137,7 +152,7 @@ export function AppSidebar({ email }: { email: string }) {
                     className={isHidden ? "hidden" : undefined}
                   >
                     <SidebarMenuButton
-                      isActive={isActive(pathname, item.href)}
+                      isActive={item.key === activeKey}
                       render={<Link href={item.href} />}
                     >
                       <Icon className="size-4 text-gray-500" />

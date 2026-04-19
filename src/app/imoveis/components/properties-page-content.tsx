@@ -136,7 +136,7 @@ export function PropertiesPageContent({
         <div className="col-span-12 md:col-span-3 lg:col-span-2">
           <PropertyFilters dict={dict} filters={filters} onChange={setFilters} />
         </div>
-        <div className="col-span-12 md:col-span-9 lg:col-span-10">
+        <div className="col-span-12 md:col-span-9 lg:col-span-10 min-w-0">
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (

@@ -42,6 +42,8 @@
     "recentRequests": "Recent Requests",
     "viewAll": "View all",
     "noRecentActivity": "No recent activity.",
+    "perMonth": "/mo",
+    "announcementSummary": "Announcement summary",
     "draft": "Draft",
     "active": "Active",
     "sold": "Sold",
