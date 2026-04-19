@@ -3,17 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BarChart3,
   Building2,
   ClipboardList,
   CreditCard,
   FileSignature,
   FileStack,
-  FileText,
   Handshake,
-  Home,
-  Image as ImageIcon,
-  Settings,
   Shield,
   Squircle,
   User,
@@ -54,18 +49,9 @@ const HIDDEN_MAIN_ITEMS = new Set<string>([
 type Dashboard = ReturnType<typeof useDictionary>["dashboard"];
 
 function resolveItems(pathname: string, d: Dashboard): MenuItem[] {
-  // Property scope: /imoveis/[id] or /imoveis/[id]/<tab> (not "novo")
-  const propertyMatch = pathname.match(/^\/imoveis\/([^/]+)(?:\/|$)/);
-  if (propertyMatch && propertyMatch[1] !== "novo") {
-    const id = propertyMatch[1];
-    return [
-      { key: "overview", href: `/imoveis/${id}`, label: d.overview, icon: Home },
-      { key: "images", href: `/imoveis/${id}/imagens`, label: d.images, icon: ImageIcon },
-      { key: "documents", href: `/imoveis/${id}/documents`, label: d.documents, icon: FileText },
-      { key: "analytics", href: `/imoveis/${id}/analytics`, label: d.analytics, icon: BarChart3 },
-      { key: "settings", href: `/imoveis/${id}/settings`, label: d.settings, icon: Settings },
-    ];
-  }
+  // Property detail scope (/imoveis/[id]/*) is handled by PropertySubheader
+  // in src/app/imoveis/[id]/layout.tsx. The root sidebar falls through to
+  // Main scope on those routes.
 
   if (pathname.startsWith("/dashboard/settings")) {
     return [
