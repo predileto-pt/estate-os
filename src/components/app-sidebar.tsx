@@ -113,7 +113,7 @@ export function AppSidebar({ email }: { email: string }) {
   const items = resolveItems(pathname, d);
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
