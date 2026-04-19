@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary } from "@/lib/i18n";
 import { getLocaleFromCookie } from "@/lib/i18n-server";
-import { ContractsPageContent } from "../components/contracts-page-content";
+import { UploadContractContent } from "../../components/upload-contract-content";
 
-export default async function ContratosPage() {
+export default async function UploadContractPage() {
   const locale = await getLocaleFromCookie();
   const dict = await getDictionary(locale);
   const supabase = await createClient();
@@ -17,7 +17,7 @@ export default async function ContratosPage() {
 
   return (
     <Suspense>
-      <ContractsPageContent dict={dict.dashboard} />
+      <UploadContractContent dict={dict.dashboard} />
     </Suspense>
   );
 }

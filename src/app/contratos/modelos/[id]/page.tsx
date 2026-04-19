@@ -2,13 +2,13 @@ import { Suspense } from "react";
 import { getDictionary } from "@/lib/i18n";
 import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { coreGet } from "@/lib/api";
-import { ContractModelPageContent } from "../../../components/contract-model-page-content";
+import { ContractModelPageContent } from "../../components/contract-model-page-content";
 import {
   FAKE_CONTRACT_MODELS,
   FAKE_SOURCE_SECTIONS,
   FAKE_FIELD_EVIDENCE,
   FAKE_SECTION_ANALYSIS_BUNDLE,
-} from "../../../components/fake-data";
+} from "../../components/fake-data";
 import { notFound } from "next/navigation";
 import type { components } from "@/lib/types/contract-intelligence-service-api";
 import type { ContractModel, ReductoParseResult, UploadStatus } from "@/lib/db-types";

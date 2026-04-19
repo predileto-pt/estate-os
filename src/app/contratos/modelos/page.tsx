@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { getDictionary } from "@/lib/i18n";
 import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { coreGet } from "@/lib/api";
-import { ModelsPageContent } from "../../components/models-page-content";
-import { FAKE_CONTRACT_MODELS } from "../../components/fake-data";
+import { ModelsPageContent } from "../components/models-page-content";
+import { FAKE_CONTRACT_MODELS } from "../components/fake-data";
 import type { components } from "@/lib/types/contract-intelligence-service-api";
 import type { ContractModel } from "@/lib/db-types";
 

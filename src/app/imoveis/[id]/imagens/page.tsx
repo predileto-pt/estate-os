@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getProperty } from "../../novo/actions";
 import { ImageManager } from "./components/image-manager";
+import { MainWrapper } from "@/components/main-wrapper";
 
 export default async function PropertyImagesPage({
   params,
@@ -14,10 +15,10 @@ export default async function PropertyImagesPage({
   if (result.error !== null) notFound();
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
+    <MainWrapper>
       <Suspense>
         <ImageManager property={result.data} />
       </Suspense>
-    </main>
+    </MainWrapper>
   );
 }

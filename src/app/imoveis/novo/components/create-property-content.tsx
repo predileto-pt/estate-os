@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Dictionary } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { MainWrapper } from "@/components/main-wrapper";
 import { ManualForm } from "./manual-form";
 import { AIForm } from "./ai-form";
 
@@ -17,7 +18,7 @@ export function CreatePropertyContent({
   const [mode, setMode] = useState<Mode>("manual");
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
+    <MainWrapper>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-2" />
         <div className="col-span-8">
@@ -104,6 +105,6 @@ export function CreatePropertyContent({
         </div>
         <div className="col-span-2" />
       </div>
-    </main>
+    </MainWrapper>
   );
 }

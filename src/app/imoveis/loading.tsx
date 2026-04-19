@@ -1,6 +1,8 @@
+import { MainWrapper } from "@/components/main-wrapper";
+
 export default function ImoveisLoading() {
   return (
-    <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
+    <MainWrapper>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-2" />
         <div className="col-span-8">
@@ -30,6 +32,6 @@ export default function ImoveisLoading() {
         </div>
         <div className="col-span-2" />
       </div>
-    </main>
+    </MainWrapper>
   );
 }

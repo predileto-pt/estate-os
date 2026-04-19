@@ -1,12 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { components } from "@/lib/types/estate-os-api";
 import type { Dictionary } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { MainWrapper } from "@/components/main-wrapper";
 import { PropertyList } from "./property-list";
 import { ExtractionJobCard } from "./extraction-job-card";
+import {
+  PropertyFilters,
+  emptyFilters,
+  type PropertyFiltersState,
+} from "./property-filters";
 import { getExtractionJobs, getProperties } from "../novo/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
@@ -23,6 +29,7 @@ export function PropertiesPageContent({
   const [jobs, setJobs] = useState<ExtractionJobResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [, setDismissTick] = useState(0);
+  const [filters, setFilters] = useState<PropertyFiltersState>(() => emptyFilters());
 
   const dismissedJobIds = useRef(new Set<string>());
   const isFirstFetch = useRef(true);
@@ -97,22 +104,39 @@ export function PropertiesPageContent({
     return () => clearInterval(id);
   }, [hasActiveJobs, fetchData]);
 
-  return (
-    <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-2" />
-        <div className="col-span-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-lg font-bold font-heading">
-              {dict.imoveis}
-            </h1>
-            <Link href="/imoveis/novo">
-              <Button variant="primary">
-                {dict.addProperty}
-              </Button>
-            </Link>
-          </div>
+  const filtered = useMemo(() => {
+    return properties.filter((p) => {
+      if (filters.listingTypes.size > 0 && !filters.listingTypes.has(p.listing_type)) {
+        return false;
+      }
+      if (filters.typologies.size > 0 && !filters.typologies.has(p.typology)) {
+        return false;
+      }
+      if (filters.statuses.size > 0 && !filters.statuses.has(p.status)) {
+        return false;
+      }
+      return true;
+    });
+  }, [properties, filters]);
 
+  return (
+    <MainWrapper>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-lg font-bold font-heading">
+          {dict.imoveis}
+        </h1>
+        <Link href="/imoveis/novo">
+          <Button variant="primary">
+            {dict.addProperty}
+          </Button>
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 md:col-span-3 lg:col-span-2">
+          <PropertyFilters dict={dict} filters={filters} onChange={setFilters} />
+        </div>
+        <div className="col-span-12 md:col-span-9 lg:col-span-10">
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -134,25 +158,19 @@ export function PropertiesPageContent({
             </div>
           ) : (
             <>
-              {/* Extraction jobs */}
               {visibleJobs.length > 0 && (
                 <div className="space-y-3 mb-6">
                   {visibleJobs.map((job) => (
-                    <ExtractionJobCard
-                      key={job.id}
-                      job={job}
-                      dict={dict}
-                    />
+                    <ExtractionJobCard key={job.id} job={job} dict={dict} />
                   ))}
                 </div>
               )}
 
-              <PropertyList properties={properties} dict={dict} />
+              <PropertyList properties={filtered} dict={dict} />
             </>
           )}
         </div>
-        <div className="col-span-2" />
       </div>
-    </main>
+    </MainWrapper>
   );
 }

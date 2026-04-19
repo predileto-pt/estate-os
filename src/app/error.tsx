@@ -1,6 +1,7 @@
 "use client";
 
 import { useDictionary } from "@/components/dictionary-provider";
+import { MainWrapper } from "@/components/main-wrapper";
 
 export default function RouteError({
   error,
@@ -12,7 +13,7 @@ export default function RouteError({
   const dict = useDictionary();
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-16 lg:px-6">
+    <MainWrapper className="py-16">
       <div className="text-center space-y-4">
         <h1 className="text-lg font-bold text-gray-900">
           Something went wrong
@@ -27,6 +28,6 @@ export default function RouteError({
           {dict.dashboard.back}
         </button>
       </div>
-    </main>
+    </MainWrapper>
   );
 }

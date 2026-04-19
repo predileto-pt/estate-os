@@ -5,6 +5,7 @@ import { getLocaleFromCookie } from "@/lib/i18n-server";
 import { getProperty, getPropertyAmenities } from "../novo/actions";
 import { notFound } from "next/navigation";
 import { PropertyDetailContent } from "../components/property-detail-content";
+import { MainWrapper } from "@/components/main-wrapper";
 
 export default async function PropertyDetailPage({
   params,
@@ -31,7 +32,7 @@ export default async function PropertyDetailPage({
   const amenities = amenitiesResult.error === null ? amenitiesResult.data : [];
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-4 lg:px-6">
+    <MainWrapper>
       <Suspense>
         <PropertyDetailContent
           property={result.data}
@@ -39,6 +40,6 @@ export default async function PropertyDetailPage({
           dict={dict.dashboard}
         />
       </Suspense>
-    </main>
+    </MainWrapper>
   );
 }
