@@ -87,12 +87,12 @@ export function PropertyCard({
       href={`/imoveis/${property.id}`}
       title={dict[STATUS_LABEL_KEY[property.status]]}
       className={cn(
-        "group flex w-full min-w-0 flex-row border border-gray-200 bg-white transition-colors hover:border-gray-400",
-        "border-b-4",
+        "group flex w-full min-w-0 flex-row border border-gray-200 bg-white transition-colors ring-offset-1 ring-offset-transparent hover:ring-offset-gray-400 rounded",
+        "shadow border-b-4",
         STATUS_BORDER[property.status]
       )}
     >
-      <div className="relative h-64 w-64 shrink-0 bg-gray-100 overflow-hidden">
+      <div className="relative h-64 w-64 shrink-0 bg-gray-100 overflow-hidden rounded-tl rounded-bl">
         {showImage ? (
           <Image
             src={image.download_url}

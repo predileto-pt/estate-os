@@ -29,7 +29,9 @@ export function PropertiesPageContent({
   const [jobs, setJobs] = useState<ExtractionJobResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [, setDismissTick] = useState(0);
-  const [filters, setFilters] = useState<PropertyFiltersState>(() => emptyFilters());
+  const [filters, setFilters] = useState<PropertyFiltersState>(() =>
+    emptyFilters()
+  );
 
   const dismissedJobIds = useRef(new Set<string>());
   const isFirstFetch = useRef(true);
@@ -94,7 +96,10 @@ export function PropertiesPageContent({
   // Poll while there are active jobs
   const visibleJobs = jobs.filter((j) => !dismissedJobIds.current.has(j.id));
   const hasActiveJobs = jobs.some(
-    (j) => j.status === "pending" || j.status === "processing" || j.status === "retrying",
+    (j) =>
+      j.status === "pending" ||
+      j.status === "processing" ||
+      j.status === "retrying"
   );
 
   useEffect(() => {
@@ -106,7 +111,10 @@ export function PropertiesPageContent({
 
   const filtered = useMemo(() => {
     return properties.filter((p) => {
-      if (filters.listingTypes.size > 0 && !filters.listingTypes.has(p.listing_type)) {
+      if (
+        filters.listingTypes.size > 0 &&
+        !filters.listingTypes.has(p.listing_type)
+      ) {
         return false;
       }
       if (filters.typologies.size > 0 && !filters.typologies.has(p.typology)) {
@@ -122,28 +130,25 @@ export function PropertiesPageContent({
   return (
     <MainWrapper>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-lg font-bold font-heading">
-          {dict.imoveis}
-        </h1>
+        <h1 className="text-lg font-bold font-heading">{dict.imoveis}</h1>
         <Link href="/imoveis/novo">
-          <Button variant="primary">
-            {dict.addProperty}
-          </Button>
+          <Button variant="primary">{dict.addProperty}</Button>
         </Link>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 md:col-span-3 lg:col-span-2">
-          <PropertyFilters dict={dict} filters={filters} onChange={setFilters} />
+        <div className="col-span-12 md:col-span-3 lg:col-span-2 bg-gray-100 p-4">
+          <PropertyFilters
+            dict={dict}
+            filters={filters}
+            onChange={setFilters}
+          />
         </div>
-        <div className="col-span-12 md:col-span-9 lg:col-span-10 min-w-0">
+        <div className="col-span-12 md:col-span-8 lg:col-span-8 min-w-0">
           {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="border border-gray-100 p-4 space-y-3"
-                >
+                <div key={i} className="border border-gray-100 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="h-4 w-2/5 bg-gray-200 rounded animate-pulse" />
                     <div className="h-5 w-20 bg-gray-200 rounded-full animate-pulse" />
