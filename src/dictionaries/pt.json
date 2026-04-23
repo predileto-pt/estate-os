@@ -81,6 +81,8 @@
     "startTrial": "Iniciar teste gratuito de 7 dias",
     "manageBilling": "Gerir faturação",
     "trialActive": "Teste ativo",
+    "trial": "Teste",
+    "daysLeft": "{count}d restantes",
     "onlyAdminsCanBill": "Só os proprietários e administradores podem gerir a faturação.",
     "finalisingSubscription": "A finalizar a sua subscrição…",
     "trialStarted": "Bem-vindo! O seu teste gratuito de 7 dias começou.",

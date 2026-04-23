@@ -191,6 +191,13 @@ function planLabel(plan: PlanKey, d: Dashboard): string {
  * handle. Hidden while the first fetch is in flight so the layout doesn't
  * shift when it resolves.
  */
+function daysUntil(iso: string | null | undefined): number | null {
+  if (!iso) return null;
+  const endMs = new Date(iso).getTime();
+  if (Number.isNaN(endMs)) return null;
+  return Math.max(0, Math.ceil((endMs - Date.now()) / 86_400_000));
+}
+
 function UpgradeEntry({ dictionary: d }: { dictionary: Dashboard }) {
   const { data, isLoading } = useSubscription();
   if (isLoading) {
@@ -198,6 +205,12 @@ function UpgradeEntry({ dictionary: d }: { dictionary: Dashboard }) {
   }
   const plan: PlanKey = data?.plan ?? "freemium";
   const isFreemium = plan === "freemium";
+  const isTrialing = data?.status === "trialing";
+  const trialDays = isTrialing ? daysUntil(data?.current_period_end) : null;
+  const trialLabel =
+    trialDays !== null
+      ? `${d.trial} · ${d.daysLeft.replace("{count}", String(trialDays))}`
+      : d.trial;
 
   return (
     <div className="flex flex-col gap-1 px-2 py-1">
@@ -216,12 +229,14 @@ function UpgradeEntry({ dictionary: d }: { dictionary: Dashboard }) {
         <span
           className={cn(
             "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium",
-            isFreemium
-              ? "bg-gray-100 text-gray-600"
-              : "bg-gray-900 text-white",
+            isTrialing
+              ? "bg-amber-100 text-amber-800"
+              : isFreemium
+                ? "bg-gray-100 text-gray-600"
+                : "bg-gray-900 text-white",
           )}
         >
-          {planLabel(plan, d)}
+          {isTrialing ? trialLabel : planLabel(plan, d)}
         </span>
       </div>
     </div>

@@ -81,6 +81,8 @@
     "startTrial": "Start 7-day free trial",
     "manageBilling": "Manage billing",
     "trialActive": "Trial active",
+    "trial": "Trial",
+    "daysLeft": "{count}d left",
     "onlyAdminsCanBill": "Only owners and admins can manage billing.",
     "finalisingSubscription": "Finalising your subscription…",
     "trialStarted": "Welcome! Your 7-day trial has started.",
