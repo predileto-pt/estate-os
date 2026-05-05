@@ -1,6 +1,6 @@
 "use server";
 
-import { coreGet, corePost, corePostAction, coreDelete, ApiError } from "@/lib/api";
+import { coreGet, corePost, corePostAction, corePatch, coreDelete, ApiError } from "@/lib/api";
 import type { ActionResult, MutationResult, PropertyResponse } from "@/lib/api";
 
 export async function deleteProperty(
@@ -20,6 +20,21 @@ export async function publishProperty(
   try {
     const data = await corePostAction<PropertyResponse>(
       `/api/v1/admin/properties/${propertyId}/publish`,
+    );
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
+export async function updatePropertyAddress(
+  propertyId: string,
+  address: string,
+): Promise<ActionResult<PropertyResponse>> {
+  try {
+    const data = await corePatch<PropertyResponse>(
+      `/api/v1/admin/properties/${propertyId}/address`,
+      { address },
     );
     return { error: null, data };
   } catch (err) {

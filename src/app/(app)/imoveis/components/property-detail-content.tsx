@@ -12,17 +12,19 @@ import { useGlobalLoading } from "@/components/ui/global-loading-overlay";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
-import { deleteProperty, publishProperty } from "../[id]/actions";
+import { deleteProperty, publishProperty, updatePropertyAddress } from "../[id]/actions";
 import { SlotsTabContent } from "./slots-tab-content";
 import { AnnouncementSummary } from "./announcement-summary";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
-type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
+type PropertyPriceResponse =
+  components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"];
 type PropertyAmenityResponse = components["schemas"]["PropertyAmenityResponse"];
 type AmenityCategory = components["schemas"]["AmenityCategory"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
-type ListingType = components["schemas"]["ListingType"];
+type ListingType =
+  components["schemas"]["properties__domain__models__property__ListingType"];
 type Typology = components["schemas"]["Typology"];
 
 function formatNif(nif: string) {
@@ -659,8 +661,44 @@ export function PropertyDetailContent({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [addressDraft, setAddressDraft] = useState(property.address);
+  const [addressError, setAddressError] = useState<string | null>(null);
+  const [isSavingAddress, startSaveAddress] = useTransition();
   const detailRouter = useRouter();
   const globalLoading = useGlobalLoading();
+
+  const handleEditAddress = () => {
+    setAddressDraft(property.address);
+    setAddressError(null);
+    setIsEditingAddress(true);
+  };
+
+  const handleCancelAddress = () => {
+    setIsEditingAddress(false);
+    setAddressError(null);
+  };
+
+  const handleSaveAddress = () => {
+    const trimmed = addressDraft.trim();
+    if (!trimmed) {
+      setAddressError("Endereço não pode estar vazio");
+      return;
+    }
+    if (trimmed === property.address) {
+      setIsEditingAddress(false);
+      return;
+    }
+    startSaveAddress(async () => {
+      const result = await updatePropertyAddress(property.id, trimmed);
+      if (result.error) {
+        setAddressError(result.error);
+        return;
+      }
+      setIsEditingAddress(false);
+      detailRouter.refresh();
+    });
+  };
 
   const handlePublishProperty = async () => {
     setPublishError(null);
@@ -772,21 +810,57 @@ export function PropertyDetailContent({
           {dict.imoveis}
         </Link>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold font-heading text-gray-900">
-              {property.address}
-            </h1>
-            {property.status === "active" && (
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-              </span>
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {isEditingAddress ? (
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <input
+                  type="text"
+                  value={addressDraft}
+                  onChange={(e) => setAddressDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveAddress();
+                    if (e.key === "Escape") handleCancelAddress();
+                  }}
+                  autoFocus
+                  disabled={isSavingAddress}
+                  className="flex-1 min-w-0 text-lg font-bold font-heading text-gray-900 px-2 py-0.5 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <Button variant="primary" onClick={handleSaveAddress} disabled={isSavingAddress}>
+                  {isSavingAddress ? "..." : "Guardar"}
+                </Button>
+                <Button variant="steel" onClick={handleCancelAddress} disabled={isSavingAddress}>
+                  Cancelar
+                </Button>
+              </div>
+            ) : (
+              <>
+                <h1 className="text-lg font-bold font-heading text-gray-900 truncate">
+                  {property.address}
+                </h1>
+                <button
+                  type="button"
+                  onClick={handleEditAddress}
+                  className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer shrink-0"
+                  aria-label="Editar endereço"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    <path d="m15 5 4 4" />
+                  </svg>
+                </button>
+                {property.status === "active" && (
+                  <span className="relative flex h-2.5 w-2.5 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+                  </span>
+                )}
+                <span className={cn("inline-block px-2 py-0.5 text-xs font-medium rounded shrink-0", STATUS_STYLES[property.status])}>
+                  {statusLabel[property.status]}
+                </span>
+              </>
             )}
-            <span className={cn("inline-block px-2 py-0.5 text-xs font-medium rounded", STATUS_STYLES[property.status])}>
-              {statusLabel[property.status]}
-            </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className={cn("flex items-center gap-2", isEditingAddress && "hidden")}>
             {property.status === "draft" && (
               <Button
                 variant="primary"
@@ -821,6 +895,9 @@ export function PropertyDetailContent({
         )}
         {publishError && (
           <p className="mt-2 text-xs text-red-600">{publishError}</p>
+        )}
+        {addressError && (
+          <p className="mt-2 text-xs text-red-600">{addressError}</p>
         )}
       </div>
 
