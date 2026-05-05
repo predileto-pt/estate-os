@@ -70,6 +70,28 @@ export async function corePost<T>(
   return res.json();
 }
 
+export async function corePostAction<T>(
+  path: string,
+  params?: Record<string, string>,
+  body?: unknown,
+): Promise<T> {
+  const { headers, organizationId } = await getAuthContext();
+  const url = new URL(`${API_URL}${path}`);
+  url.searchParams.set("organization_id", organizationId);
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(key, value);
+    }
+  }
+
+  const res = await fetchWithAuthRetry(url.toString(), headers, {
+    method: "POST",
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
+  if (!res.ok) throw await parseApiError(res);
+  return res.json();
+}
+
 export async function coreAuthPost<T>(
   path: string,
   body: unknown,

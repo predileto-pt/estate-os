@@ -12,7 +12,7 @@ import { useGlobalLoading } from "@/components/ui/global-loading-overlay";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
-import { deleteProperty } from "../[id]/actions";
+import { deleteProperty, publishProperty } from "../[id]/actions";
 import { SlotsTabContent } from "./slots-tab-content";
 import { AnnouncementSummary } from "./announcement-summary";
 
@@ -657,8 +657,27 @@ export function PropertyDetailContent({
   const locale = useLocale();
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const detailRouter = useRouter();
   const globalLoading = useGlobalLoading();
+
+  const handlePublishProperty = async () => {
+    setPublishError(null);
+    setIsPublishing(true);
+    globalLoading.show("A publicar imóvel...");
+    try {
+      const result = await publishProperty(property.id);
+      if (result.error) {
+        setPublishError(result.error);
+        return;
+      }
+      detailRouter.refresh();
+    } finally {
+      globalLoading.hide();
+      setIsPublishing(false);
+    }
+  };
 
   const handleDeleteProperty = async () => {
     if (
@@ -768,12 +787,23 @@ export function PropertyDetailContent({
             </span>
           </div>
           <div className="flex items-center gap-2">
-            {(property.status === "draft" || property.status === "active") && (
+            {property.status === "draft" && (
               <Button
-                variant={property.status === "draft" ? "primary" : "steel"}
-                onClick={() => {/* TODO: wire to PATCH /api/v1/properties/{id} when available */}}
+                variant="primary"
+                onClick={handlePublishProperty}
+                disabled={isPublishing}
               >
-                {property.status === "draft" ? dict.publish : dict.unpublish}
+                {isPublishing ? "..." : dict.publish}
+              </Button>
+            )}
+            {property.status === "active" && (
+              <Button
+                variant="steel"
+                onClick={() => {/* TODO: wire when backend exposes withdraw endpoint */}}
+                disabled
+                title="Withdraw endpoint not available yet"
+              >
+                {dict.unpublish}
               </Button>
             )}
             <Button
@@ -788,6 +818,9 @@ export function PropertyDetailContent({
         </div>
         {deleteError && (
           <p className="mt-2 text-xs text-red-600">{deleteError}</p>
+        )}
+        {publishError && (
+          <p className="mt-2 text-xs text-red-600">{publishError}</p>
         )}
       </div>
 

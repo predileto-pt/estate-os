@@ -75,8 +75,11 @@ export function PropertySubheader({ id }: { id: string }) {
   const activeKey = resolveActiveKey(pathname, items);
 
   return (
-    <nav aria-label={d.property} className="border-b border-gray-200 bg-white">
-      <ul className="flex items-center gap-1 overflow-x-auto px-4">
+    <nav
+      aria-label={d.property}
+      className="sticky top-0 z-20 border-b border-gray-200 bg-white"
+    >
+      <ul className="flex items-center gap-1 overflow-x-auto px-4 overflow-y-hidden">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = item.key === activeKey;
