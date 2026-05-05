@@ -5,12 +5,14 @@ export type ActionResult<T> = { error: string } | { error: null; data: T };
 export type MutationResult = { error: string } | { error: null };
 
 export type PropertyResponse = components["schemas"]["PropertyResponse"];
-export type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
+export type PropertyPriceResponse =
+  components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"];
 export type ExtractionJobResponse = components["schemas"]["ExtractionJobResponse"];
 export type UserResponse = components["schemas"]["UserResponse"];
 export type OrganizationResponse = components["schemas"]["OrganizationResponse"];
-export type UserWithOrganizationResponse =
-  components["schemas"]["UserWithOrganizationResponse"];
+export type MeResponse = components["schemas"]["MeResponse"];
+export type MembershipSummary =
+  components["schemas"]["identity__adapters__api__schemas__MembershipSummary"];
 
 export type PropertyAmenityResponse =
   components["schemas"]["PropertyAmenityResponse"];

@@ -30,8 +30,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Register user */
-        post: operations["register_api_v1_auth_register_post"];
+        /** Register admin account (user + organization + owner membership) */
+        post: operations["register_admin_api_v1_admin_auth_register_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -45,8 +45,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get authenticated user */
-        get: operations["get_me_api_v1_auth_me_get"];
+        /** Return the current user with their memberships */
+        get: operations["me_api_v1_admin_auth_me_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -55,22 +55,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/users/me": {
+    "/api/v1/admin/auth/profile": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get user profile */
-        get: operations["get_user_profile_api_v1_users_me_get"];
+        get?: never;
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Update user profile */
-        patch: operations["update_user_profile_api_v1_users_me_patch"];
+        /** Update the current user's profile */
+        patch: operations["update_profile_api_v1_admin_auth_profile_patch"];
+        trace?: never;
+    };
+    "/api/v1/portal/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register portal user */
+        post: operations["register_api_v1_portal_auth_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the current user with their memberships */
+        get: operations["me_api_v1_portal_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/auth/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the current user's profile */
+        patch: operations["update_profile_api_v1_portal_auth_profile_patch"];
         trace?: never;
     };
     "/api/v1/admin/organizations/{organization_id}": {
@@ -81,14 +131,14 @@ export interface paths {
             cookie?: never;
         };
         /** Get organization */
-        get: operations["get_organization_api_v1_organizations__organization_id__get"];
+        get: operations["get_organization_api_v1_admin_organizations__organization_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
         /** Update organization */
-        patch: operations["update_organization_api_v1_organizations__organization_id__patch"];
+        patch: operations["update_organization_api_v1_admin_organizations__organization_id__patch"];
         trace?: never;
     };
     "/api/v1/admin/memberships": {
@@ -99,7 +149,7 @@ export interface paths {
             cookie?: never;
         };
         /** List organization members */
-        get: operations["list_members_api_v1_memberships_get"];
+        get: operations["list_members_api_v1_admin_memberships_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -119,11 +169,11 @@ export interface paths {
         put?: never;
         post?: never;
         /** Remove member */
-        delete: operations["remove_member_api_v1_memberships__membership_id__delete"];
+        delete: operations["remove_member_api_v1_admin_memberships__membership_id__delete"];
         options?: never;
         head?: never;
         /** Update member role */
-        patch: operations["update_member_role_api_v1_memberships__membership_id__patch"];
+        patch: operations["update_member_role_api_v1_admin_memberships__membership_id__patch"];
         trace?: never;
     };
     "/api/v1/admin/invitations": {
@@ -134,10 +184,10 @@ export interface paths {
             cookie?: never;
         };
         /** List pending invitations */
-        get: operations["list_invitations_api_v1_invitations_get"];
+        get: operations["list_invitations_api_v1_admin_invitations_get"];
         put?: never;
         /** Invite user by email */
-        post: operations["invite_member_api_v1_invitations_post"];
+        post: operations["invite_member_api_v1_admin_invitations_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -155,78 +205,10 @@ export interface paths {
         put?: never;
         post?: never;
         /** Revoke invitation */
-        delete: operations["revoke_invitation_api_v1_invitations__invitation_id__delete"];
+        delete: operations["revoke_invitation_api_v1_admin_invitations__invitation_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/subscriptions/plans": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List subscription plans */
-        get: operations["list_plans_api_v1_subscriptions_plans_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/subscriptions/current": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get current subscription */
-        get: operations["get_current_subscription_api_v1_subscriptions_current_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/subscriptions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create subscription */
-        post: operations["create_subscription_api_v1_subscriptions_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/subscriptions/{subscription_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update subscription */
-        patch: operations["update_subscription_api_v1_subscriptions__subscription_id__patch"];
         trace?: never;
     };
     "/api/v1/admin/notifications": {
@@ -237,10 +219,10 @@ export interface paths {
             cookie?: never;
         };
         /** List notifications */
-        get: operations["list_notifications_api_v1_notifications_get"];
+        get: operations["list_notifications_api_v1_admin_notifications_get"];
         put?: never;
         /** Create notification */
-        post: operations["create_notification_api_v1_notifications_post"];
+        post: operations["create_notification_api_v1_admin_notifications_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -261,7 +243,92 @@ export interface paths {
         options?: never;
         head?: never;
         /** Mark notifications as read */
-        patch: operations["mark_notifications_read_api_v1_notifications_read_patch"];
+        patch: operations["mark_notifications_read_api_v1_admin_notifications_read_patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/billing/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List available subscription plans */
+        get: operations["list_plans_api_v1_admin_billing_plans_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/billing/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get current organization's subscription */
+        get: operations["get_current_subscription_api_v1_admin_billing_subscription_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/billing/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start a Stripe Checkout session for the current org */
+        post: operations["start_checkout_api_v1_admin_billing_checkout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/billing/portal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start a Stripe Customer Portal session */
+        post: operations["start_portal_api_v1_admin_billing_portal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/webhooks/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stripe webhook endpoint */
+        post: operations["stripe_webhook_api_v1_billing_webhooks_stripe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/admin/email/send": {
@@ -274,7 +341,24 @@ export interface paths {
         get?: never;
         put?: never;
         /** Send email */
-        post: operations["send_email_api_v1_email_send_post"];
+        post: operations["send_email_api_v1_admin_email_send_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/properties/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active properties (public) */
+        get: operations["list_active_properties_api_v1_admin_properties_active_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -289,10 +373,10 @@ export interface paths {
             cookie?: never;
         };
         /** List properties */
-        get: operations["list_properties_api_v1_properties__get"];
+        get: operations["list_properties_api_v1_admin_properties__get"];
         put?: never;
         /** Create property */
-        post: operations["create_property_api_v1_properties__post"];
+        post: operations["create_property_api_v1_admin_properties__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -307,7 +391,7 @@ export interface paths {
             cookie?: never;
         };
         /** List properties summary */
-        get: operations["list_properties_summary_api_v1_properties_summary_get"];
+        get: operations["list_properties_summary_api_v1_admin_properties_summary_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -324,9 +408,53 @@ export interface paths {
             cookie?: never;
         };
         /** Get property */
-        get: operations["get_property_api_v1_properties__property_id__get"];
+        get: operations["get_property_api_v1_admin_properties__property_id__get"];
         put?: never;
         post?: never;
+        /**
+         * Delete a property (hard delete)
+         * @description Permanently delete a property and all related data: owners, prices, images (including S3 objects), amenities, and extraction jobs. Only the organization's OWNER or ADMIN can perform this action.
+         */
+        delete: operations["delete_property_api_v1_admin_properties__property_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/properties/{property_id}/address": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update property address
+         * @description Replace a property's `address`. Strips surrounding whitespace; empty / whitespace-only inputs are rejected at the schema layer (422). On no-op (new value equal to current after normalization) returns the existing aggregate without bumping `aggregate_version` or emitting an event.
+         */
+        patch: operations["update_property_address_api_v1_admin_properties__property_id__address_patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/properties/{property_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a property to the public portal
+         * @description Flip a property from DRAFT or WITHDRAWN to ACTIVE and broadcast PROPERTY_PUBLISHED.v1 so the listings context picks it up. Only the organization's OWNER or ADMIN can perform this action.
+         */
+        post: operations["publish_property_api_v1_admin_properties__property_id__publish_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -341,10 +469,10 @@ export interface paths {
             cookie?: never;
         };
         /** List property owners */
-        get: operations["list_property_owners_api_v1_property_owners__get"];
+        get: operations["list_property_owners_api_v1_admin_property_owners__get"];
         put?: never;
         /** Create property owner */
-        post: operations["create_property_owner_api_v1_property_owners__post"];
+        post: operations["create_property_owner_api_v1_admin_property_owners__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -361,7 +489,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Extract property owner from document */
-        post: operations["extract_from_document_api_v1_property_owners_extract_from_document_post"];
+        post: operations["extract_from_document_api_v1_admin_property_owners_extract_from_document_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -376,7 +504,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get property owner */
-        get: operations["get_property_owner_api_v1_property_owners__owner_id__get"];
+        get: operations["get_property_owner_api_v1_admin_property_owners__owner_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -399,7 +527,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** Update property owner contact info */
-        patch: operations["update_property_owner_contact_api_v1_property_owners__owner_id__contact_patch"];
+        patch: operations["update_property_owner_contact_api_v1_admin_property_owners__owner_id__contact_patch"];
         trace?: never;
     };
     "/api/v1/admin/property-prices/": {
@@ -410,10 +538,10 @@ export interface paths {
             cookie?: never;
         };
         /** List property prices */
-        get: operations["list_property_prices_api_v1_property_prices__get"];
+        get: operations["list_property_prices_api_v1_admin_property_prices__get"];
         put?: never;
         /** Create property price */
-        post: operations["create_property_price_api_v1_property_prices__post"];
+        post: operations["create_property_price_api_v1_admin_property_prices__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -430,7 +558,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Generate presigned upload URLs for property images */
-        post: operations["presign_image_uploads_api_v1_property_images_presign_post"];
+        post: operations["presign_image_uploads_api_v1_admin_property_images_presign_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -447,7 +575,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Record property image metadata after upload */
-        post: operations["record_property_image_api_v1_property_images__post"];
+        post: operations["record_property_image_api_v1_admin_property_images__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -465,7 +593,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** Delete a property image */
-        delete: operations["delete_property_image_api_v1_property_images__image_id__delete"];
+        delete: operations["delete_property_image_api_v1_admin_property_images__image_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -480,7 +608,7 @@ export interface paths {
         };
         get?: never;
         /** Reorder property images */
-        put: operations["reorder_property_images_api_v1_property_images_reorder_put"];
+        put: operations["reorder_property_images_api_v1_admin_property_images_reorder_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -496,7 +624,7 @@ export interface paths {
             cookie?: never;
         };
         /** List property amenities */
-        get: operations["get_property_amenities_api_v1_property_amenities__get"];
+        get: operations["get_property_amenities_api_v1_admin_property_amenities__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -515,7 +643,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Trigger amenity discovery for a property */
-        post: operations["discover_property_amenities_api_v1_property_amenities_discover_post"];
+        post: operations["discover_property_amenities_api_v1_admin_property_amenities_discover_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -532,7 +660,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Get presigned S3 URLs for document upload */
-        post: operations["generate_upload_urls_api_v1_extraction_jobs_presign_post"];
+        post: operations["generate_upload_urls_api_v1_admin_extraction_jobs_presign_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -547,10 +675,10 @@ export interface paths {
             cookie?: never;
         };
         /** List extraction jobs */
-        get: operations["list_extraction_jobs_api_v1_extraction_jobs__get"];
+        get: operations["list_extraction_jobs_api_v1_admin_extraction_jobs__get"];
         put?: never;
         /** Submit extraction job after uploading documents to S3 */
-        post: operations["submit_extraction_api_v1_extraction_jobs__post"];
+        post: operations["submit_extraction_api_v1_admin_extraction_jobs__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -567,7 +695,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Submit batch extraction job (property docs + ID docs) */
-        post: operations["submit_batch_extraction_api_v1_extraction_jobs_batch_post"];
+        post: operations["submit_batch_extraction_api_v1_admin_extraction_jobs_batch_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -584,7 +712,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Retry a failed extraction job */
-        post: operations["retry_extraction_job_api_v1_extraction_jobs__job_id__retry_post"];
+        post: operations["retry_extraction_job_api_v1_admin_extraction_jobs__job_id__retry_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -599,9 +727,633 @@ export interface paths {
             cookie?: never;
         };
         /** Get extraction job status */
-        get: operations["get_extraction_job_api_v1_extraction_jobs__job_id__get"];
+        get: operations["get_extraction_job_api_v1_admin_extraction_jobs__job_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active properties with filters */
+        get: operations["list_properties_api_v1_listings_properties_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/properties/{property_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a single active property by ID */
+        get: operations["get_property_api_v1_listings_properties__property_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/submissions/uploads/presign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get presigned S3 URLs for document uploads */
+        post: operations["presign_uploads_api_v1_portal_submissions_uploads_presign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit applicant documents for screening */
+        post: operations["create_submission_api_v1_portal_submissions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/submissions/{applicant_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get screening status for a submission */
+        get: operations["get_screening_status_api_v1_portal_submissions__applicant_id__status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/intake-form-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List intake form requests for an agency */
+        get: operations["list_intake_form_requests_api_v1_admin_intake_form_requests_get"];
+        put?: never;
+        /** Create an intake form request */
+        post: operations["create_intake_form_request_api_v1_admin_intake_form_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/intake-form-requests/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get an intake form request by ID */
+        get: operations["get_intake_form_request_api_v1_admin_intake_form_requests__request_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/applicants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List applicants by organization */
+        get: operations["list_applicants_api_v1_admin_applicants_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/applicants/{applicant_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get applicant details with screening report */
+        get: operations["get_applicant_api_v1_admin_applicants__applicant_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Slots */
+        get: operations["list_slots_api_v1_admin_slots_get"];
+        put?: never;
+        /** Create Slot */
+        post: operations["create_slot_api_v1_admin_slots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/slots/{slot_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Slot */
+        get: operations["get_slot_api_v1_admin_slots__slot_id__get"];
+        put?: never;
+        post?: never;
+        /** Cancel Slot */
+        delete: operations["cancel_slot_api_v1_admin_slots__slot_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Bookings */
+        get: operations["list_bookings_api_v1_admin_bookings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/bookings/{booking_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Booking */
+        get: operations["get_booking_api_v1_admin_bookings__booking_id__get"];
+        put?: never;
+        post?: never;
+        /** Cancel Booking */
+        delete: operations["cancel_booking_api_v1_admin_bookings__booking_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/booking-invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Booking Invitation */
+        post: operations["create_booking_invitation_api_v1_admin_booking_invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/properties/{property_id}/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Available Slots */
+        get: operations["list_available_slots_api_v1_portal_properties__property_id__slots_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Booking
+         * @description Create a booking using a booking invitation token (not Supabase JWT).
+         */
+        post: operations["create_booking_api_v1_portal_bookings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/bookings/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Applicant Bookings */
+        get: operations["list_applicant_bookings_api_v1_portal_bookings_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/source-documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List source documents
+         * @description Returns a summary list of all source documents with contract name, page count, and section count.
+         */
+        get: operations["list_documents_api_v1_admin_contracts_source_documents_get"];
+        put?: never;
+        /**
+         * Upload a source document
+         * @description Accepts a PDF or DOCX file, stores it in S3, computes a content hash for deduplication, and creates a `ContractSourceDocument` record with status `uploaded`.
+         */
+        post: operations["upload_api_v1_admin_contracts_source_documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/source-documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a source document
+         * @description Returns the full metadata for a single source document, including current upload status.
+         */
+        get: operations["get_document_api_v1_admin_contracts_source_documents__document_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/source-documents/{document_id}/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get source document detail with parse data
+         * @description Returns full document metadata including the raw Reducto parse output JSON.
+         */
+        get: operations["get_document_detail_api_v1_admin_contracts_source_documents__document_id__detail_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/source-documents/{document_id}/parse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request parsing of a source document
+         * @description Enqueues an async parse job (OCR + layout analysis) for the given document. The document is split into ordered `SourceSection` rows once parsing completes.
+         */
+        post: operations["parse_api_v1_admin_contracts_source_documents__document_id__parse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/source-documents/{document_id}/extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request extraction from a source document
+         * @description Enqueues an async extraction job that uses an LLM to pull structured field evidence from each parsed section. Results are stored as `SourceFieldEvidence` rows.
+         */
+        post: operations["extract_api_v1_admin_contracts_source_documents__document_id__extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/source-documents/{document_id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Retry a failed document
+         * @description Resets a FAILED document back to UPLOADED status and re-publishes an ingestion message to SQS so the worker will re-process it.
+         */
+        post: operations["retry_document_api_v1_admin_contracts_source_documents__document_id__retry_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/review/source-documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get review bundle for a source document
+         * @description Returns the document's parsed sections together with all extracted field evidence so that a reviewer can inspect, accept, or correct them in one view.
+         */
+        get: operations["get_review_bundle_api_v1_admin_contracts_review_source_documents__document_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/review/source-sections/{section_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update source section review
+         * @description Sets the review status of a parsed section (e.g. `accepted`, `corrected`, `rejected`) and optionally provides a corrected `normalized_text`.
+         */
+        patch: operations["update_section_review_api_v1_admin_contracts_review_source_sections__section_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/review/source-field-evidence/{evidence_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update field evidence review
+         * @description Sets the review status of an extracted field (e.g. `accepted`, `corrected`) and optionally provides a `corrected_value_json`.
+         */
+        patch: operations["update_field_evidence_review_api_v1_admin_contracts_review_source_field_evidence__evidence_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/template-versions/from-source/{source_document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create template version from source document
+         * @description Promotes a fully reviewed source document into a new template version. Copies sections as `TemplateSection` rows with Jinja render slots, creates field bindings, conditions, and party slots derived from the extraction results.
+         */
+        post: operations["create_from_source_api_v1_admin_contracts_template_versions_from_source__source_document_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/template-versions/{version_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a template version
+         * @description Returns the full template version record including its schema, rules, and status.
+         */
+        get: operations["get_version_api_v1_admin_contracts_template_versions__version_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update a template version
+         * @description Partially updates a draft template version. Allowed fields: `review_notes`, `status`, `schema_json`, `computed_rules_json`.
+         */
+        patch: operations["update_version_api_v1_admin_contracts_template_versions__version_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/template-versions/template-sections/{section_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update a template section
+         * @description Partially updates an individual template section -- title, render template, condition expression, optionality, repeatability, or status.
+         */
+        patch: operations["update_section_api_v1_admin_contracts_template_versions_template_sections__section_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/template-versions/{version_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a template version
+         * @description Transitions a template version from `draft` / `review` to `approved` and sets it as the current version on the parent `ContractTemplate`. Fails if the version is already published.
+         */
+        post: operations["publish_version_api_v1_admin_contracts_template_versions__version_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/generated-contracts/from-crm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create generated contract from CRM data
+         * @description Resolves CRM contact and property records, maps them onto the template version's field bindings and party slots, and creates a `GeneratedContract` in `draft` status.
+         */
+        post: operations["create_from_crm_api_v1_admin_contracts_generated_contracts_from_crm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/generated-contracts/{contract_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a generated contract
+         * @description Returns the full generated contract including its rendered schema and current status.
+         */
+        get: operations["get_contract_api_v1_admin_contracts_generated_contracts__contract_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/contracts/generated-contracts/{contract_id}/render": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Render a generated contract
+         * @description Renders each section of the generated contract through the Jinja template engine, produces a PDF artifact, stores it in S3, and returns the artifact metadata.
+         */
+        post: operations["render_contract_api_v1_admin_contracts_generated_contracts__contract_id__render_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -612,13 +1364,75 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AdminRegisterRequest */
+        AdminRegisterRequest: {
+            /** Name */
+            name: string;
+            /** Email */
+            email: string;
+            /** Organization Name */
+            organization_name?: string | null;
+            /**
+             * Phone Country Code
+             * @description E.g. +351
+             */
+            phone_country_code?: string | null;
+            /** Phone Number */
+            phone_number?: string | null;
+        };
+        /** AdminRegisterResponse */
+        AdminRegisterResponse: {
+            user: components["schemas"]["UserResponse"];
+            organization: components["schemas"]["OrganizationSummary"];
+            membership: components["schemas"]["organizations__adapters__api__routes__admin_auth__MembershipSummary"];
+            subscription: components["schemas"]["SubscriptionSummary"] | null;
+        };
         /**
          * AmenityCategory
          * @enum {string}
          */
         AmenityCategory: "hospital" | "bank" | "grocery" | "school" | "laundry" | "coffee_shop" | "pharmacy" | "gym" | "restaurant";
-        /** Body_extract_from_document_api_v1_property_owners_extract_from_document_post */
-        Body_extract_from_document_api_v1_property_owners_extract_from_document_post: {
+        /** ApplicantDetailResponse */
+        ApplicantDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Email */
+            email: string;
+            /** Phone */
+            phone?: string | null;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Form Request Id
+             * Format: uuid
+             */
+            form_request_id: string;
+            /** Listing Type */
+            listing_type: string;
+            /** Property Type */
+            property_type?: string | null;
+            /** Property Value */
+            property_value: number | null;
+            /** Monthly Rent */
+            monthly_rent: number | null;
+            /** Property Title */
+            property_title: string;
+            /** Property Address */
+            property_address: string;
+            /** Status */
+            status?: string | null;
+            screening_report?: components["schemas"]["ScreeningReportResponse"] | null;
+        };
+        /** Body_extract_from_document_api_v1_admin_property_owners_extract_from_document_post */
+        Body_extract_from_document_api_v1_admin_property_owners_extract_from_document_post: {
             /**
              * Property Id
              * Format: uuid
@@ -632,11 +1446,165 @@ export interface components {
             /** File */
             file: string;
         };
+        /** Body_upload_api_v1_admin_contracts_source_documents_post */
+        Body_upload_api_v1_admin_contracts_source_documents_post: {
+            /** File */
+            file: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             * @description ID of the owning organization.
+             */
+            organization_id: string;
+        };
+        /** BookingInvitationResponse */
+        BookingInvitationResponse: {
+            /** Token */
+            token: string;
+            /** Url */
+            url: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+        };
+        /** BookingResponse */
+        BookingResponse: {
+            /** Id */
+            id: string;
+            /** Slot Id */
+            slot_id: string;
+            /** Applicant Id */
+            applicant_id: string;
+            /** Property Id */
+            property_id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Status */
+            status: string;
+            /** Notes */
+            notes: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** CheckoutRequest */
+        CheckoutRequest: {
+            /**
+             * Plan
+             * @enum {string}
+             */
+            plan: "pro" | "enterprise";
+            /**
+             * Cadence
+             * @enum {string}
+             */
+            cadence: "monthly" | "yearly";
+        };
+        /** CheckoutResponse */
+        CheckoutResponse: {
+            /** Url */
+            url: string;
+            /** Session Id */
+            session_id: string;
+        };
         /**
          * CivilStatus
          * @enum {string}
          */
         CivilStatus: "single" | "married" | "divorced" | "widowed" | "civil_union" | "separated";
+        /** CreateBookingInvitationRequest */
+        CreateBookingInvitationRequest: {
+            /**
+             * Applicant Id
+             * Format: uuid
+             */
+            applicant_id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Email */
+            email: string;
+        };
+        /** CreateBookingRequest */
+        CreateBookingRequest: {
+            /**
+             * Slot Id
+             * Format: uuid
+             */
+            slot_id: string;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+        };
+        /**
+         * CreateGeneratedContractFromCRMRequest
+         * @description Payload to generate a new contract from CRM records.
+         */
+        CreateGeneratedContractFromCRMRequest: {
+            /**
+             * Template Version Id
+             * Format: uuid
+             * @description Template version to use for generation.
+             */
+            template_version_id: string;
+            /**
+             * Crm Contact Id
+             * @description CRM identifier of the contact (buyer/tenant).
+             */
+            crm_contact_id: string;
+            /**
+             * Crm Property Id
+             * @description CRM identifier of the property.
+             */
+            crm_property_id: string;
+            /**
+             * Organization Id
+             * @description Optional owning client ID.
+             */
+            organization_id?: string | null;
+        };
+        /** CreateIntakeFormRequestBody */
+        CreateIntakeFormRequestBody: {
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Applicant Name */
+            applicant_name: string;
+            /** Applicant Email */
+            applicant_email: string;
+            /** Property Id */
+            property_id: string;
+            listing_type: components["schemas"]["screening__domain__models__applicant__ListingType"];
+            property_type?: components["schemas"]["PropertyType"] | null;
+            /** Applicant Phone */
+            applicant_phone?: string | null;
+            /** Property Title */
+            property_title?: string | null;
+            /** Property Price */
+            property_price?: number | null;
+            /** Property Address */
+            property_address?: string | null;
+        };
         /** CreateNotificationRequest */
         CreateNotificationRequest: {
             /**
@@ -676,7 +1644,7 @@ export interface components {
              * @description Tax identification number (NIF), 9 digits
              */
             nif: string;
-            document_type: components["schemas"]["DocumentType"];
+            document_type: components["schemas"]["properties__domain__models__property_owner__DocumentType"];
             /** Document Id */
             document_id: string;
             /**
@@ -709,7 +1677,7 @@ export interface components {
              * @description Price amount in euros
              */
             amount: number | string;
-            listing_type: components["schemas"]["ListingType"];
+            listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
         };
         /** CreatePropertyRequest */
         CreatePropertyRequest: {
@@ -720,31 +1688,113 @@ export interface components {
             organization_id: string;
             /** Address */
             address: string;
-            listing_type: components["schemas"]["ListingType"];
+            listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
             typology: components["schemas"]["Typology"];
             /** Description */
             description?: string | null;
         };
-        /** CreateSubscriptionRequest */
-        CreateSubscriptionRequest: {
-            plan: components["schemas"]["SubscriptionPlan"];
-            type: components["schemas"]["SubscriptionType"];
-            /** @default active */
-            status: components["schemas"]["SubscriptionStatus"];
-            /** Stripe Subscription Id */
-            stripe_subscription_id?: string | null;
-            /** Stripe Price Id */
-            stripe_price_id?: string | null;
-            /** Current Period Start */
-            current_period_start?: string | null;
-            /** Current Period End */
-            current_period_end?: string | null;
+        /** CreateSlotRequest */
+        CreateSlotRequest: {
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Start Time
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * End Time
+             * Format: date-time
+             */
+            end_time: string;
+        };
+        /** CreateSubmissionRequest */
+        CreateSubmissionRequest: {
+            /** Nif */
+            nif: string;
+            /** Name */
+            name: string;
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Email */
+            email: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Form Request Id
+             * Format: uuid
+             */
+            form_request_id: string;
+            listing_type: components["schemas"]["screening__domain__models__applicant__ListingType"];
+            property_type: components["schemas"]["PropertyType"];
+            /** Terms Accepted */
+            terms_accepted: boolean;
+            /** Documents */
+            documents: components["schemas"]["UploadedDocumentSpec"][];
+            /** Phone */
+            phone?: string | null;
+            /** Property Value */
+            property_value?: number | null;
+            /** Monthly Rent */
+            monthly_rent?: number | null;
+            /**
+             * Property Title
+             * @default n/a
+             */
+            property_title: string;
+            /**
+             * Property Address
+             * @default n/a
+             */
+            property_address: string;
         };
         /**
-         * DocumentType
-         * @enum {string}
+         * CreateTemplateVersionFromSourceResponse
+         * @description Summary returned after promoting a source document into a template version.
          */
-        DocumentType: "cartao_cidadao" | "passport" | "visto_residencia" | "titulo_residencia";
+        CreateTemplateVersionFromSourceResponse: {
+            /**
+             * Id
+             * Format: uuid
+             * @description ID of the newly created template version.
+             */
+            id: string;
+            /**
+             * Contract Template Id
+             * Format: uuid
+             * @description Parent contract template ID.
+             */
+            contract_template_id: string;
+            /**
+             * Version Number
+             * @description Sequential version number within the template.
+             */
+            version_number: number;
+            /**
+             * Status
+             * @description Initial status (always `draft`).
+             */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** ExtractionJobResponse */
         ExtractionJobResponse: {
             /**
@@ -789,10 +1839,171 @@ export interface components {
          * @enum {string}
          */
         ExtractionJobStatus: "pending" | "processing" | "completed" | "failed" | "retrying";
+        /**
+         * FieldEvidenceRead
+         * @description A single extracted field value with its provenance.
+         */
+        FieldEvidenceRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Source Section Id
+             * @description Section this evidence was extracted from.
+             */
+            source_section_id?: string | null;
+            /**
+             * Field Key
+             * @description Canonical field key (e.g. `rent_amount`, `start_date`).
+             */
+            field_key: string;
+            /**
+             * Field Value Json
+             * @description Extracted value (JSON-typed).
+             */
+            field_value_json?: unknown;
+            /**
+             * Source Text
+             * @description Original text span the value was extracted from.
+             */
+            source_text?: string | null;
+            /**
+             * Page Number
+             * @description Page where the evidence was found.
+             */
+            page_number?: number | null;
+            /**
+             * Confidence
+             * @description Extraction confidence (0-1).
+             */
+            confidence?: string | null;
+            /**
+             * Review Status
+             * @description Review status: `pending`, `accepted`, `corrected`, or `rejected`.
+             */
+            review_status: string;
+            /**
+             * Corrected Value Json
+             * @description Reviewer-corrected value, if any.
+             */
+            corrected_value_json?: unknown;
+        };
+        /** FileUploadSpec */
+        FileUploadSpec: {
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            document_type: components["schemas"]["screening__domain__models__document__DocumentType"];
+        };
+        /**
+         * GeneratedContractRead
+         * @description Full metadata of a generated contract.
+         */
+        GeneratedContractRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Contract Template Id
+             * Format: uuid
+             * @description Parent contract template ID.
+             */
+            contract_template_id: string;
+            /**
+             * Template Version Id
+             * Format: uuid
+             * @description Template version used for generation.
+             */
+            template_version_id: string;
+            /** Organization Id */
+            organization_id?: string | null;
+            /** Crm Contact Id */
+            crm_contact_id?: string | null;
+            /** Crm Property Id */
+            crm_property_id?: string | null;
+            /**
+             * Status
+             * @description Lifecycle status: `draft`, `generated`, `reviewed`, `signed`, or `archived`.
+             */
+            status: string;
+            /**
+             * Input Payload Json
+             * @description Resolved input payload used for rendering.
+             */
+            input_payload_json: {
+                [key: string]: unknown;
+            };
+            /**
+             * Rendered Schema Json
+             * @description Rendered schema snapshot at generation time.
+             */
+            rendered_schema_json: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** IntakeFormRequestResponse */
+        IntakeFormRequestResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Applicant Name */
+            applicant_name: string;
+            /** Applicant Email */
+            applicant_email: string;
+            /** Applicant Phone */
+            applicant_phone: string | null;
+            /** Property Id */
+            property_id: string;
+            /** Listing Type */
+            listing_type: string;
+            /** Property Type */
+            property_type?: string | null;
+            /** Property Title */
+            property_title: string | null;
+            /** Property Price */
+            property_price: number | null;
+            /** Property Address */
+            property_address: string | null;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            submission?: components["schemas"]["SubmissionSummaryResponse"] | null;
         };
         /** InvitationResponse */
         InvitationResponse: {
@@ -837,15 +2048,57 @@ export interface components {
             email: string;
             role: components["schemas"]["MembershipRole"];
         };
-        /**
-         * ListingType
-         * @enum {string}
-         */
-        ListingType: "sale" | "purchase";
+        /** ListedPropertyResponse */
+        ListedPropertyResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Address */
+            address: string;
+            listing_type: components["schemas"]["listings__domain__models__ListingType"];
+            typology: components["schemas"]["Typology"];
+            /** Description */
+            description: string | null;
+            characteristics?: components["schemas"]["PropertyCharacteristicsResponse"] | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Prices */
+            prices: components["schemas"]["listings__adapters__api__schemas__PropertyPriceResponse"][];
+            /**
+             * Images
+             * @default []
+             */
+            images: components["schemas"]["listings__adapters__api__schemas__PropertyImageResponse"][];
+        };
         /** MarkNotificationsReadRequest */
         MarkNotificationsReadRequest: {
             /** Notification Ids */
             notification_ids: string[];
+        };
+        /** MeResponse */
+        MeResponse: {
+            user: components["schemas"]["UserResponse"];
+            /** Memberships */
+            memberships: components["schemas"]["identity__adapters__api__schemas__MembershipSummary"][];
         };
         /** MembershipResponse */
         MembershipResponse: {
@@ -957,6 +2210,44 @@ export interface components {
              */
             updated_at: string;
         };
+        /** OrganizationSummary */
+        OrganizationSummary: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string | null;
+            /** Nif */
+            nif: string | null;
+            /** Created At */
+            created_at: string;
+            /** Updated At */
+            updated_at: string;
+        };
+        /** PaginatedBookingsResponse */
+        PaginatedBookingsResponse: {
+            /** Bookings */
+            bookings: components["schemas"]["BookingResponse"][];
+            /** Total */
+            total: number;
+        };
+        /** PaginatedListingResponse */
+        PaginatedListingResponse: {
+            /** Items */
+            items: components["schemas"]["ListedPropertyResponse"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /** PaginatedSlotsResponse */
+        PaginatedSlotsResponse: {
+            /** Slots */
+            slots: components["schemas"]["SlotResponse"][];
+            /** Total */
+            total: number;
+        };
         /** PhoneResponse */
         PhoneResponse: {
             /** Country Code */
@@ -970,6 +2261,11 @@ export interface components {
             name: string;
             /** Label */
             label: string;
+        };
+        /** PortalResponse */
+        PortalResponse: {
+            /** Url */
+            url: string;
         };
         /** PresignFileSpec */
         PresignFileSpec: {
@@ -1030,6 +2326,16 @@ export interface components {
             /** Upload Url */
             upload_url: string;
         };
+        /** PresignedFileUpload */
+        PresignedFileUpload: {
+            /** Filename */
+            filename: string;
+            /** S3 Key */
+            s3_key: string;
+            /** Upload Url */
+            upload_url: string;
+            document_type: components["schemas"]["screening__domain__models__document__DocumentType"];
+        };
         /** PresignedImageFileResponse */
         PresignedImageFileResponse: {
             /**
@@ -1041,6 +2347,23 @@ export interface components {
             s3_key: string;
             /** Upload Url */
             upload_url: string;
+        };
+        /** PresignedUploadRequest */
+        PresignedUploadRequest: {
+            /**
+             * Form Request Id
+             * Format: uuid
+             */
+            form_request_id: string;
+            /** Files */
+            files: components["schemas"]["FileUploadSpec"][];
+        };
+        /** PresignedUploadResponse */
+        PresignedUploadResponse: {
+            /** Upload Id */
+            upload_id: string;
+            /** Files */
+            files: components["schemas"]["PresignedFileUpload"][];
         };
         /** PropertyAmenityResponse */
         PropertyAmenityResponse: {
@@ -1108,41 +2431,6 @@ export interface components {
             /** Has Pool */
             has_pool?: boolean | null;
         };
-        /** PropertyImageResponse */
-        PropertyImageResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Property Id
-             * Format: uuid
-             */
-            property_id: string;
-            /** S3 Key */
-            s3_key: string;
-            /** Filename */
-            filename: string;
-            /** Content Type */
-            content_type: string;
-            /** Size Bytes */
-            size_bytes: number;
-            /** Display Order */
-            display_order: number;
-            /** Download Url */
-            download_url: string;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
-            updated_at: string;
-        };
         /** PropertyOwnerResponse */
         PropertyOwnerResponse: {
             /**
@@ -1162,7 +2450,7 @@ export interface components {
             address: string;
             /** Nif */
             nif: string;
-            document_type: components["schemas"]["DocumentType"] | null;
+            document_type: components["schemas"]["properties__domain__models__property_owner__DocumentType"] | null;
             /** Document Id */
             document_id: string | null;
             /** Issued By */
@@ -1196,32 +2484,6 @@ export interface components {
              */
             updated_at: string;
         };
-        /** PropertyPriceResponse */
-        PropertyPriceResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Property Id
-             * Format: uuid
-             */
-            property_id: string;
-            /** Amount */
-            amount: string;
-            listing_type: components["schemas"]["ListingType"];
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
-            updated_at: string;
-        };
         /** PropertyResponse */
         PropertyResponse: {
             /**
@@ -1236,7 +2498,7 @@ export interface components {
             organization_id: string;
             /** Address */
             address: string;
-            listing_type: components["schemas"]["ListingType"];
+            listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
             typology: components["schemas"]["Typology"];
             status: components["schemas"]["PropertyStatus"];
             /** Description */
@@ -1259,12 +2521,12 @@ export interface components {
             /** Owners */
             owners: components["schemas"]["PropertyOwnerResponse"][];
             /** Prices */
-            prices: components["schemas"]["PropertyPriceResponse"][];
+            prices: components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"][];
             /**
              * Images
              * @default []
              */
-            images: components["schemas"]["PropertyImageResponse"][];
+            images: components["schemas"]["properties__adapters__api__schemas__PropertyImageResponse"][];
         };
         /**
          * PropertyStatus
@@ -1285,12 +2547,59 @@ export interface components {
             id: string;
             /** Address */
             address: string;
-            listing_type: components["schemas"]["ListingType"];
+            listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
             typology: components["schemas"]["Typology"];
             /** Price */
             price: string | null;
             /** Owners */
             owners: components["schemas"]["PropertySummaryOwnerResponse"][];
+        };
+        /**
+         * PropertyType
+         * @enum {string}
+         */
+        PropertyType: "APARTAMENTO" | "MORADIA" | "TERRENO";
+        /** PublicPropertyResponse */
+        PublicPropertyResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Address */
+            address: string;
+            listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
+            typology: components["schemas"]["Typology"];
+            status: components["schemas"]["PropertyStatus"];
+            /** Description */
+            description: string | null;
+            characteristics?: components["schemas"]["PropertyCharacteristicsResponse"] | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Prices */
+            prices: components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"][];
+            /**
+             * Images
+             * @default []
+             */
+            images: components["schemas"]["properties__adapters__api__schemas__PropertyImageResponse"][];
         };
         /** RecordPropertyImageRequest */
         RecordPropertyImageRequest: {
@@ -1324,8 +2633,6 @@ export interface components {
             name: string;
             /** Email */
             email: string;
-            /** Organization Name */
-            organization_name?: string | null;
             /**
              * Phone Country Code
              * @description E.g. +351
@@ -1333,6 +2640,33 @@ export interface components {
             phone_country_code?: string | null;
             /** Phone Number */
             phone_number?: string | null;
+        };
+        /**
+         * RenderGeneratedContractResponse
+         * @description Artifact metadata returned after rendering a contract to PDF.
+         */
+        RenderGeneratedContractResponse: {
+            /**
+             * Id
+             * Format: uuid
+             * @description Artifact ID.
+             */
+            id: string;
+            /**
+             * Artifact Type
+             * @description Artifact format (e.g. `pdf`).
+             */
+            artifact_type: string;
+            /**
+             * Storage Url
+             * @description S3 URL of the rendered artifact.
+             */
+            storage_url: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** ReorderPropertyImagesRequest */
         ReorderPropertyImagesRequest: {
@@ -1348,6 +2682,43 @@ export interface components {
             property_id: string;
             /** Image Ids */
             image_ids: string[];
+        };
+        /**
+         * RiskLevel
+         * @enum {string}
+         */
+        RiskLevel: "LOW" | "MEDIUM" | "HIGH";
+        /** ScreeningReportResponse */
+        ScreeningReportResponse: {
+            /**
+             * Applicant Id
+             * Format: uuid
+             */
+            applicant_id: string;
+            risk_level: components["schemas"]["RiskLevel"];
+            /** Identity Verified */
+            identity_verified: boolean;
+            /** Income Verified */
+            income_verified: boolean;
+            /** Dti Ratio */
+            dti_ratio: number;
+            /** Justification */
+            justification: string;
+            listing_type: components["schemas"]["screening__domain__models__applicant__ListingType"];
+            property_type?: components["schemas"]["PropertyType"] | null;
+            /** Average Monthly Income */
+            average_monthly_income: number;
+        };
+        /** ScreeningStatusResponse */
+        ScreeningStatusResponse: {
+            /**
+             * Applicant Id
+             * Format: uuid
+             */
+            applicant_id: string;
+            /** Status */
+            status: string;
+            report?: components["schemas"]["ScreeningReportResponse"] | null;
         };
         /** SendEmailRequest */
         SendEmailRequest: {
@@ -1369,48 +2740,28 @@ export interface components {
              */
             from_email: string;
         };
-        /** SubmitExtractionRequest */
-        SubmitExtractionRequest: {
-            /** Job Id */
-            job_id: string;
-            /**
-             * Organization Id
-             * Format: uuid
-             */
-            organization_id: string;
-            /** Document Keys */
-            document_keys: string[];
-            listing_type: components["schemas"]["ListingType"];
-            typology: components["schemas"]["Typology"];
-        };
-        /**
-         * SubscriptionPlan
-         * @enum {string}
-         */
-        SubscriptionPlan: "freemium" | "pro" | "enterprise";
-        /** SubscriptionResponse */
-        SubscriptionResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
+        /** SlotResponse */
+        SlotResponse: {
+            /** Id */
             id: string;
-            /**
-             * Organization Id
-             * Format: uuid
-             */
+            /** Property Id */
+            property_id: string;
+            /** Agent User Id */
+            agent_user_id: string;
+            /** Organization Id */
             organization_id: string;
-            plan: components["schemas"]["SubscriptionPlan"];
-            type: components["schemas"]["SubscriptionType"];
-            status: components["schemas"]["SubscriptionStatus"];
-            /** Stripe Subscription Id */
-            stripe_subscription_id: string | null;
-            /** Stripe Price Id */
-            stripe_price_id: string | null;
-            /** Current Period Start */
-            current_period_start: string | null;
-            /** Current Period End */
-            current_period_end: string | null;
+            /**
+             * Start Time
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * End Time
+             * Format: date-time
+             */
+            end_time: string;
+            /** Status */
+            status: string;
             /**
              * Created At
              * Format: date-time
@@ -1423,20 +2774,363 @@ export interface components {
             updated_at: string;
         };
         /**
-         * SubscriptionStatus
-         * @enum {string}
+         * SourceDocumentDetail
+         * @description Detail view of a source document with raw parse data.
          */
-        SubscriptionStatus: "active" | "cancelled" | "past_due" | "trialing" | "inactive";
+        SourceDocumentDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Filename */
+            filename: string;
+            /** Contract Name */
+            contract_name?: string | null;
+            /** File Url */
+            file_url: string;
+            /** Page Count */
+            page_count?: number | null;
+            /** Upload Status */
+            upload_status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Parse Response Json */
+            parse_response_json?: {
+                [key: string]: unknown;
+            } | null;
+        };
         /**
-         * SubscriptionType
-         * @enum {string}
+         * SourceDocumentListItem
+         * @description Summary info for a source document in a listing.
          */
-        SubscriptionType: "stripe" | "manual" | "deposit";
+        SourceDocumentListItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Filename */
+            filename: string;
+            /** Contract Name */
+            contract_name?: string | null;
+            /** File Url */
+            file_url: string;
+            /** Page Count */
+            page_count?: number | null;
+            /** Sections Count */
+            sections_count: number;
+            /** Upload Status */
+            upload_status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * SourceDocumentRead
+         * @description Full metadata of a source document.
+         */
+        SourceDocumentRead: {
+            /**
+             * Id
+             * Format: uuid
+             * @description Unique identifier of the source document.
+             */
+            id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             * @description ID of the organization that owns this document.
+             */
+            organization_id: string;
+            /**
+             * Filename
+             * @description Original filename.
+             */
+            filename: string;
+            /**
+             * Storage Url
+             * @description S3 object URL.
+             */
+            storage_url: string;
+            /**
+             * Mime Type
+             * @description MIME type.
+             */
+            mime_type: string;
+            /**
+             * Page Count
+             * @description Number of pages detected after parsing.
+             */
+            page_count?: number | null;
+            /**
+             * Language Code
+             * @description ISO 639-1 language code detected after parsing.
+             */
+            language_code?: string | null;
+            /**
+             * Document Hash
+             * @description SHA-256 content hash used for deduplication.
+             */
+            document_hash: string;
+            /**
+             * Upload Status
+             * @description Current status: `uploaded`, `parsed`, `extracted`, or `failed`.
+             */
+            upload_status: string;
+            /**
+             * Created At
+             * Format: date-time
+             * @description Timestamp when the document was uploaded.
+             */
+            created_at: string;
+        };
+        /**
+         * SourceReviewBundleRead
+         * @description Aggregated review data for a source document -- sections plus field evidence.
+         */
+        SourceReviewBundleRead: {
+            /**
+             * Source Document Id
+             * Format: uuid
+             */
+            source_document_id: string;
+            /** Filename */
+            filename: string;
+            /** Upload Status */
+            upload_status: string;
+            /**
+             * Sections
+             * @description Parsed sections in display order.
+             */
+            sections: components["schemas"]["SourceSectionRead"][];
+            /**
+             * Field Evidence
+             * @description All extracted field evidence across sections.
+             */
+            field_evidence: components["schemas"]["FieldEvidenceRead"][];
+        };
+        /**
+         * SourceSectionRead
+         * @description A parsed section of a source document.
+         */
+        SourceSectionRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Section Key
+             * @description Machine-readable section identifier.
+             */
+            section_key?: string | null;
+            /**
+             * Title
+             * @description Human-readable section title.
+             */
+            title?: string | null;
+            /**
+             * Page Start
+             * @description First page of the section (1-based).
+             */
+            page_start?: number | null;
+            /**
+             * Page End
+             * @description Last page of the section (1-based).
+             */
+            page_end?: number | null;
+            /**
+             * Sort Order
+             * @description Display order within the document.
+             */
+            sort_order: number;
+            /**
+             * Extracted Text
+             * @description Raw text extracted by the parser.
+             */
+            extracted_text?: string | null;
+            /**
+             * Normalized Text
+             * @description Reviewer-corrected or normalized text.
+             */
+            normalized_text?: string | null;
+            /**
+             * Classification Confidence
+             * @description Model confidence for section classification (0-1).
+             */
+            classification_confidence?: string | null;
+            /**
+             * Review Status
+             * @description Review status: `pending`, `accepted`, `corrected`, `rejected`, `merged`, or `split`.
+             */
+            review_status: string;
+        };
+        /** SubmissionResponse */
+        SubmissionResponse: {
+            /**
+             * Applicant Id
+             * Format: uuid
+             */
+            applicant_id: string;
+            /** Documents Uploaded */
+            documents_uploaded: number;
+            /** Message */
+            message: string;
+        };
+        /** SubmissionSummaryResponse */
+        SubmissionSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** SubmitExtractionRequest */
+        SubmitExtractionRequest: {
+            /** Job Id */
+            job_id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Document Keys */
+            document_keys: string[];
+            listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
+            typology: components["schemas"]["Typology"];
+        };
+        /** SubscriptionResponse */
+        SubscriptionResponse: {
+            /** Id */
+            id: string | null;
+            /** Organization Id */
+            organization_id: string;
+            /** Plan */
+            plan: string;
+            /** Type */
+            type: string;
+            /** Status */
+            status: string;
+            /** Cadence */
+            cadence?: ("monthly" | "yearly") | null;
+            /** Stripe Customer Id */
+            stripe_customer_id?: string | null;
+            /** Stripe Subscription Id */
+            stripe_subscription_id?: string | null;
+            /** Stripe Price Id */
+            stripe_price_id?: string | null;
+            /** Current Period Start */
+            current_period_start?: string | null;
+            /** Current Period End */
+            current_period_end?: string | null;
+        };
+        /** SubscriptionSummary */
+        SubscriptionSummary: {
+            /** Id */
+            id: string | null;
+            /** Plan */
+            plan: string | null;
+            /** Status */
+            status: string | null;
+        };
+        /**
+         * TemplateVersionRead
+         * @description Full metadata of a template version.
+         */
+        TemplateVersionRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Contract Template Id
+             * Format: uuid
+             * @description Parent contract template ID.
+             */
+            contract_template_id: string;
+            /**
+             * Source Document Id
+             * @description Source document this version derives from.
+             */
+            source_document_id?: string | null;
+            /**
+             * Version Number
+             * @description Sequential version number.
+             */
+            version_number: number;
+            /**
+             * Render Engine
+             * @description Template engine used for rendering (e.g. `jinja`).
+             */
+            render_engine: string;
+            /**
+             * Schema Json
+             * @description JSON schema describing the template's input fields.
+             */
+            schema_json: {
+                [key: string]: unknown;
+            };
+            /**
+             * Computed Rules Json
+             * @description Pre-computed conditional rules for section inclusion.
+             */
+            computed_rules_json: {
+                [key: string]: unknown;
+            };
+            /**
+             * Status
+             * @description Lifecycle status: `draft`, `review`, `approved`, `deprecated`, or `archived`.
+             */
+            status: string;
+            /** Review Notes */
+            review_notes?: string | null;
+            /** Created By */
+            created_by?: string | null;
+            /** Approved By */
+            approved_by?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Approved At */
+            approved_at?: string | null;
+        };
         /**
          * Typology
          * @enum {string}
          */
         Typology: "house" | "apartment" | "land" | "ruin";
+        /**
+         * UpdateFieldEvidenceReviewRequest
+         * @description Payload to update the review status of an extracted field.
+         */
+        UpdateFieldEvidenceReviewRequest: {
+            /**
+             * Review Status
+             * @description New review status (e.g. `accepted`, `corrected`).
+             */
+            review_status: string;
+            /**
+             * Corrected Value Json
+             * @description Corrected value to replace the extracted value.
+             */
+            corrected_value_json?: unknown;
+        };
         /** UpdateMemberRoleRequest */
         UpdateMemberRoleRequest: {
             role: components["schemas"]["MembershipRole"];
@@ -1453,6 +3147,23 @@ export interface components {
             /** Address */
             address?: string | null;
         };
+        /** UpdateProfileRequest */
+        UpdateProfileRequest: {
+            /** Name */
+            name?: string | null;
+            /** Phone Country Code */
+            phone_country_code?: string | null;
+            /** Phone Number */
+            phone_number?: string | null;
+        };
+        /** UpdatePropertyAddressRequest */
+        UpdatePropertyAddressRequest: {
+            /**
+             * Address
+             * @description New street address; whitespace-only rejected
+             */
+            address: string;
+        };
         /** UpdatePropertyOwnerContactRequest */
         UpdatePropertyOwnerContactRequest: {
             /** Email */
@@ -1460,36 +3171,139 @@ export interface components {
             /** Phone Number */
             phone_number?: string | null;
         };
-        /** UpdateSubscriptionRequest */
-        UpdateSubscriptionRequest: {
-            status?: components["schemas"]["SubscriptionStatus"] | null;
-            /** Stripe Subscription Id */
-            stripe_subscription_id?: string | null;
-            /** Stripe Price Id */
-            stripe_price_id?: string | null;
-            /** Current Period Start */
-            current_period_start?: string | null;
-            /** Current Period End */
-            current_period_end?: string | null;
-        };
-        /** UpdateUserRequest */
-        UpdateUserRequest: {
-            /** Name */
-            name?: string | null;
+        /**
+         * UpdateSourceSectionReviewRequest
+         * @description Payload to update the review status of a parsed section.
+         */
+        UpdateSourceSectionReviewRequest: {
             /**
-             * Phone Country Code
-             * @description E.g. +351
+             * Review Status
+             * @description New review status (e.g. `accepted`, `corrected`, `rejected`).
              */
-            phone_country_code?: string | null;
-            /** Phone Number */
-            phone_number?: string | null;
+            review_status: string;
+            /**
+             * Normalized Text
+             * @description Corrected text to replace the extracted text.
+             */
+            normalized_text?: string | null;
         };
-        /** UserResponse */
-        UserResponse: {
+        /**
+         * UpdateTemplateSectionRequest
+         * @description Partial update payload for a single template section.
+         */
+        UpdateTemplateSectionRequest: {
+            /**
+             * Title
+             * @description Section display title.
+             */
+            title?: string | null;
+            /**
+             * Render Template
+             * @description Jinja template string for this section.
+             */
+            render_template?: string | null;
+            /**
+             * Condition Expression
+             * @description Boolean expression that gates section inclusion.
+             */
+            condition_expression?: string | null;
+            /**
+             * Is Optional
+             * @description Whether the section can be omitted.
+             */
+            is_optional?: boolean | null;
+            /**
+             * Is Repeatable
+             * @description Whether the section can repeat for multiple parties.
+             */
+            is_repeatable?: boolean | null;
+            /**
+             * Status
+             * @description Section status: `draft`, `approved`, or `hidden`.
+             */
+            status?: string | null;
+        };
+        /**
+         * UpdateTemplateVersionRequest
+         * @description Partial update payload for a template version.
+         */
+        UpdateTemplateVersionRequest: {
+            /**
+             * Review Notes
+             * @description Free-text review notes.
+             */
+            review_notes?: string | null;
+            /**
+             * Status
+             * @description New lifecycle status.
+             */
+            status?: string | null;
+            /**
+             * Schema Json
+             * @description Replacement input-field schema.
+             */
+            schema_json?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Computed Rules Json
+             * @description Replacement computed rules.
+             */
+            computed_rules_json?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * UploadSourceDocumentResponse
+         * @description Metadata returned after a successful source document upload.
+         */
+        UploadSourceDocumentResponse: {
             /**
              * Id
              * Format: uuid
+             * @description Unique identifier of the source document.
              */
+            id: string;
+            /**
+             * Filename
+             * @description Original filename as provided during upload.
+             */
+            filename: string;
+            /**
+             * Storage Url
+             * @description S3 object URL where the file is stored.
+             */
+            storage_url: string;
+            /**
+             * Mime Type
+             * @description MIME type of the uploaded file (e.g. `application/pdf`).
+             */
+            mime_type: string;
+            /**
+             * Upload Status
+             * @description Current status: `uploaded`, `parsed`, `extracted`, or `failed`.
+             */
+            upload_status: string;
+            /**
+             * Created At
+             * Format: date-time
+             * @description Timestamp when the document was uploaded.
+             */
+            created_at: string;
+        };
+        /** UploadedDocumentSpec */
+        UploadedDocumentSpec: {
+            /** S3 Key */
+            s3_key: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            document_type: components["schemas"]["screening__domain__models__document__DocumentType"];
+        };
+        /** UserResponse */
+        UserResponse: {
+            /** Id */
             id: string;
             /** Supabase User Id */
             supabase_user_id: string;
@@ -1497,25 +3311,11 @@ export interface components {
             email: string;
             /** Name */
             name: string;
-            phone: components["schemas"]["PhoneResponse"] | null;
-            /** Organization Id */
-            organization_id: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
+            phone?: components["schemas"]["PhoneResponse"] | null;
+            /** Created At */
             created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
+            /** Updated At */
             updated_at: string;
-        };
-        /** UserWithOrganizationResponse */
-        UserWithOrganizationResponse: {
-            user: components["schemas"]["UserResponse"];
-            organization: components["schemas"]["OrganizationResponse"] | null;
-            role?: components["schemas"]["MembershipRole"] | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -1530,6 +3330,148 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /**
+         * MembershipSummary
+         * @description Projection of a Membership + its Organization.name, as returned by
+         *     `MembershipRepository.list_by_user_id_with_org_names` and attached to
+         *     `request.state.memberships` by `IdentityMiddleware`.
+         */
+        identity__adapters__api__schemas__MembershipSummary: {
+            /** Organization Id */
+            organization_id: string;
+            /** Role */
+            role: string;
+            /** Organization Name */
+            organization_name: string | null;
+            /** Created At */
+            created_at: string;
+        };
+        /** PropertyImageResponse */
+        listings__adapters__api__schemas__PropertyImageResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Display Order */
+            display_order: number;
+            /** Download Url */
+            download_url: string;
+        };
+        /** PropertyPriceResponse */
+        listings__adapters__api__schemas__PropertyPriceResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Amount */
+            amount: string;
+            listing_type: components["schemas"]["listings__domain__models__ListingType"];
+        };
+        /**
+         * ListingType
+         * @enum {string}
+         */
+        listings__domain__models__ListingType: "sale" | "purchase";
+        /** MembershipSummary */
+        organizations__adapters__api__routes__admin_auth__MembershipSummary: {
+            /** Id */
+            id: string;
+            /** Role */
+            role: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Created At */
+            created_at: string;
+        };
+        /** PropertyImageResponse */
+        properties__adapters__api__schemas__PropertyImageResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** S3 Key */
+            s3_key: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Display Order */
+            display_order: number;
+            /** Download Url */
+            download_url: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** PropertyPriceResponse */
+        properties__adapters__api__schemas__PropertyPriceResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** Amount */
+            amount: string;
+            listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * ListingType
+         * @enum {string}
+         */
+        properties__domain__models__property__ListingType: "sale" | "purchase";
+        /**
+         * DocumentType
+         * @enum {string}
+         */
+        properties__domain__models__property_owner__DocumentType: "cartao_cidadao" | "passport" | "visto_residencia" | "titulo_residencia";
+        /**
+         * ListingType
+         * @enum {string}
+         */
+        screening__domain__models__applicant__ListingType: "ARRENDAMENTO" | "VENDA";
+        /**
+         * DocumentType
+         * @enum {string}
+         */
+        screening__domain__models__document__DocumentType: "ID_DOCUMENT" | "PROOF_OF_INCOME";
     };
     responses: never;
     parameters: never;
@@ -1559,7 +3501,126 @@ export interface operations {
             };
         };
     };
-    register_api_v1_auth_register_post: {
+    register_admin_api_v1_admin_auth_register_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminRegisterRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminRegisterResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin account already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_api_v1_admin_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin access required (no memberships) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_profile_api_v1_admin_auth_profile_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_api_v1_portal_auth_register_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -1588,13 +3649,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description User already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -1606,7 +3660,7 @@ export interface operations {
             };
         };
     };
-    get_me_api_v1_auth_me_get: {
+    me_api_v1_portal_auth_me_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1621,7 +3675,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserWithOrganizationResponse"];
+                    "application/json": components["schemas"]["MeResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -1631,8 +3685,8 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description User not found */
-            404: {
+            /** @description Admin access required (no memberships) */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1640,41 +3694,7 @@ export interface operations {
             };
         };
     };
-    get_user_profile_api_v1_users_me_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserWithOrganizationResponse"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    update_user_profile_api_v1_users_me_patch: {
+    update_profile_api_v1_portal_auth_profile_patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1683,7 +3703,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateUserRequest"];
+                "application/json": components["schemas"]["UpdateProfileRequest"];
             };
         };
         responses: {
@@ -1703,13 +3723,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -1721,7 +3734,7 @@ export interface operations {
             };
         };
     };
-    get_organization_api_v1_organizations__organization_id__get: {
+    get_organization_api_v1_admin_organizations__organization_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1773,7 +3786,7 @@ export interface operations {
             };
         };
     };
-    update_organization_api_v1_organizations__organization_id__patch: {
+    update_organization_api_v1_admin_organizations__organization_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1829,7 +3842,7 @@ export interface operations {
             };
         };
     };
-    list_members_api_v1_memberships_get: {
+    list_members_api_v1_admin_memberships_get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -1874,7 +3887,7 @@ export interface operations {
             };
         };
     };
-    remove_member_api_v1_memberships__membership_id__delete: {
+    remove_member_api_v1_admin_memberships__membership_id__delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -1931,7 +3944,7 @@ export interface operations {
             };
         };
     };
-    update_member_role_api_v1_memberships__membership_id__patch: {
+    update_member_role_api_v1_admin_memberships__membership_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -1994,7 +4007,7 @@ export interface operations {
             };
         };
     };
-    list_invitations_api_v1_invitations_get: {
+    list_invitations_api_v1_admin_invitations_get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -2039,7 +4052,7 @@ export interface operations {
             };
         };
     };
-    invite_member_api_v1_invitations_post: {
+    invite_member_api_v1_admin_invitations_post: {
         parameters: {
             query: {
                 organization_id: string;
@@ -2095,7 +4108,7 @@ export interface operations {
             };
         };
     };
-    revoke_invitation_api_v1_invitations__invitation_id__delete: {
+    revoke_invitation_api_v1_admin_invitations__invitation_id__delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -2145,153 +4158,7 @@ export interface operations {
             };
         };
     };
-    list_plans_api_v1_subscriptions_plans_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PlanResponse"][];
-                };
-            };
-        };
-    };
-    get_current_subscription_api_v1_subscriptions_current_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SubscriptionResponse"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No active subscription found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    create_subscription_api_v1_subscriptions_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateSubscriptionRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SubscriptionResponse"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid subscription data */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    update_subscription_api_v1_subscriptions__subscription_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                subscription_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateSubscriptionRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SubscriptionResponse"];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Subscription not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid subscription data */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    list_notifications_api_v1_notifications_get: {
+    list_notifications_api_v1_admin_notifications_get: {
         parameters: {
             query?: {
                 limit?: number;
@@ -2337,7 +4204,7 @@ export interface operations {
             };
         };
     };
-    create_notification_api_v1_notifications_post: {
+    create_notification_api_v1_admin_notifications_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2377,7 +4244,7 @@ export interface operations {
             };
         };
     };
-    mark_notifications_read_api_v1_notifications_read_patch: {
+    mark_notifications_read_api_v1_admin_notifications_read_patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -2424,7 +4291,160 @@ export interface operations {
             };
         };
     };
-    send_email_api_v1_email_send_post: {
+    list_plans_api_v1_admin_billing_plans_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanResponse"][];
+                };
+            };
+        };
+    };
+    get_current_subscription_api_v1_admin_billing_subscription_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"];
+                };
+            };
+        };
+    };
+    start_checkout_api_v1_admin_billing_checkout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown plan / cadence combination */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    start_portal_api_v1_admin_billing_portal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortalResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Organization has no Stripe customer yet */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    stripe_webhook_api_v1_billing_webhooks_stripe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event processed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Invalid signature */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    send_email_api_v1_admin_email_send_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2464,7 +4484,27 @@ export interface operations {
             };
         };
     };
-    list_properties_api_v1_properties__get: {
+    list_active_properties_api_v1_admin_properties_active_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicPropertyResponse"][];
+                };
+            };
+        };
+    };
+    list_properties_api_v1_admin_properties__get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -2502,7 +4542,7 @@ export interface operations {
             };
         };
     };
-    create_property_api_v1_properties__post: {
+    create_property_api_v1_admin_properties__post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2542,7 +4582,7 @@ export interface operations {
             };
         };
     };
-    list_properties_summary_api_v1_properties_summary_get: {
+    list_properties_summary_api_v1_admin_properties_summary_get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -2580,7 +4620,7 @@ export interface operations {
             };
         };
     };
-    get_property_api_v1_properties__property_id__get: {
+    get_property_api_v1_admin_properties__property_id__get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -2634,7 +4674,167 @@ export interface operations {
             };
         };
     };
-    list_property_owners_api_v1_property_owners__get: {
+    delete_property_api_v1_admin_properties__property_id__delete: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Property deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized — must be OWNER or ADMIN of the organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_property_address_api_v1_admin_properties__property_id__address_patch: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyAddressRequest"];
+            };
+        };
+        responses: {
+            /** @description Address updated (or unchanged on no-op) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Address failed schema validation (empty/whitespace-only) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    publish_property_api_v1_admin_properties__property_id__publish_post: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Property published */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized — must be OWNER or ADMIN of the organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property is not publishable (missing fields or wrong status) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_property_owners_api_v1_admin_property_owners__get: {
         parameters: {
             query: {
                 property_id: string;
@@ -2680,7 +4880,7 @@ export interface operations {
             };
         };
     };
-    create_property_owner_api_v1_property_owners__post: {
+    create_property_owner_api_v1_admin_property_owners__post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2732,7 +4932,7 @@ export interface operations {
             };
         };
     };
-    extract_from_document_api_v1_property_owners_extract_from_document_post: {
+    extract_from_document_api_v1_admin_property_owners_extract_from_document_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2741,7 +4941,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["Body_extract_from_document_api_v1_property_owners_extract_from_document_post"];
+                "multipart/form-data": components["schemas"]["Body_extract_from_document_api_v1_admin_property_owners_extract_from_document_post"];
             };
         };
         responses: {
@@ -2784,7 +4984,7 @@ export interface operations {
             };
         };
     };
-    get_property_owner_api_v1_property_owners__owner_id__get: {
+    get_property_owner_api_v1_admin_property_owners__owner_id__get: {
         parameters: {
             query: {
                 property_id: string;
@@ -2839,7 +5039,7 @@ export interface operations {
             };
         };
     };
-    update_property_owner_contact_api_v1_property_owners__owner_id__contact_patch: {
+    update_property_owner_contact_api_v1_admin_property_owners__owner_id__contact_patch: {
         parameters: {
             query: {
                 property_id: string;
@@ -2898,7 +5098,7 @@ export interface operations {
             };
         };
     };
-    list_property_prices_api_v1_property_prices__get: {
+    list_property_prices_api_v1_admin_property_prices__get: {
         parameters: {
             query: {
                 property_id: string;
@@ -2916,7 +5116,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PropertyPriceResponse"][];
+                    "application/json": components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"][];
                 };
             };
             /** @description Not authenticated */
@@ -2944,7 +5144,7 @@ export interface operations {
             };
         };
     };
-    create_property_price_api_v1_property_prices__post: {
+    create_property_price_api_v1_admin_property_prices__post: {
         parameters: {
             query?: never;
             header?: never;
@@ -2998,7 +5198,7 @@ export interface operations {
             };
         };
     };
-    presign_image_uploads_api_v1_property_images_presign_post: {
+    presign_image_uploads_api_v1_admin_property_images_presign_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -3052,7 +5252,7 @@ export interface operations {
             };
         };
     };
-    record_property_image_api_v1_property_images__post: {
+    record_property_image_api_v1_admin_property_images__post: {
         parameters: {
             query?: never;
             header?: never;
@@ -3113,7 +5313,7 @@ export interface operations {
             };
         };
     };
-    delete_property_image_api_v1_property_images__image_id__delete: {
+    delete_property_image_api_v1_admin_property_images__image_id__delete: {
         parameters: {
             query: {
                 property_id: string;
@@ -3168,7 +5368,7 @@ export interface operations {
             };
         };
     };
-    reorder_property_images_api_v1_property_images_reorder_put: {
+    reorder_property_images_api_v1_admin_property_images_reorder_put: {
         parameters: {
             query?: never;
             header?: never;
@@ -3229,7 +5429,7 @@ export interface operations {
             };
         };
     };
-    get_property_amenities_api_v1_property_amenities__get: {
+    get_property_amenities_api_v1_admin_property_amenities__get: {
         parameters: {
             query: {
                 property_id: string;
@@ -3282,7 +5482,7 @@ export interface operations {
             };
         };
     };
-    discover_property_amenities_api_v1_property_amenities_discover_post: {
+    discover_property_amenities_api_v1_admin_property_amenities_discover_post: {
         parameters: {
             query: {
                 property_id: string;
@@ -3333,7 +5533,7 @@ export interface operations {
             };
         };
     };
-    generate_upload_urls_api_v1_extraction_jobs_presign_post: {
+    generate_upload_urls_api_v1_admin_extraction_jobs_presign_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -3371,7 +5571,7 @@ export interface operations {
             };
         };
     };
-    list_extraction_jobs_api_v1_extraction_jobs__get: {
+    list_extraction_jobs_api_v1_admin_extraction_jobs__get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -3409,7 +5609,7 @@ export interface operations {
             };
         };
     };
-    submit_extraction_api_v1_extraction_jobs__post: {
+    submit_extraction_api_v1_admin_extraction_jobs__post: {
         parameters: {
             query?: never;
             header?: never;
@@ -3454,7 +5654,7 @@ export interface operations {
             };
         };
     };
-    submit_batch_extraction_api_v1_extraction_jobs_batch_post: {
+    submit_batch_extraction_api_v1_admin_extraction_jobs_batch_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -3499,7 +5699,7 @@ export interface operations {
             };
         };
     };
-    retry_extraction_job_api_v1_extraction_jobs__job_id__retry_post: {
+    retry_extraction_job_api_v1_admin_extraction_jobs__job_id__retry_post: {
         parameters: {
             query: {
                 organization_id: string;
@@ -3551,7 +5751,7 @@ export interface operations {
             };
         };
     };
-    get_extraction_job_api_v1_extraction_jobs__job_id__get: {
+    get_extraction_job_api_v1_admin_extraction_jobs__job_id__get: {
         parameters: {
             query: {
                 organization_id: string;
@@ -3593,6 +5793,1271 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_properties_api_v1_listings_properties_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by listing type (sale/purchase) */
+                listing_type?: components["schemas"]["listings__domain__models__ListingType"] | null;
+                /** @description Filter by typology (house/apartment/land/ruin) */
+                typology?: components["schemas"]["Typology"] | null;
+                /** @description Minimum price filter */
+                min_price?: number | string | null;
+                /** @description Maximum price filter */
+                max_price?: number | string | null;
+                /** @description Filter by district/location (partial match on address) */
+                district?: string | null;
+                /** @description Number of results per page */
+                limit?: number;
+                /** @description Pagination offset */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedListingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_listings_properties__property_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListedPropertyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    presign_uploads_api_v1_portal_submissions_uploads_presign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresignedUploadRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PresignedUploadResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_submission_api_v1_portal_submissions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSubmissionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmissionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_screening_status_api_v1_portal_submissions__applicant_id__status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScreeningStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_intake_form_requests_api_v1_admin_intake_form_requests_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeFormRequestResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_intake_form_request_api_v1_admin_intake_form_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateIntakeFormRequestBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeFormRequestResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_intake_form_request_api_v1_admin_intake_form_requests__request_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntakeFormRequestResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_applicants_api_v1_admin_applicants_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicantDetailResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_applicant_api_v1_admin_applicants__applicant_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicantDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_slots_api_v1_admin_slots_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+                property_id?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedSlotsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_slot_api_v1_admin_slots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSlotRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_slot_api_v1_admin_slots__slot_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_slot_api_v1_admin_slots__slot_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_bookings_api_v1_admin_bookings_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedBookingsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_booking_api_v1_admin_bookings__booking_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_booking_api_v1_admin_bookings__booking_id__delete: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_booking_invitation_api_v1_admin_booking_invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBookingInvitationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingInvitationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_available_slots_api_v1_portal_properties__property_id__slots_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedSlotsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_booking_api_v1_portal_bookings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBookingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_applicant_bookings_api_v1_portal_bookings_status_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedBookingsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_documents_api_v1_admin_contracts_source_documents_get: {
+        parameters: {
+            query?: {
+                organization_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceDocumentListItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_api_v1_admin_contracts_source_documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_api_v1_admin_contracts_source_documents_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadSourceDocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_document_api_v1_admin_contracts_source_documents__document_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceDocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_document_detail_api_v1_admin_contracts_source_documents__document_id__detail_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceDocumentDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    parse_api_v1_admin_contracts_source_documents__document_id__parse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    extract_api_v1_admin_contracts_source_documents__document_id__extract_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    retry_document_api_v1_admin_contracts_source_documents__document_id__retry_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadSourceDocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_review_bundle_api_v1_admin_contracts_review_source_documents__document_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceReviewBundleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_section_review_api_v1_admin_contracts_review_source_sections__section_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSourceSectionReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_field_evidence_review_api_v1_admin_contracts_review_source_field_evidence__evidence_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                evidence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFieldEvidenceReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_from_source_api_v1_admin_contracts_template_versions_from_source__source_document_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source_document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateTemplateVersionFromSourceResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_version_api_v1_admin_contracts_template_versions__version_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateVersionRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_version_api_v1_admin_contracts_template_versions__version_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTemplateVersionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_section_api_v1_admin_contracts_template_versions_template_sections__section_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                section_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTemplateSectionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_version_api_v1_admin_contracts_template_versions__version_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_from_crm_api_v1_admin_contracts_generated_contracts_from_crm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGeneratedContractFromCRMRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GeneratedContractRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_contract_api_v1_admin_contracts_generated_contracts__contract_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GeneratedContractRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    render_contract_api_v1_admin_contracts_generated_contracts__contract_id__render_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                contract_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RenderGeneratedContractResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

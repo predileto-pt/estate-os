@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { ApiError } from "./errors";
-import type { UserWithOrganizationResponse } from "./types";
+import type { MeResponse } from "./types";
 
 const API_URL = process.env.API_URL || "http://localhost";
 
@@ -37,8 +37,8 @@ export async function getOrganizationId(): Promise<string | null> {
   const res = await fetch(`${API_URL}/api/v1/admin/auth/me`, { headers });
   if (!res.ok) return null;
 
-  const data: UserWithOrganizationResponse = await res.json();
-  const orgId = data.user.organization_id ?? null;
+  const data: MeResponse = await res.json();
+  const orgId = data.memberships[0]?.organization_id ?? null;
 
   if (orgId) {
     cookieStore.set("organization_id", orgId, {

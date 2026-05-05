@@ -15,6 +15,7 @@ export type {
   ExtractionJobResponse,
   UserResponse,
   OrganizationResponse,
-  UserWithOrganizationResponse,
+  MeResponse,
+  MembershipSummary,
   PropertySummary,
 } from "./types";

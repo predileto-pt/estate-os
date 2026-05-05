@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useDictionary } from "@/components/dictionary-provider";
 import { Button } from "@/components/ui/button";
-import { getMe, updateOrganization } from "@/app/register/actions";
+import { getMe, getOrganization, updateOrganization } from "@/app/register/actions";
 import type { components } from "@/lib/types/estate-os-api";
 
 const organizationSchema = z.object({
@@ -38,17 +38,23 @@ export default function OrganizationPage() {
   });
 
   useEffect(() => {
-    getMe().then((result) => {
-      if (result.error === null && result.data.organization) {
-        setOrganization(result.data.organization);
+    (async () => {
+      const meResult = await getMe();
+      if (meResult.error !== null || !meResult.data.organizationId) {
+        setLoading(false);
+        return;
+      }
+      const orgResult = await getOrganization(meResult.data.organizationId);
+      if (orgResult.error === null) {
+        setOrganization(orgResult.data);
         reset({
-          name: result.data.organization.name ?? "",
-          nif: result.data.organization.nif ?? "",
-          address: result.data.organization.address ?? "",
+          name: orgResult.data.name ?? "",
+          nif: orgResult.data.nif ?? "",
+          address: orgResult.data.address ?? "",
         });
       }
       setLoading(false);
-    });
+    })();
   }, [reset]);
 
   async function onSubmit(data: OrganizationFormData) {

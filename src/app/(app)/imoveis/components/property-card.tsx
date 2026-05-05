@@ -12,8 +12,10 @@ import { cn, formatPrice } from "@/lib/utils";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
-type PropertyImageResponse = components["schemas"]["PropertyImageResponse"];
-type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
+type PropertyImageResponse =
+  components["schemas"]["properties__adapters__api__schemas__PropertyImageResponse"];
+type PropertyPriceResponse =
+  components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"];
 
 const STATUS_BORDER: Record<PropertyStatus, string> = {
   draft: "border-b-gray-400",
