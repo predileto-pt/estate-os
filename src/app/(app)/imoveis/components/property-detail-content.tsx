@@ -1093,8 +1093,21 @@ export function PropertyDetailContent({
           <div className="sticky top-4 space-y-6">
             {/* Address card */}
             <div className="border border-gray-200 bg-white overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-100">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
                 <Small variant="label">{dict.address}</Small>
+                {!isEditingAddress && (
+                  <button
+                    type="button"
+                    onClick={handleEditAddress}
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                    aria-label="Editar endereço"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                      <path d="m15 5 4 4" />
+                    </svg>
+                  </button>
+                )}
               </div>
               <div className="px-4 py-4">
                 <div className="flex items-start gap-2">
