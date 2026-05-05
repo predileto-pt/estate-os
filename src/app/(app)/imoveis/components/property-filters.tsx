@@ -84,7 +84,10 @@ export function PropertyFilters({
   onChange: (next: PropertyFiltersState) => void;
 }) {
   const hasActive =
-    filters.listingTypes.size + filters.typologies.size + filters.statuses.size > 0;
+    filters.listingTypes.size +
+      filters.typologies.size +
+      filters.statuses.size >
+    0;
 
   return (
     <aside className="space-y-5">
@@ -107,7 +110,10 @@ export function PropertyFilters({
         selected={filters.listingTypes}
         getLabel={(v) => dict[v]}
         onToggle={(v) =>
-          onChange({ ...filters, listingTypes: toggle(filters.listingTypes, v) })
+          onChange({
+            ...filters,
+            listingTypes: toggle(filters.listingTypes, v),
+          })
         }
       />
 

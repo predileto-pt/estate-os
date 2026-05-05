@@ -217,3 +217,40 @@ npm run dev
 ```
 
 The "Imobiliária" link in the searcher nav points to the dashboard.
+
+## Billing & Subscriptions
+
+The dashboard exposes Stripe-hosted Checkout and Customer Portal flows. **All Stripe integration lives in the backend service `estate-os-service`** — the frontend only needs `API_URL` pointing at a backend instance where the `STRIPE_*` envs are configured. See [estate-os-service/README.md § Stripe Billing Setup](../estate-os-service/README.md#stripe-billing-setup) for products, prices, webhook setup, and the end-to-end test flow.
+
+### User-facing surfaces
+
+| Route | Chrome | Purpose |
+|---|---|---|
+| `/upgrade` | bare | Plan picker — Pro vs Enterprise side-by-side with a monthly/yearly toggle. Clicking a plan POSTs to `/api/billing/checkout` and redirects the browser to Stripe-hosted Checkout. |
+| `/upgrade/success?session_id=...` | bare | Where Stripe redirects after a successful payment. Shows a confirmation card with "Back to dashboard" and "Manage billing" CTAs. |
+| `/dashboard/settings/subscriptions` | full | Management-only. Shows the current plan and a "Manage billing" button (opens Stripe Customer Portal for cancel / switch plan / update card / invoices). Freemium orgs see an "Upgrade plan" CTA linking to `/upgrade`. |
+
+The persistent entry point is a ghost "Atualizar plano" button with a current-plan badge in the sidebar footer, rendered from `src/components/app-sidebar.tsx` and wired to the shared `useSubscription()` hook (`src/hooks/use-subscription.ts`).
+
+### Architecture notes
+
+- **Chrome-free layout.** `src/app/(app)/` is a route group containing every authenticated dashboard route (`dashboard`, `imoveis`, `candidatos`, `contratos`, `propostas`, `formularios`). The group's `layout.tsx` hosts the Supabase auth guard, `SidebarProvider`, `AppSidebar`, and `MainHeader`. Routes *outside* the group (`/upgrade`, `/upgrade/success`, `/login`, `/register`, `/auth/*`) inherit only the root layout's providers and render without chrome. Route-group parens don't affect URLs.
+- **Subscription data.** `useSubscription()` wraps a TanStack Query over `/api/billing/subscription`. Backend returns a synthetic `freemium / active / manual` row when no subscription exists, so newly-registered orgs never see a 404. Cached for 30s across the sidebar badge and the upgrade page.
+- **Checkout redirect URLs** are built by the backend from its `APP_URL` env. Keep `NEXT_PUBLIC_APP_URL` here in sync with `APP_URL` in the backend `.env` — Stripe lands the user on whatever the backend hands it.
+
+### Local dev flow
+
+With the backend running on `:8000` and `stripe listen --forward-to http://localhost:8000/api/v1/billing/webhooks/stripe` in a second terminal (see backend README for the full CLI), the end-to-end dev loop is:
+
+```
+/dashboard (logged-in)
+  → sidebar "Atualizar plano" button
+  → /upgrade
+  → click "Iniciar período gratuito"
+  → POST /api/billing/checkout → receives a checkout.stripe.com URL
+  → browser redirect → card 4242 4242 4242 4242 → submit
+  → browser redirect → /upgrade/success?session_id=cs_test_...
+  → click "Voltar ao painel" → /dashboard
+```
+
+Meanwhile, `stripe listen` forwards `checkout.session.completed` / `customer.subscription.created` to the backend, which updates the `subscriptions` row. The sidebar badge flips from "Freemium" to "Pro" on the next page load (or after the 30s TanStack cache expires).

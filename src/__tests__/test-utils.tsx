@@ -2,7 +2,7 @@ import React from "react";
 import { render, type RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DictionaryProvider } from "@/components/dictionary-provider";
-import { FormPreviewProvider } from "@/app/formularios/components/form-preview-context";
+import { FormPreviewProvider } from "@/app/(app)/formularios/components/form-preview-context";
 import en from "@/dictionaries/en.json";
 
 function AllProviders({ children }: { children: React.ReactNode }) {

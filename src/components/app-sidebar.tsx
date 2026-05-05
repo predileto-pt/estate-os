@@ -10,6 +10,7 @@ import {
   FileStack,
   Handshake,
   Shield,
+  Sparkles,
   Squircle,
   User,
   Users,
@@ -28,6 +29,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useDictionary } from "@/components/dictionary-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { useSubscription } from "@/hooks/use-subscription";
+import { cn } from "@/lib/utils";
 
 type MenuItem = {
   key: string;
@@ -155,6 +158,9 @@ export function AppSidebar({ email }: { email: string }) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
+            <UpgradeEntry dictionary={d} />
+          </SidebarMenuItem>
+          <SidebarMenuItem>
             <div className="px-2 py-1 text-xs text-muted-foreground truncate">
               {email}
             </div>
@@ -167,5 +173,72 @@ export function AppSidebar({ email }: { email: string }) {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
+  );
+}
+
+type PlanKey = "freemium" | "pro" | "enterprise";
+
+function planLabel(plan: PlanKey, d: Dashboard): string {
+  if (plan === "pro") return d.planPro;
+  if (plan === "enterprise") return d.planEnterprise;
+  return d.planFreemium;
+}
+
+/**
+ * Upgrade-plan CTA + current-plan badge rendered above the email in the
+ * sidebar footer. Reads `useSubscription()` — backend returns a synthetic
+ * freemium row when none exists, so there's no first-run empty state to
+ * handle. Hidden while the first fetch is in flight so the layout doesn't
+ * shift when it resolves.
+ */
+function daysUntil(iso: string | null | undefined): number | null {
+  if (!iso) return null;
+  const endMs = new Date(iso).getTime();
+  if (Number.isNaN(endMs)) return null;
+  return Math.max(0, Math.ceil((endMs - Date.now()) / 86_400_000));
+}
+
+function UpgradeEntry({ dictionary: d }: { dictionary: Dashboard }) {
+  const { data, isLoading } = useSubscription();
+  if (isLoading) {
+    return <div className="h-11 px-2" aria-hidden />;
+  }
+  const plan: PlanKey = data?.plan ?? "freemium";
+  const isFreemium = plan === "freemium";
+  const isTrialing = data?.status === "trialing";
+  const trialDays = isTrialing ? daysUntil(data?.current_period_end) : null;
+  const trialLabel =
+    trialDays !== null
+      ? `${d.trial} · ${d.daysLeft.replace("{count}", String(trialDays))}`
+      : d.trial;
+
+  return (
+    <div className="flex flex-col gap-1 px-2 py-1">
+      <Link
+        href="/upgrade"
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5",
+          "text-xs font-medium text-gray-600 hover:text-gray-900",
+          "hover:bg-gray-100 transition-colors",
+        )}
+      >
+        <Sparkles className="size-3.5" />
+        <span>{d.upgradePlan}</span>
+      </Link>
+      <div className="px-2">
+        <span
+          className={cn(
+            "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium",
+            isTrialing
+              ? "bg-amber-100 text-amber-800"
+              : isFreemium
+                ? "bg-gray-100 text-gray-600"
+                : "bg-gray-900 text-white",
+          )}
+        >
+          {isTrialing ? trialLabel : planLabel(plan, d)}
+        </span>
+      </div>
+    </div>
   );
 }
