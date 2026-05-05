@@ -798,17 +798,28 @@ export function PropertyDetailContent({
           {/* Image carousel */}
           <div className="relative">
             <ImageCarousel images={property.images} />
-            <Link
-              href={`/imoveis/${property.id}/imagens`}
-              className="absolute top-3 left-3 bg-white/90 hover:bg-white text-xs text-gray-700 px-2.5 py-1 border border-gray-200 transition-colors flex items-center gap-1.5"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-              {dict.manageImages}
-            </Link>
+            <div className="absolute top-3 left-3 flex items-center gap-2">
+              <Link
+                href={`/imoveis/${property.id}/imagens`}
+                className="bg-white/90 hover:bg-white text-xs text-gray-700 px-2.5 py-1 border border-gray-200 transition-colors flex items-center gap-1.5"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                {dict.manageImages}
+              </Link>
+              <button
+                type="button"
+                className="bg-white/90 hover:bg-white text-xs text-gray-700 px-2.5 py-1 border border-gray-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z" />
+                </svg>
+                {dict.createVideo}
+              </button>
+            </div>
           </div>
 
           {/* Description card */}

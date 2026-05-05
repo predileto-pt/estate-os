@@ -360,6 +360,7 @@
     "nearby": "nearby",
     "images": "Images",
     "manageImages": "Manage Images",
+    "createVideo": "Create video",
     "addImages": "Add Images",
     "deleteImage": "Delete",
     "deleteImageConfirm": "Are you sure you want to delete this image?",
