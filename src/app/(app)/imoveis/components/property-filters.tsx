@@ -3,7 +3,8 @@
 import type { components } from "@/lib/types/estate-os-api";
 import type { Dictionary } from "@/lib/i18n";
 
-type ListingType = components["schemas"]["ListingType"];
+type ListingType =
+  components["schemas"]["properties__domain__models__property__ListingType"];
 type Typology = components["schemas"]["Typology"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
 

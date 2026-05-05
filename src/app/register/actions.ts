@@ -2,14 +2,15 @@
 
 import { cookies } from "next/headers";
 import { getAuthHeaders } from "@/lib/api/auth";
-import { corePatch } from "@/lib/api/core-client";
+import { coreGet, corePatch } from "@/lib/api/core-client";
 import { ApiError } from "@/lib/api/errors";
 import type {
   ActionResult,
   MutationResult,
   UserResponse,
   OrganizationResponse,
-  UserWithOrganizationResponse,
+  MeResponse,
+  MembershipSummary,
 } from "@/lib/api/types";
 
 const API_URL = process.env.API_URL || "http://localhost";
@@ -17,7 +18,8 @@ const API_URL = process.env.API_URL || "http://localhost";
 export async function getMe(): Promise<
   ActionResult<{
     user: UserResponse;
-    organization: OrganizationResponse | null;
+    memberships: MembershipSummary[];
+    organizationId: string | null;
   }>
 > {
   const headers = await getAuthHeaders();
@@ -30,13 +32,12 @@ export async function getMe(): Promise<
       return { error: `Failed to fetch user: ${res.status}` };
     }
 
-    const data: UserWithOrganizationResponse = await res.json();
+    const data: MeResponse = await res.json();
+    const organizationId = data.memberships[0]?.organization_id ?? null;
 
-    // Cache organization_id in cookie
-    const orgId = data.user.organization_id;
-    if (orgId) {
+    if (organizationId) {
       const cookieStore = await cookies();
-      cookieStore.set("organization_id", orgId, {
+      cookieStore.set("organization_id", organizationId, {
         path: "/",
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -47,10 +48,23 @@ export async function getMe(): Promise<
 
     return {
       error: null,
-      data: { user: data.user, organization: data.organization },
+      data: { user: data.user, memberships: data.memberships, organizationId },
     };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
+export async function getOrganization(
+  organizationId: string,
+): Promise<ActionResult<OrganizationResponse>> {
+  try {
+    const data = await coreGet<OrganizationResponse>(
+      `/api/v1/admin/organizations/${organizationId}`,
+    );
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
   }
 }
 

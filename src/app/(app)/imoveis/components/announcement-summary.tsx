@@ -9,8 +9,10 @@ import { useLocale } from "@/components/dictionary-provider";
 import { cn, formatPrice, formatArea } from "@/lib/utils";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
-type PropertyImageResponse = components["schemas"]["PropertyImageResponse"];
-type PropertyPriceResponse = components["schemas"]["PropertyPriceResponse"];
+type PropertyImageResponse =
+  components["schemas"]["properties__adapters__api__schemas__PropertyImageResponse"];
+type PropertyPriceResponse =
+  components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"];
 
 function primaryImage(
   images: PropertyImageResponse[],

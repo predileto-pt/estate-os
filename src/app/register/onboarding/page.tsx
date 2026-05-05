@@ -33,7 +33,7 @@ export default function OnboardingPage() {
       return;
     }
 
-    const organizationId = meResult.data.user.organization_id;
+    const organizationId = meResult.data.organizationId;
     if (!organizationId) {
       setError("No organization found");
       setLoading(false);
