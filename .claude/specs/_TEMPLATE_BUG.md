@@ -18,3 +18,9 @@ The minimum change that resolves the symptom without expanding scope. Reference 
 ## Verification
 
 How we'll know it's fixed — manual repro that now passes, regression test added, etc.
+
+## Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org/): `<type>(<scope>): <subject>`. Bug fixes are typically `fix(<scope>): …`. Subject is imperative, lowercase, no trailing period.
+
+Example: `fix(subheader): pin property detail nav on scroll`

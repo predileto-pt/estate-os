@@ -15,6 +15,7 @@ Spec-driven workflow for this repo. One markdown file per unit of work (feature,
 - **Granularity**: full spec for features/refactors; a one-paragraph intent note is fine for small bugs (use `_TEMPLATE_BUG.md`).
 - **Scope discipline**: if a spec grows past ~1 page of acceptance criteria, split it.
 - **Open questions**: resolve before implementing, or mark them as explicit assumptions.
+- **Commits**: follow [Conventional Commits](https://www.conventionalcommits.org/) — `feat(imoveis): …`, `fix(subheader): …`, `chore(deps): …`, `docs(specs): …`. One logical change per commit.
 
 ## Layout
 

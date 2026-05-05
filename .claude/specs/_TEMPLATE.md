@@ -37,6 +37,21 @@ Checklist of observable outcomes. Each item should be testable.
 - [ ] Tests cover <specific behavior>
 - [ ] Docs / CLAUDE.md updated if architecture changed
 
+## Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org/): `<type>(<scope>): <subject>`.
+
+- **type**: `feat`, `fix`, `chore`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`
+- **scope** (optional but encouraged): module or area touched — `imoveis`, `auth`, `api`, `subheader`, `specs`, `deps`
+- **subject**: imperative, lowercase, no trailing period (≤72 chars)
+- One logical change per commit. Don't bundle a feature and an unrelated chore.
+
+Examples:
+- `feat(imoveis): wire publish action to backend`
+- `fix(subheader): pin property detail nav on scroll`
+- `chore(deps): bump next to 16.x`
+- `docs(specs): clarify shipping checklist`
+
 ## Open questions
 
 Things that need a decision before (or during) implementation. Resolve or convert to explicit assumptions before merging the spec.
