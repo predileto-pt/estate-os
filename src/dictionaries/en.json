@@ -166,6 +166,8 @@
     "house": "House",
     "apartment": "Apartment",
     "imoveis": "Properties",
+    "anuncios": "Listings",
+    "noAnuncios": "No active listings.",
     "contratos": "Contracts",
     "addProperty": "Add Property",
     "owners": "Owners",

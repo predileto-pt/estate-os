@@ -166,6 +166,8 @@
     "house": "Moradia",
     "apartment": "Apartamento",
     "imoveis": "Imóveis",
+    "anuncios": "Anúncios",
+    "noAnuncios": "Não existem anúncios activos.",
     "contratos": "Contratos",
     "addProperty": "Adicionar Imóvel",
     "owners": "Proprietários",
