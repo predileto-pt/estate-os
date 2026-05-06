@@ -94,20 +94,20 @@ export function PropertyCard({
         STATUS_BORDER[property.status]
       )}
     >
-      <div className="relative h-64 w-64 shrink-0 bg-gray-100 overflow-hidden rounded-tl rounded-bl">
+      <div className="relative h-32 w-32 shrink-0 bg-gray-100 overflow-hidden rounded-tl rounded-bl">
         {showImage ? (
           <Image
             src={image.download_url}
             alt={property.address}
             fill
-            sizes="256px"
+            sizes="128px"
             className="object-cover"
             unoptimized
             onError={() => setImageBroken(true)}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Building2 className="size-16 text-gray-300" />
+            <Building2 className="size-10 text-gray-300" />
           </div>
         )}
       </div>
