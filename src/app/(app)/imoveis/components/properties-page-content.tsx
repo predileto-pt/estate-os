@@ -137,7 +137,7 @@ export function PropertiesPageContent({
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 md:col-span-3 lg:col-span-2 bg-gray-100 p-4">
+        <div className="col-span-12 md:col-span-3 lg:col-span-2 p-4">
           <PropertyFilters
             dict={dict}
             filters={filters}

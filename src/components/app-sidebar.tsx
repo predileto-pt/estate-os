@@ -9,6 +9,7 @@ import {
   FileSignature,
   FileStack,
   Handshake,
+  Megaphone,
   Shield,
   Sparkles,
   Squircle,
@@ -84,6 +85,7 @@ function resolveItems(pathname: string, d: Dashboard): MenuItem[] {
     { key: "formularios", href: "/formularios", label: d.intakeFormRequests, icon: ClipboardList },
     { key: "candidatos", href: "/candidatos", label: d.candidatos, icon: Users },
     { key: "imoveis", href: "/imoveis", label: d.imoveis, icon: Building2 },
+    { key: "anuncios", href: "/anuncios", label: d.anuncios, icon: Megaphone },
     { key: "propostas", href: "/propostas", label: d.propostas, icon: Handshake },
     { key: "contratos", href: "/contratos", label: d.contratos, icon: FileSignature },
   ];

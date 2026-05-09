@@ -7,7 +7,6 @@ import { Building2 } from "lucide-react";
 import type { components } from "@/lib/types/estate-os-api";
 import type { Dictionary } from "@/lib/i18n";
 import { useLocale } from "@/components/dictionary-provider";
-import { buttonVariants } from "@/components/ui/button";
 import { cn, formatPrice } from "@/lib/utils";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
@@ -18,11 +17,11 @@ type PropertyPriceResponse =
   components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"];
 
 const STATUS_BORDER: Record<PropertyStatus, string> = {
-  draft: "border-b-gray-400",
-  active: "border-b-emerald-500",
-  sold: "border-b-blue-500",
-  rented: "border-b-violet-500",
-  withdrawn: "border-b-red-400",
+  draft: "border-t-gray-400",
+  active: "border-t-emerald-500",
+  sold: "border-t-blue-500",
+  rented: "border-t-violet-500",
+  withdrawn: "border-t-red-400",
 };
 
 const STATUS_LABEL_KEY: Record<PropertyStatus, keyof Dictionary["dashboard"]> =
@@ -89,30 +88,28 @@ export function PropertyCard({
       href={`/imoveis/${property.id}`}
       title={dict[STATUS_LABEL_KEY[property.status]]}
       className={cn(
-        "group flex w-full min-w-0 flex-row border border-gray-200 bg-white transition-colors ring-offset-1 ring-offset-transparent hover:ring-offset-gray-400 rounded",
-        "shadow border-b-4",
-        STATUS_BORDER[property.status]
+        "group flex w-full min-w-0 flex-row border border-gray-200 bg-white transition-colors ring-offset-1 ring-offset-transparent hover:ring-offset-gray-400 rounded"
       )}
     >
-      <div className="relative h-64 w-64 shrink-0 bg-gray-100 overflow-hidden rounded-tl rounded-bl">
+      <div className="relative h-32 w-32 shrink-0 bg-gray-100 overflow-hidden rounded-tl rounded-bl">
         {showImage ? (
           <Image
             src={image.download_url}
             alt={property.address}
             fill
-            sizes="256px"
+            sizes="128px"
             className="object-cover"
             unoptimized
             onError={() => setImageBroken(true)}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Building2 className="size-16 text-gray-300" />
+            <Building2 className="size-10 text-gray-300" />
           </div>
         )}
       </div>
 
-      <div className="flex flex-1 min-w-0 flex-col gap-2 p-4">
+      <div className="flex flex-1 min-w-0 flex-col gap-1 p-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
             {listingTypeLabel[property.listing_type] ?? property.listing_type}
@@ -144,13 +141,13 @@ export function PropertyCard({
           </p>
         )}
 
-        <div className="mt-auto pt-2">
+        {/* <div className="mt-auto pt-2">
           <span
             className={cn(buttonVariants({ variant: "steel", size: "sm" }))}
           >
             {dict.details}
           </span>
-        </div>
+        </div> */}
       </div>
     </Link>
   );
