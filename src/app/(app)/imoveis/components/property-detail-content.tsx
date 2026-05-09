@@ -13,8 +13,6 @@ import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
 import { deleteProperty, publishProperty, updatePropertyAddress } from "../[id]/actions";
-import { SlotsTabContent } from "./slots-tab-content";
-import { AnnouncementSummary } from "./announcement-summary";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
@@ -942,43 +940,29 @@ export function PropertyDetailContent({
           </div>
 
           {/* Characteristics card */}
-          <div className="border border-gray-200 bg-white overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
-              <Small variant="label">{dict.characteristics}</Small>
-              <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
-                {listingTypeLabel[property.listing_type] ?? property.listing_type}
-              </span>
-              <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
-                {typologyLabel[property.typology] ?? property.typology}
-              </span>
+          {property.typology !== "land" && (
+            <div className="border border-gray-200 bg-white overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                <Small variant="label">{dict.characteristics}</Small>
+                <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
+                  {listingTypeLabel[property.listing_type] ?? property.listing_type}
+                </span>
+                <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
+                  {typologyLabel[property.typology] ?? property.typology}
+                </span>
+              </div>
+              <div className="grid grid-cols-5 divide-x divide-gray-100">
+                {characteristicsGrid.map((item) => (
+                  <div key={item.label} className="px-4 py-4 flex flex-col items-center text-center gap-1.5">
+                    {item.icon}
+                    <span className="text-xs text-gray-400">{item.label}</span>
+                    <span className="text-sm font-medium text-gray-900">{item.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-5 divide-x divide-gray-100">
-              {characteristicsGrid.map((item) => (
-                <div key={item.label} className="px-4 py-4 flex flex-col items-center text-center gap-1.5">
-                  {item.icon}
-                  <span className="text-xs text-gray-400">{item.label}</span>
-                  <span className="text-sm font-medium text-gray-900">{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
-          {/* Announcement summary */}
-          <AnnouncementSummary property={property} dict={dict} />
-
-          {/* Bookings */}
-          <div className="border border-gray-200 bg-white overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100">
-              <Small variant="label">{dict.bookings}</Small>
-            </div>
-            <div className="px-4 py-4">
-              <SlotsTabContent
-                propertyId={property.id}
-                organizationId={property.organization_id}
-                dict={dict}
-              />
-            </div>
-          </div>
         </div>
 
         {/* Right column — sidebar */}

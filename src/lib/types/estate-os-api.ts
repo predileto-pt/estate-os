@@ -461,6 +461,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/properties/{property_id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unpublish a property — take it off the public listings
+         * @description Flip a property from ACTIVE back to DRAFT and broadcast PROPERTY_UNPUBLISHED.v1. The listings context deletes the property_listings row on receipt — the property disappears from the public site but stays in the agent's dashboard as a draft. Symmetric to /publish; only the organization's OWNER or ADMIN can perform this action.
+         */
+        post: operations["unpublish_property_api_v1_admin_properties__property_id__unpublish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/properties/{property_id}/enrich": {
         parameters: {
             query?: never;
@@ -1779,6 +1799,14 @@ export interface components {
             metadata?: {
                 [key: string]: unknown;
             };
+            /** Address */
+            address?: string | null;
+            /** Image Urls */
+            image_urls?: string[];
+            /** Reviews */
+            reviews?: {
+                [key: string]: unknown;
+            }[] | null;
         };
         /** CreatePropertyPriceRequest */
         CreatePropertyPriceRequest: {
@@ -2264,7 +2292,18 @@ export interface components {
          * @enum {string}
          */
         JobStatus: "pending" | "processing" | "completed" | "failed";
-        /** ListedPropertyResponse */
+        /**
+         * ListedPropertyResponse
+         * @description Public-facing listing payload.
+         *
+         *     `address` removed (privacy fix, spec
+         *     `2026-05-property-address-enrichment-fix`). Structured location
+         *     fields (parish/municipality/district/country) are NOT exposed in v1
+         *     — they live on `property_listings`, which the public route doesn't
+         *     yet read. Exposing them is a follow-up that switches the public
+         *     route from the legacy `ListedProperty` (over `properties`) to
+         *     `PropertyListing` (over `property_listings`).
+         */
         ListedPropertyResponse: {
             /**
              * Id
@@ -2276,8 +2315,6 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
-            /** Address */
-            address: string;
             listing_type: components["schemas"]["listings__domain__models__ListingType"];
             typology: components["schemas"]["Typology"];
             /** Description */
@@ -2666,6 +2703,14 @@ export interface components {
             metadata?: {
                 [key: string]: unknown;
             };
+            /** Address */
+            address?: string | null;
+            /** Image Urls */
+            image_urls?: string[];
+            /** Reviews */
+            reviews?: {
+                [key: string]: unknown;
+            }[] | null;
             /**
              * Id
              * Format: uuid
@@ -3403,6 +3448,14 @@ export interface components {
             metadata?: {
                 [key: string]: unknown;
             } | null;
+            /** Address */
+            address?: string | null;
+            /** Image Urls */
+            image_urls?: string[] | null;
+            /** Reviews */
+            reviews?: {
+                [key: string]: unknown;
+            }[] | null;
         };
         /**
          * UpdateSourceSectionReviewRequest
@@ -5059,6 +5112,58 @@ export interface operations {
                 content?: never;
             };
             /** @description Property is not publishable (missing fields or wrong status) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    unpublish_property_api_v1_admin_properties__property_id__unpublish_post: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Property unpublished */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized — must be OWNER or ADMIN of the organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property is not unpublishable (not currently ACTIVE) */
             422: {
                 headers: {
                     [name: string]: unknown;
