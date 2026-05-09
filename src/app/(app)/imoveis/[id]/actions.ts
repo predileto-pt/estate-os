@@ -2,6 +2,9 @@
 
 import { coreGet, corePost, corePostAction, corePatch, coreDelete, ApiError } from "@/lib/api";
 import type { ActionResult, MutationResult, PropertyResponse } from "@/lib/api";
+import type { components } from "@/lib/types/estate-os-api";
+
+export type PropertyPoiResponse = components["schemas"]["PropertyPoiResponse"];
 
 export async function deleteProperty(
   propertyId: string,
@@ -20,6 +23,19 @@ export async function publishProperty(
   try {
     const data = await corePostAction<PropertyResponse>(
       `/api/v1/admin/properties/${propertyId}/publish`,
+    );
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
+export async function getPropertyPois(
+  propertyId: string,
+): Promise<ActionResult<PropertyPoiResponse[]>> {
+  try {
+    const data = await coreGet<PropertyPoiResponse[]>(
+      `/api/v1/admin/properties/${propertyId}/pois`,
     );
     return { error: null, data };
   } catch (err) {
