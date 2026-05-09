@@ -227,8 +227,8 @@ export function PoiList({
                 {categoryLabel(category)}
                 <Small variant="muted">({items.length})</Small>
               </h2>
-              <div className="-mx-4 px-4 overflow-x-auto">
-                <div className="flex gap-3 snap-x snap-mandatory pb-2">
+              <div className="-mx-4 px-4 overflow-x-auto scrollbar-thin">
+                <div className="flex gap-3 snap-x snap-mandatory pb-3">
                   {items.map((poi) => (
                     <PoiCard key={poi.id} poi={poi} />
                   ))}
