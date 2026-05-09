@@ -7,7 +7,6 @@ import type {
   MutationResult,
   PropertyResponse,
   PropertyPriceResponse,
-  PropertyAmenityResponse,
   ExtractionJobResponse,
 } from "@/lib/api/types";
 
@@ -28,20 +27,6 @@ export async function getPropertyPrices(
   try {
     const data = await coreGet<PropertyPriceResponse[]>(
       "/api/v1/admin/property-prices/",
-      { property_id: propertyId },
-    );
-    return { error: null, data };
-  } catch (err) {
-    return { error: err instanceof ApiError ? err.message : "Network error" };
-  }
-}
-
-export async function getPropertyAmenities(
-  propertyId: string,
-): Promise<ActionResult<PropertyAmenityResponse[]>> {
-  try {
-    const data = await coreGet<PropertyAmenityResponse[]>(
-      "/api/v1/admin/property-amenities/",
       { property_id: propertyId },
     );
     return { error: null, data };

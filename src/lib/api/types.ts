@@ -14,10 +14,6 @@ export type MeResponse = components["schemas"]["MeResponse"];
 export type MembershipSummary =
   components["schemas"]["identity__adapters__api__schemas__MembershipSummary"];
 
-export type PropertyAmenityResponse =
-  components["schemas"]["PropertyAmenityResponse"];
-export type AmenityCategory = components["schemas"]["AmenityCategory"];
-
 export type PropertySummary = {
   id: string;
   address: string;
