@@ -173,6 +173,8 @@
     "discoveringPois": "A descobrir POIs...",
     "poisQueuedHint": "Pedido em fila — os POIs aparecerão dentro de alguns segundos.",
     "poisMissingCoords": "O imóvel não tem coordenadas, não é possível descobrir POIs.",
+    "poisDiscoveryFailed": "A descoberta falhou.",
+    "poisLastUpdate": "Última actualização há {when}.",
     "poiCategoryHospital": "Hospitais",
     "poiCategoryBank": "Bancos",
     "poiCategoryGrocery": "Supermercados",

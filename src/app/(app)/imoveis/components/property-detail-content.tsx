@@ -20,8 +20,6 @@ type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
 type PropertyPriceResponse =
   components["schemas"]["properties__adapters__api__schemas__PropertyPriceResponse"];
-type PropertyAmenityResponse = components["schemas"]["PropertyAmenityResponse"];
-type AmenityCategory = components["schemas"]["AmenityCategory"];
 type PropertyStatus = components["schemas"]["PropertyStatus"];
 type ListingType =
   components["schemas"]["properties__domain__models__property__ListingType"];
@@ -544,116 +542,11 @@ function PropertyPriceCard({
 
 
 
-type NearbyPlaceResponse = components["schemas"]["NearbyPlaceResponse"];
-
-function PlaceLink({ name, url }: { name: string; url?: string | null }) {
-  if (url) {
-    return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-sm text-gray-700 hover:text-gray-900 truncate underline decoration-gray-300 hover:decoration-gray-500 transition-colors"
-      >
-        {name}
-      </a>
-    );
-  }
-  return <span className="text-sm text-gray-700 truncate">{name}</span>;
-}
-
-function AmenityRow({
-  amenity,
-  dict,
-}: {
-  amenity: PropertyAmenityResponse;
-  dict: Dictionary["dashboard"];
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const meta = AMENITY_ICONS[amenity.category];
-  const hasPlaces = amenity.top_places.length > 0;
-
-  return (
-    <div className="px-4 py-3">
-      <button
-        onClick={() => hasPlaces && setExpanded((prev) => !prev)}
-        className={cn(
-          "flex items-start gap-3 w-full text-left",
-          hasPlaces && "cursor-pointer",
-        )}
-      >
-        <span className="text-base leading-none mt-0.5">{meta?.icon ?? "📍"}</span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <PlaceLink name={amenity.nearest_name} url={amenity.nearest_google_maps_url} />
-            <span className="text-xs text-gray-400 shrink-0">
-              {formatDistance(amenity.nearest_distance_meters)}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
-            <span>{meta?.label ?? amenity.category}</span>
-            {amenity.total_count > 1 && (
-              <span>· {amenity.total_count} {dict.nearby}</span>
-            )}
-            {hasPlaces && (
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={cn("ml-auto transition-transform", expanded && "rotate-180")}
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            )}
-          </div>
-        </div>
-      </button>
-
-      {expanded && hasPlaces && (
-        <div className="ml-8 mt-2 space-y-1.5 border-l-2 border-gray-100 pl-3">
-          {amenity.top_places.map((place, i) => (
-            <div key={place.place_id ?? i} className="flex items-center justify-between gap-2">
-              <PlaceLink name={place.name} url={place.google_maps_url} />
-              <span className="text-xs text-gray-400 shrink-0">
-                {formatDistance(place.distance_meters)}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-const AMENITY_ICONS: Record<AmenityCategory, { icon: string; label: string }> = {
-  hospital: { icon: "🏥", label: "Hospital" },
-  bank: { icon: "🏦", label: "Banco" },
-  grocery: { icon: "🛒", label: "Supermercado" },
-  school: { icon: "🏫", label: "Escola" },
-  laundry: { icon: "🧺", label: "Lavandaria" },
-  coffee_shop: { icon: "☕", label: "Café" },
-  pharmacy: { icon: "💊", label: "Farmácia" },
-  gym: { icon: "🏋️", label: "Ginásio" },
-  restaurant: { icon: "🍽️", label: "Restaurante" },
-};
-
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
-}
-
 export function PropertyDetailContent({
   property,
-  amenities,
   dict,
 }: {
   property: PropertyResponse;
-  amenities: PropertyAmenityResponse[];
   dict: Dictionary["dashboard"];
 }) {
   const locale = useLocale();
@@ -1158,22 +1051,6 @@ export function PropertyDetailContent({
 
             {/* Price card */}
             <PropertyPriceCard property={property} prices={property.prices} dict={dict} />
-
-            {/* Amenities card */}
-            {amenities.length > 0 && (
-              <div className="border border-gray-200 bg-white overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <Small variant="label">{dict.nearbyAmenities}</Small>
-                </div>
-                <div className="divide-y divide-gray-100">
-                  {amenities
-                    .sort((a, b) => a.nearest_distance_meters - b.nearest_distance_meters)
-                    .map((amenity) => (
-                      <AmenityRow key={amenity.id} amenity={amenity} dict={dict} />
-                    ))}
-                </div>
-              </div>
-            )}
 
             {/* Dates + ID card */}
             <div className="border border-gray-200 bg-white overflow-hidden">

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getDictionary } from "@/lib/i18n";
 import { getLocaleFromCookie } from "@/lib/i18n-server";
-import { getProperty, getPropertyAmenities } from "../novo/actions";
+import { getProperty } from "../novo/actions";
 import { notFound } from "next/navigation";
 import { PropertyDetailContent } from "../components/property-detail-content";
 import { MainWrapper } from "@/components/main-wrapper";
@@ -23,20 +23,14 @@ export default async function PropertyDetailPage({
 
   if (!user) return null;
 
-  const [result, amenitiesResult] = await Promise.all([
-    getProperty(id),
-    getPropertyAmenities(id),
-  ]);
+  const result = await getProperty(id);
   if (result.error !== null) notFound();
-
-  const amenities = amenitiesResult.error === null ? amenitiesResult.data : [];
 
   return (
     <MainWrapper>
       <Suspense>
         <PropertyDetailContent
           property={result.data}
-          amenities={amenities}
           dict={dict.dashboard}
         />
       </Suspense>

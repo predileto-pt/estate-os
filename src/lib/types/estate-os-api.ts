@@ -472,9 +472,29 @@ export interface paths {
         put?: never;
         /**
          * Trigger POI auto-discovery for a property
-         * @description Enqueues an `ENRICH_PROPERTY_REQUESTED.v1` command. The worker discovers nearby POIs via the configured `PlacesService`, ranks them, and replaces the property's POI catalog. Manually-edited categories are preserved unless `force=true` is sent.
+         * @description Enqueues an `ENRICH_PROPERTY_REQUESTED.v1` command and registers a unified background-job row (ADR-012). Returns the `job_id` so the frontend can poll `GET /admin/jobs/{id}` for status. The worker discovers nearby POIs via the configured `PlacesService`, ranks them, and replaces the property's POI catalog. Manually-edited categories are preserved unless `force=true` is sent.
          */
         post: operations["enrich_property_api_v1_admin_properties__property_id__enrich_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/properties/{property_id}/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List background jobs for a property
+         * @description Returns the most recent background-job rows scoped to this property (`entity_type=PROPERTY, entity_id=property_id`). Filter by `kind` to scope to a specific workflow (e.g. `property_enrichment`). Backed by the shared `jobs` infra (ADR-012).
+         */
+        get: operations["list_property_jobs_api_v1_admin_properties__property_id__jobs_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -636,40 +656,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/property-amenities/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List property amenities */
-        get: operations["get_property_amenities_api_v1_admin_property_amenities__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/property-amenities/discover": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Trigger amenity discovery for a property */
-        post: operations["discover_property_amenities_api_v1_admin_property_amenities_discover_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/admin/properties/{property_id}/pois": {
         parameters: {
             query?: never;
@@ -790,6 +776,43 @@ export interface paths {
         };
         /** Get extraction job status */
         get: operations["get_extraction_job_api_v1_admin_extraction_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/jobs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List background jobs for an organization
+         * @description Returns the most recent jobs scoped to the caller's organization, ordered by `created_at` descending. Filter by `status` (comma-separated), `kind`, `entity_type`, `entity_id`. No pagination — callers ask for the last N (default 10, max 50).
+         */
+        get: operations["list_jobs_api_v1_admin_jobs__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a single background job */
+        get: operations["get_job_api_v1_admin_jobs__job_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1466,11 +1489,6 @@ export interface components {
             membership: components["schemas"]["organizations__adapters__api__routes__admin_auth__MembershipSummary"];
             subscription: components["schemas"]["SubscriptionSummary"] | null;
         };
-        /**
-         * AmenityCategory
-         * @enum {string}
-         */
-        AmenityCategory: "hospital" | "bank" | "grocery" | "school" | "laundry" | "coffee_shop" | "pharmacy" | "gym" | "restaurant";
         /** ApplicantDetailResponse */
         ApplicantDetailResponse: {
             /**
@@ -1905,6 +1923,24 @@ export interface components {
              */
             force: boolean;
         };
+        /** EnrichPropertyResponse */
+        EnrichPropertyResponse: {
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            /**
+             * Status
+             * @default processing
+             */
+            status: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+        };
         /** ExtractionJobResponse */
         ExtractionJobResponse: {
             /**
@@ -1933,6 +1969,8 @@ export interface components {
             property_id?: string | null;
             /** Error Message */
             error_message?: string | null;
+            /** Tracked Job Id */
+            tracked_job_id?: string | null;
             /**
              * Created At
              * Format: date-time
@@ -2158,6 +2196,74 @@ export interface components {
             email: string;
             role: components["schemas"]["MembershipRole"];
         };
+        /**
+         * JobEntityType
+         * @enum {string}
+         */
+        JobEntityType: "property" | "listing" | "applicant" | "contract" | "generated_media";
+        /**
+         * JobKind
+         * @enum {string}
+         */
+        JobKind: "property_document_extraction" | "property_enrichment" | "applicant_screening" | "contract_ingestion" | "contract_analysis" | "media_generation_image" | "media_generation_video";
+        /** JobResponse */
+        JobResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Requested By User Id
+             * Format: uuid
+             */
+            requested_by_user_id: string;
+            kind: components["schemas"]["JobKind"];
+            status: components["schemas"]["JobStatus"];
+            entity_type: components["schemas"]["JobEntityType"];
+            /**
+             * Entity Id
+             * Format: uuid
+             */
+            entity_id: string;
+            /** Title */
+            title: string;
+            /** Error Code */
+            error_code: string | null;
+            /** Error Message */
+            error_message: string | null;
+            /** Result Summary */
+            result_summary: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Completed At */
+            completed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * JobStatus
+         * @enum {string}
+         */
+        JobStatus: "pending" | "processing" | "completed" | "failed";
         /** ListedPropertyResponse */
         ListedPropertyResponse: {
             /**
@@ -2244,21 +2350,6 @@ export interface components {
          * @enum {string}
          */
         MembershipRole: "owner" | "admin" | "member";
-        /** NearbyPlaceResponse */
-        NearbyPlaceResponse: {
-            /** Name */
-            name: string;
-            /** Distance Meters */
-            distance_meters: number;
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Place Id */
-            place_id?: string | null;
-            /** Google Maps Url */
-            google_maps_url?: string | null;
-        };
         /** NotificationResponse */
         NotificationResponse: {
             /**
@@ -2479,49 +2570,6 @@ export interface components {
             upload_id: string;
             /** Files */
             files: components["schemas"]["PresignedFileUpload"][];
-        };
-        /** PropertyAmenityResponse */
-        PropertyAmenityResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Property Id
-             * Format: uuid
-             */
-            property_id: string;
-            category: components["schemas"]["AmenityCategory"];
-            /** Nearest Name */
-            nearest_name: string;
-            /** Nearest Distance Meters */
-            nearest_distance_meters: number;
-            /** Nearest Latitude */
-            nearest_latitude: number;
-            /** Nearest Longitude */
-            nearest_longitude: number;
-            /** Total Count */
-            total_count: number;
-            /** Nearest Place Id */
-            nearest_place_id?: string | null;
-            /** Nearest Google Maps Url */
-            nearest_google_maps_url?: string | null;
-            /**
-             * Top Places
-             * @default []
-             */
-            top_places: components["schemas"]["NearbyPlaceResponse"][];
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
-            updated_at: string;
         };
         /** PropertyCharacteristicsResponse */
         PropertyCharacteristicsResponse: {
@@ -5036,13 +5084,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Enrichment command queued */
+            /** @description Enrichment command queued; job_id returned */
             202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["EnrichPropertyResponse"];
                 };
             };
             /** @description Not authenticated */
@@ -5072,6 +5120,55 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_property_jobs_api_v1_admin_properties__property_id__jobs_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+                kind?: components["schemas"]["JobKind"] | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -5670,110 +5767,6 @@ export interface operations {
             };
         };
     };
-    get_property_amenities_api_v1_admin_property_amenities__get: {
-        parameters: {
-            query: {
-                property_id: string;
-                organization_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PropertyAmenityResponse"][];
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not authorized */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Property not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    discover_property_amenities_api_v1_admin_property_amenities_discover_post: {
-        parameters: {
-            query: {
-                property_id: string;
-                organization_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Not authenticated */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not authorized */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Property not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Property missing coordinates */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     list_property_pois_api_v1_admin_properties__property_id__pois_get: {
         parameters: {
             query: {
@@ -6249,6 +6242,110 @@ export interface operations {
                 content?: never;
             };
             /** @description Job not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_jobs_api_v1_admin_jobs__get: {
+        parameters: {
+            query: {
+                organization_id: string;
+                status?: string | null;
+                kind?: components["schemas"]["JobKind"] | null;
+                entity_type?: components["schemas"]["JobEntityType"] | null;
+                entity_id?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_job_api_v1_admin_jobs__job_id__get: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Job not found (or belongs to a different organization) */
             404: {
                 headers: {
                     [name: string]: unknown;

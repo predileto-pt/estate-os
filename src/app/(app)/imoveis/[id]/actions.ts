@@ -5,6 +5,9 @@ import type { ActionResult, MutationResult, PropertyResponse } from "@/lib/api";
 import type { components } from "@/lib/types/estate-os-api";
 
 export type PropertyPoiResponse = components["schemas"]["PropertyPoiResponse"];
+export type JobResponse = components["schemas"]["JobResponse"];
+export type EnrichPropertyResponse =
+  components["schemas"]["EnrichPropertyResponse"];
 
 export async function deleteProperty(
   propertyId: string,
@@ -46,14 +49,39 @@ export async function getPropertyPois(
 export async function enrichProperty(
   propertyId: string,
   force: boolean = false,
-): Promise<MutationResult> {
+): Promise<ActionResult<EnrichPropertyResponse>> {
   try {
-    await corePostAction(
+    const data = await corePostAction<EnrichPropertyResponse>(
       `/api/v1/admin/properties/${propertyId}/enrich`,
       undefined,
       { force },
     );
-    return { error: null };
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
+export async function getJob(
+  jobId: string,
+): Promise<ActionResult<JobResponse>> {
+  try {
+    const data = await coreGet<JobResponse>(`/api/v1/admin/jobs/${jobId}`);
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
+export async function getLatestPropertyEnrichmentJob(
+  propertyId: string,
+): Promise<ActionResult<JobResponse | null>> {
+  try {
+    const data = await coreGet<JobResponse[]>(
+      `/api/v1/admin/properties/${propertyId}/jobs`,
+      { kind: "property_enrichment", limit: "1" },
+    );
+    return { error: null, data: data[0] ?? null };
   } catch (err) {
     return { error: err instanceof ApiError ? err.message : "Network error" };
   }
