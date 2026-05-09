@@ -1,11 +1,31 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import type { components } from "@/lib/types/estate-os-api";
 import type { Dictionary } from "@/lib/i18n";
 import { Title } from "@/components/ui/title";
 import { Small } from "@/components/ui/small";
+import {
+  enrichProperty,
+  getJob,
+  getLatestPropertyEnrichmentJob,
+} from "../../actions";
 import { DiscoverPoisButton } from "./discover-pois-button";
 
 type PropertyPoiResponse = components["schemas"]["PropertyPoiResponse"];
 type PoiCategory = components["schemas"]["PoiCategory"];
+type JobResponse = components["schemas"]["JobResponse"];
+type JobStatus = components["schemas"]["JobStatus"];
+
+const POLL_INTERVAL_MS = 3_000;
+// Reaper marks orphaned jobs FAILED after 30 min (ADR-012); cap polling well
+// short of that so a misconfigured worker doesn't keep tabs open forever.
+const MAX_POLL_DURATION_MS = 5 * 60_000;
+
+const isInFlight = (status: JobStatus) =>
+  status === "pending" || status === "processing";
 
 const CATEGORY_LABEL_KEY: Record<PoiCategory, keyof Dictionary["dashboard"]> = {
   hospital: "poiCategoryHospital",
@@ -57,6 +77,96 @@ export function PoiList({
   pois: PropertyPoiResponse[];
   dict: Dictionary["dashboard"];
 }) {
+  const router = useRouter();
+  const [job, setJob] = useState<JobResponse | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pollStartRef = useRef<number>(0);
+  const wasInFlightRef = useRef(false);
+
+  const stopPolling = useCallback(() => {
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+  }, []);
+
+  const startPolling = useCallback(
+    (jobId: string) => {
+      stopPolling();
+      pollStartRef.current = Date.now();
+      const tick = async () => {
+        if (Date.now() - pollStartRef.current > MAX_POLL_DURATION_MS) {
+          stopPolling();
+          return;
+        }
+        const result = await getJob(jobId);
+        if (result.error !== null) return; // transient — keep polling
+        const fresh = result.data;
+        setJob(fresh);
+        if (!isInFlight(fresh.status)) {
+          stopPolling();
+          if (wasInFlightRef.current && fresh.status === "completed") {
+            router.refresh();
+          }
+          wasInFlightRef.current = false;
+        } else {
+          wasInFlightRef.current = true;
+        }
+      };
+      pollTimerRef.current = setInterval(tick, POLL_INTERVAL_MS);
+      // Tick once immediately so the UI reflects current state without
+      // waiting a full interval.
+      void tick();
+    },
+    [router, stopPolling],
+  );
+
+  // Recover state on mount: if the latest enrichment job is still in flight,
+  // resume polling so navigating away and back doesn't lose the indicator.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const result = await getLatestPropertyEnrichmentJob(propertyId);
+      if (cancelled || result.error !== null) return;
+      const latest = result.data;
+      if (!latest) return;
+      setJob(latest);
+      if (isInFlight(latest.status)) {
+        wasInFlightRef.current = true;
+        startPolling(latest.id);
+      }
+    })();
+    return () => {
+      cancelled = true;
+      stopPolling();
+    };
+  }, [propertyId, startPolling, stopPolling]);
+
+  const handleTrigger = async () => {
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      const result = await enrichProperty(propertyId);
+      if (result.error !== null) {
+        setSubmitError(
+          result.error.includes("422")
+            ? dict.poisMissingCoords
+            : result.error,
+        );
+        return;
+      }
+      wasInFlightRef.current = true;
+      startPolling(result.data.job_id);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inFlight = job !== null && isInFlight(job.status);
+
   const header = (
     <header className="mb-6 flex items-start justify-between gap-4">
       <div>
@@ -67,9 +177,28 @@ export function PoiList({
           {dict.poisSubtitle}
         </Small>
       </div>
-      <DiscoverPoisButton propertyId={propertyId} dict={dict} />
+      <DiscoverPoisButton
+        job={job}
+        submitting={submitting}
+        inFlight={inFlight}
+        error={submitError}
+        onTrigger={handleTrigger}
+        dict={dict}
+      />
     </header>
   );
+
+  if (inFlight) {
+    return (
+      <div>
+        {header}
+        <div className="flex flex-col items-center gap-3 py-16 text-center">
+          <Loader2 className="size-6 text-gray-400 animate-spin" />
+          <p className="text-sm text-gray-500">{dict.poisQueuedHint}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (pois.length === 0) {
     return (
