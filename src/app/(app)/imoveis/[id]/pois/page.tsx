@@ -19,7 +19,7 @@ export default async function PropertyPoisPage({
 
   return (
     <MainWrapper>
-      <PoiList pois={result.data} dict={dict.dashboard} />
+      <PoiList propertyId={id} pois={result.data} dict={dict.dashboard} />
     </MainWrapper>
   );
 }

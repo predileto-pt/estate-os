@@ -43,6 +43,22 @@ export async function getPropertyPois(
   }
 }
 
+export async function enrichProperty(
+  propertyId: string,
+  force: boolean = false,
+): Promise<MutationResult> {
+  try {
+    await corePostAction(
+      `/api/v1/admin/properties/${propertyId}/enrich`,
+      undefined,
+      { force },
+    );
+    return { error: null };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
 export async function updatePropertyAddress(
   propertyId: string,
   address: string,

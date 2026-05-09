@@ -2,6 +2,7 @@ import type { components } from "@/lib/types/estate-os-api";
 import type { Dictionary } from "@/lib/i18n";
 import { Title } from "@/components/ui/title";
 import { Small } from "@/components/ui/small";
+import { DiscoverPoisButton } from "./discover-pois-button";
 
 type PropertyPoiResponse = components["schemas"]["PropertyPoiResponse"];
 type PoiCategory = components["schemas"]["PoiCategory"];
@@ -48,23 +49,32 @@ function groupByCategory(
 }
 
 export function PoiList({
+  propertyId,
   pois,
   dict,
 }: {
+  propertyId: string;
   pois: PropertyPoiResponse[];
   dict: Dictionary["dashboard"];
 }) {
+  const header = (
+    <header className="mb-6 flex items-start justify-between gap-4">
+      <div>
+        <Title level={1} size="2xl" className="font-heading">
+          {dict.pois}
+        </Title>
+        <Small variant="muted" as="p" className="mt-1">
+          {dict.poisSubtitle}
+        </Small>
+      </div>
+      <DiscoverPoisButton propertyId={propertyId} dict={dict} />
+    </header>
+  );
+
   if (pois.length === 0) {
     return (
       <div>
-        <header className="mb-4">
-          <Title level={1} size="2xl" className="font-heading">
-            {dict.pois}
-          </Title>
-          <Small variant="muted" as="p" className="mt-1">
-            {dict.poisSubtitle}
-          </Small>
-        </header>
+        {header}
         <p className="text-sm text-gray-500">{dict.noPois}</p>
       </div>
     );
@@ -77,14 +87,7 @@ export function PoiList({
 
   return (
     <div>
-      <header className="mb-6">
-        <Title level={1} size="2xl" className="font-heading">
-          {dict.pois}
-        </Title>
-        <Small variant="muted" as="p" className="mt-1">
-          {dict.poisSubtitle}
-        </Small>
-      </header>
+      {header}
 
       <div className="space-y-6">
         {categories.map((category) => {
