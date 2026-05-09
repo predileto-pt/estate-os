@@ -206,8 +206,12 @@ export function PoiList({
   }
 
   const grouped = groupByCategory(pois);
+  const categoryLabel = (category: PoiCategory): string => {
+    const key = CATEGORY_LABEL_KEY[category];
+    return (key && dict[key]) || category;
+  };
   const categories = Array.from(grouped.keys()).sort((a, b) =>
-    dict[CATEGORY_LABEL_KEY[a]].localeCompare(dict[CATEGORY_LABEL_KEY[b]]),
+    categoryLabel(a).localeCompare(categoryLabel(b)),
   );
 
   return (
@@ -220,7 +224,7 @@ export function PoiList({
           return (
             <section key={category}>
               <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-baseline gap-2">
-                {dict[CATEGORY_LABEL_KEY[category]]}
+                {categoryLabel(category)}
                 <Small variant="muted">({items.length})</Small>
               </h2>
               <div className="-mx-4 px-4 overflow-x-auto">
