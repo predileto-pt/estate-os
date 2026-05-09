@@ -13,6 +13,7 @@ import {
   getLatestPropertyEnrichmentJob,
 } from "../../actions";
 import { DiscoverPoisButton } from "./discover-pois-button";
+import { PoiCard } from "./poi-card";
 
 type PropertyPoiResponse = components["schemas"]["PropertyPoiResponse"];
 type PoiCategory = components["schemas"]["PoiCategory"];
@@ -47,11 +48,6 @@ const CATEGORY_LABEL_KEY: Record<PoiCategory, keyof Dictionary["dashboard"]> = {
   bakery: "poiCategoryBakery",
   police_station: "poiCategoryPoliceStation",
 };
-
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
-}
 
 function groupByCategory(
   pois: PropertyPoiResponse[],
@@ -210,38 +206,34 @@ export function PoiList({
   }
 
   const grouped = groupByCategory(pois);
+  const categoryLabel = (category: PoiCategory): string => {
+    const key = CATEGORY_LABEL_KEY[category];
+    return (key && dict[key]) || category;
+  };
   const categories = Array.from(grouped.keys()).sort((a, b) =>
-    dict[CATEGORY_LABEL_KEY[a]].localeCompare(dict[CATEGORY_LABEL_KEY[b]]),
+    categoryLabel(a).localeCompare(categoryLabel(b)),
   );
 
   return (
     <div>
       {header}
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {categories.map((category) => {
           const items = grouped.get(category) ?? [];
           return (
             <section key={category}>
-              <h2 className="text-sm font-semibold text-gray-900 mb-2 flex items-baseline gap-2">
-                {dict[CATEGORY_LABEL_KEY[category]]}
+              <h2 className="text-sm font-semibold text-gray-900 mb-3 flex items-baseline gap-2">
+                {categoryLabel(category)}
                 <Small variant="muted">({items.length})</Small>
               </h2>
-              <ul className="border border-gray-200 bg-white divide-y divide-gray-100">
-                {items.map((poi) => (
-                  <li
-                    key={poi.id}
-                    className="flex items-baseline justify-between gap-4 px-3 py-2"
-                  >
-                    <span className="text-sm text-gray-700 truncate">
-                      {poi.name}
-                    </span>
-                    <Small variant="muted" className="shrink-0">
-                      {formatDistance(poi.distance_meters)}
-                    </Small>
-                  </li>
-                ))}
-              </ul>
+              <div className="-mx-4 px-4 overflow-x-auto scrollbar-thin">
+                <div className="flex gap-3 snap-x snap-mandatory pb-3">
+                  {items.map((poi) => (
+                    <PoiCard key={poi.id} poi={poi} />
+                  ))}
+                </div>
+              </div>
             </section>
           );
         })}
