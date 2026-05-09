@@ -461,6 +461,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/properties/{property_id}/enrich": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Trigger POI auto-discovery for a property
+         * @description Enqueues an `ENRICH_PROPERTY_REQUESTED.v1` command. The worker discovers nearby POIs via the configured `PlacesService`, ranks them, and replaces the property's POI catalog. Manually-edited categories are preserved unless `force=true` is sent.
+         */
+        post: operations["enrich_property_api_v1_admin_properties__property_id__enrich_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/property-owners/": {
         parameters: {
             query?: never;
@@ -650,6 +670,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/properties/{property_id}/pois": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List a property's POIs */
+        get: operations["list_property_pois_api_v1_admin_properties__property_id__pois_get"];
+        put?: never;
+        /**
+         * Replace the entire POI catalog for a property
+         * @description Replaces every existing POI for this property with the supplied list. Each row is flagged `manually_edited=true` so the future enrichment workflow won't re-discover categories with manually-edited rows. Empty list (`pois: []`) clears the catalog.
+         */
+        post: operations["replace_property_pois_api_v1_admin_properties__property_id__pois_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/properties/{property_id}/pois/{poi_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete one POI */
+        delete: operations["delete_property_poi_api_v1_admin_properties__property_id__pois__poi_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit one POI in place
+         * @description Partial update. Sets `manually_edited=true` on success. Cross-property defense: returns 404 if `poi_id` exists but belongs to a different property.
+         */
+        patch: operations["update_property_poi_api_v1_admin_properties__property_id__pois__poi_id__patch"];
+        trace?: never;
+    };
     "/api/v1/admin/extraction-jobs/presign": {
         parameters: {
             query?: never;
@@ -762,6 +824,23 @@ export interface paths {
         };
         /** Get a single active property by ID */
         get: operations["get_property_api_v1_listings_properties__property_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/listings/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active listings for the caller's organization (admin view) */
+        get: operations["list_org_active_listings_api_v1_admin_listings_properties_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1660,6 +1739,29 @@ export interface components {
              */
             date_of_birth: string;
         };
+        /**
+         * CreatePropertyPoiRequest
+         * @description One POI inside a `ReplacePropertyPoisRequest.pois` list.
+         */
+        CreatePropertyPoiRequest: {
+            category: components["schemas"]["PoiCategory"];
+            /** Name */
+            name: string;
+            /** Distance Meters */
+            distance_meters: number;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Place Type */
+            place_type?: string | null;
+            /** Place Id */
+            place_id?: string | null;
+            /** Metadata */
+            metadata?: {
+                [key: string]: unknown;
+            };
+        };
         /** CreatePropertyPriceRequest */
         CreatePropertyPriceRequest: {
             /**
@@ -1794,6 +1896,14 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** EnrichPropertyRequest */
+        EnrichPropertyRequest: {
+            /**
+             * Force
+             * @default false
+             */
+            force: boolean;
         };
         /** ExtractionJobResponse */
         ExtractionJobResponse: {
@@ -2262,6 +2372,11 @@ export interface components {
             /** Label */
             label: string;
         };
+        /**
+         * PoiCategory
+         * @enum {string}
+         */
+        PoiCategory: "hospital" | "bank" | "grocery" | "school" | "pharmacy" | "gym" | "restaurant" | "coffee_shop" | "laundry" | "gas_station" | "public_transit" | "kindergarten" | "park" | "post_office" | "library" | "shopping_mall" | "bakery" | "police_station";
         /** PortalResponse */
         PortalResponse: {
             /** Url */
@@ -2484,6 +2599,48 @@ export interface components {
              */
             updated_at: string;
         };
+        /** PropertyPoiResponse */
+        PropertyPoiResponse: {
+            category: components["schemas"]["PoiCategory"];
+            /** Name */
+            name: string;
+            /** Distance Meters */
+            distance_meters: number;
+            /** Latitude */
+            latitude: number;
+            /** Longitude */
+            longitude: number;
+            /** Place Type */
+            place_type?: string | null;
+            /** Place Id */
+            place_id?: string | null;
+            /** Metadata */
+            metadata?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Property Id
+             * Format: uuid
+             */
+            property_id: string;
+            /** Manually Edited */
+            manually_edited: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** PropertyResponse */
         PropertyResponse: {
             /**
@@ -2682,6 +2839,11 @@ export interface components {
             property_id: string;
             /** Image Ids */
             image_ids: string[];
+        };
+        /** ReplacePropertyPoisRequest */
+        ReplacePropertyPoisRequest: {
+            /** Pois */
+            pois?: components["schemas"]["CreatePropertyPoiRequest"][];
         };
         /**
          * RiskLevel
@@ -3170,6 +3332,29 @@ export interface components {
             email?: string | null;
             /** Phone Number */
             phone_number?: string | null;
+        };
+        /**
+         * UpdatePropertyPoiRequest
+         * @description All fields optional — PATCH semantics.
+         */
+        UpdatePropertyPoiRequest: {
+            category?: components["schemas"]["PoiCategory"] | null;
+            /** Name */
+            name?: string | null;
+            /** Distance Meters */
+            distance_meters?: number | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
+            /** Place Type */
+            place_type?: string | null;
+            /** Place Id */
+            place_id?: string | null;
+            /** Metadata */
+            metadata?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * UpdateSourceSectionReviewRequest
@@ -4834,6 +5019,62 @@ export interface operations {
             };
         };
     };
+    enrich_property_api_v1_admin_properties__property_id__enrich_post: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnrichPropertyRequest"];
+            };
+        };
+        responses: {
+            /** @description Enrichment command queued */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property is missing coordinates */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     list_property_owners_api_v1_admin_property_owners__get: {
         parameters: {
             query: {
@@ -5533,6 +5774,226 @@ export interface operations {
             };
         };
     };
+    list_property_pois_api_v1_admin_properties__property_id__pois_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description POIs for the property */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyPoiResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replace_property_pois_api_v1_admin_properties__property_id__pois_post: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplacePropertyPoisRequest"];
+            };
+        };
+        responses: {
+            /** @description POIs replaced (or catalog cleared on empty list) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyPoiResponse"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid body */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_property_poi_api_v1_admin_properties__property_id__pois__poi_id__delete: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+                poi_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description POI deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property or POI not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_property_poi_api_v1_admin_properties__property_id__pois__poi_id__patch: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+                poi_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyPoiRequest"];
+            };
+        };
+        responses: {
+            /** @description POI updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyPoiResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property or POI not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid body */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     generate_upload_urls_api_v1_admin_extraction_jobs_presign_post: {
         parameters: {
             query?: never;
@@ -5868,6 +6329,65 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ListedPropertyResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_org_active_listings_api_v1_admin_listings_properties_get: {
+        parameters: {
+            query: {
+                organization_id: string;
+                /** @description Filter by listing type (sale/purchase) */
+                listing_type?: components["schemas"]["listings__domain__models__ListingType"] | null;
+                /** @description Filter by typology (house/apartment/land/ruin) */
+                typology?: components["schemas"]["Typology"] | null;
+                /** @description Minimum price filter */
+                min_price?: number | string | null;
+                /** @description Maximum price filter */
+                max_price?: number | string | null;
+                /** @description Filter by district/location (partial match on address) */
+                district?: string | null;
+                /** @description Number of results per page */
+                limit?: number;
+                /** @description Pagination offset */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Active listings for the organization */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedListingResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a member of this organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

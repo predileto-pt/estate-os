@@ -7,6 +7,7 @@ import {
   FileText,
   Home,
   Image as ImageIcon,
+  MapPin,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -51,6 +52,12 @@ export function PropertySubheader({ id }: { id: string }) {
       href: `/imoveis/${id}/imagens`,
       label: d.images,
       icon: ImageIcon,
+    },
+    {
+      key: "pois",
+      href: `/imoveis/${id}/pois`,
+      label: d.pois,
+      icon: MapPin,
     },
     {
       key: "documents",
