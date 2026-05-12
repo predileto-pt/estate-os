@@ -12,7 +12,7 @@ import { useGlobalLoading } from "@/components/ui/global-loading-overlay";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
-import { deleteProperty, publishProperty, unpublishProperty, updatePropertyAddress } from "../[id]/actions";
+import { deleteProperty, enhancePropertyDescription, publishProperty, unpublishProperty, updatePropertyAddress } from "../[id]/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
@@ -557,8 +557,27 @@ export function PropertyDetailContent({
   const [addressDraft, setAddressDraft] = useState(property.address);
   const [addressError, setAddressError] = useState<string | null>(null);
   const [isSavingAddress, startSaveAddress] = useTransition();
+  const [isEnhancingDescription, setIsEnhancingDescription] = useState(false);
+  const [enhanceDescriptionError, setEnhanceDescriptionError] = useState<string | null>(null);
   const detailRouter = useRouter();
   const globalLoading = useGlobalLoading();
+
+  const handleEnhanceDescription = async () => {
+    setEnhanceDescriptionError(null);
+    setIsEnhancingDescription(true);
+    globalLoading.show("A melhorar descrição...");
+    try {
+      const result = await enhancePropertyDescription(property.id);
+      if (result.error) {
+        setEnhanceDescriptionError(result.error);
+        return;
+      }
+      detailRouter.refresh();
+    } finally {
+      globalLoading.hide();
+      setIsEnhancingDescription(false);
+    }
+  };
 
   const handleEditAddress = () => {
     setAddressDraft(property.address);
@@ -849,13 +868,31 @@ export function PropertyDetailContent({
 
           {/* Description card */}
           <div className="border border-gray-200 bg-white overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
               <Small variant="label">{dict.description}</Small>
+              <button
+                type="button"
+                onClick={handleEnhanceDescription}
+                disabled={isEnhancingDescription}
+                className="inline-flex items-center gap-1.5 text-xs text-gray-700 px-2.5 py-1 border border-gray-200 bg-white hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+                  <path d="M20 3v4" />
+                  <path d="M22 5h-4" />
+                  <path d="M4 17v2" />
+                  <path d="M5 18H3" />
+                </svg>
+                {isEnhancingDescription ? "..." : dict.enhanceDescription}
+              </button>
             </div>
             <div className="px-4 py-4">
               <p className="text-sm text-gray-600 leading-relaxed">
                 {property.description || "Sem descrição disponível."}
               </p>
+              {enhanceDescriptionError && (
+                <p className="mt-2 text-xs text-red-600">{enhanceDescriptionError}</p>
+              )}
             </div>
           </div>
 

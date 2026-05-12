@@ -100,6 +100,19 @@ export async function getLatestPropertyEnrichmentJob(
   }
 }
 
+export async function enhancePropertyDescription(
+  propertyId: string,
+): Promise<ActionResult<PropertyResponse>> {
+  try {
+    const data = await corePostAction<PropertyResponse>(
+      `/api/v1/admin/properties/${propertyId}/enhance-description`,
+    );
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
 export async function updatePropertyAddress(
   propertyId: string,
   address: string,

@@ -303,6 +303,7 @@
     "land": "Land",
     "ruin": "Ruin",
     "description": "Description",
+    "enhanceDescription": "Enhance description",
     "characteristics": "Characteristics",
     "areaM2": "Area (m²)",
     "bedrooms": "Bedrooms",
