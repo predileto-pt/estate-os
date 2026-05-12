@@ -33,6 +33,19 @@ export async function publishProperty(
   }
 }
 
+export async function unpublishProperty(
+  propertyId: string,
+): Promise<ActionResult<PropertyResponse>> {
+  try {
+    const data = await corePostAction<PropertyResponse>(
+      `/api/v1/admin/properties/${propertyId}/unpublish`,
+    );
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
 export async function getPropertyPois(
   propertyId: string,
 ): Promise<ActionResult<PropertyPoiResponse[]>> {

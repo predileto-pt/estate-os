@@ -1,6 +1,11 @@
 "use server";
 
-import { coreGet, corePost, coreAuthPost, corePatch } from "@/lib/api/core-client";
+import {
+  coreGet,
+  corePost,
+  coreAuthPost,
+  corePatch,
+} from "@/lib/api/core-client";
 import { ApiError } from "@/lib/api/errors";
 import type {
   ActionResult,
@@ -22,12 +27,12 @@ export async function getProperties(): Promise<
 }
 
 export async function getPropertyPrices(
-  propertyId: string,
+  propertyId: string
 ): Promise<ActionResult<PropertyPriceResponse[]>> {
   try {
     const data = await coreGet<PropertyPriceResponse[]>(
       "/api/v1/admin/property-prices/",
-      { property_id: propertyId },
+      { property_id: propertyId }
     );
     return { error: null, data };
   } catch (err) {
@@ -49,11 +54,11 @@ export async function createPropertyPrice(params: {
 }
 
 export async function getProperty(
-  propertyId: string,
+  propertyId: string
 ): Promise<ActionResult<PropertyResponse>> {
   try {
     const data = await coreGet<PropertyResponse>(
-      `/api/v1/admin/properties/${propertyId}`,
+      `/api/v1/admin/properties/${propertyId}`
     );
     return { error: null, data };
   } catch (err) {
@@ -62,7 +67,7 @@ export async function getProperty(
 }
 
 export async function presignExtractionFiles(
-  files: { filename: string; content_type: string }[],
+  files: { filename: string; content_type: string }[]
 ): Promise<
   ActionResult<{
     job_id: string;
@@ -85,7 +90,7 @@ export async function getExtractionJobs(): Promise<
 > {
   try {
     const data = await coreGet<ExtractionJobResponse[]>(
-      "/api/v1/admin/extraction-jobs/",
+      "/api/v1/admin/extraction-jobs/"
     );
     return { error: null, data };
   } catch (err) {
@@ -117,7 +122,7 @@ export async function updateOwnerContact(params: {
     await corePatch(
       `/api/v1/admin/property-owners/${params.owner_id}/contact`,
       { email: params.email, phone_number: params.phone_number },
-      { property_id: params.property_id },
+      { property_id: params.property_id }
     );
     return { error: null };
   } catch (err) {

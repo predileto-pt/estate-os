@@ -12,7 +12,7 @@ import { useGlobalLoading } from "@/components/ui/global-loading-overlay";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
-import { deleteProperty, publishProperty, updatePropertyAddress } from "../[id]/actions";
+import { deleteProperty, publishProperty, unpublishProperty, updatePropertyAddress } from "../[id]/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
@@ -552,6 +552,7 @@ export function PropertyDetailContent({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [isUnpublishing, setIsUnpublishing] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [addressDraft, setAddressDraft] = useState(property.address);
   const [addressError, setAddressError] = useState<string | null>(null);
@@ -605,6 +606,30 @@ export function PropertyDetailContent({
     } finally {
       globalLoading.hide();
       setIsPublishing(false);
+    }
+  };
+
+  const handleUnpublishProperty = async () => {
+    if (
+      !window.confirm(
+        `Tem a certeza que pretende despublicar este imóvel?\n\n${property.address}\n\nO imóvel será removido do site público mas permanece como rascunho no painel.`,
+      )
+    ) {
+      return;
+    }
+    setPublishError(null);
+    setIsUnpublishing(true);
+    globalLoading.show("A despublicar imóvel...");
+    try {
+      const result = await unpublishProperty(property.id);
+      if (result.error) {
+        setPublishError(result.error);
+        return;
+      }
+      detailRouter.refresh();
+    } finally {
+      globalLoading.hide();
+      setIsUnpublishing(false);
     }
   };
 
@@ -764,11 +789,10 @@ export function PropertyDetailContent({
             {property.status === "active" && (
               <Button
                 variant="steel"
-                onClick={() => {/* TODO: wire when backend exposes withdraw endpoint */}}
-                disabled
-                title="Withdraw endpoint not available yet"
+                onClick={handleUnpublishProperty}
+                disabled={isUnpublishing}
               >
-                {dict.unpublish}
+                {isUnpublishing ? "..." : dict.unpublish}
               </Button>
             )}
             <Button
