@@ -20,7 +20,7 @@ type PoiCategory = components["schemas"]["PoiCategory"];
 type JobResponse = components["schemas"]["JobResponse"];
 type JobStatus = components["schemas"]["JobStatus"];
 
-const POLL_INTERVAL_MS = 3_000;
+const POLL_INTERVAL_MS = 5_000;
 // Reaper marks orphaned jobs FAILED after 30 min (ADR-012); cap polling well
 // short of that so a misconfigured worker doesn't keep tabs open forever.
 const MAX_POLL_DURATION_MS = 5 * 60_000;
