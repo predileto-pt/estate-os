@@ -13,6 +13,14 @@ const organizationSchema = z.object({
   name: z.string().min(1),
   nif: z.string().min(1),
   address: z.string().min(1),
+  email: z
+    .string()
+    .trim()
+    .email({ message: "invalid_email" })
+    .or(z.literal(""))
+    .optional(),
+  phone_country_code: z.string().trim().optional(),
+  phone_number: z.string().trim().optional(),
 });
 
 type OrganizationFormData = z.infer<typeof organizationSchema>;
@@ -34,8 +42,28 @@ export default function OrganizationPage() {
     formState: { errors, isSubmitting },
   } = useForm<OrganizationFormData>({
     resolver: zodResolver(organizationSchema),
-    defaultValues: { name: "", nif: "", address: "" },
+    defaultValues: {
+      name: "",
+      nif: "",
+      address: "",
+      email: "",
+      phone_country_code: "",
+      phone_number: "",
+    },
   });
+
+  function defaultsFromOrg(
+    org: components["schemas"]["OrganizationResponse"],
+  ): OrganizationFormData {
+    return {
+      name: org.name ?? "",
+      nif: org.nif ?? "",
+      address: org.address ?? "",
+      email: org.email ?? "",
+      phone_country_code: org.phone?.country_code ?? "",
+      phone_number: org.phone?.number ?? "",
+    };
+  }
 
   useEffect(() => {
     (async () => {
@@ -47,11 +75,7 @@ export default function OrganizationPage() {
       const orgResult = await getOrganization(meResult.data.organizationId);
       if (orgResult.error === null) {
         setOrganization(orgResult.data);
-        reset({
-          name: orgResult.data.name ?? "",
-          nif: orgResult.data.nif ?? "",
-          address: orgResult.data.address ?? "",
-        });
+        reset(defaultsFromOrg(orgResult.data));
       }
       setLoading(false);
     })();
@@ -62,21 +86,36 @@ export default function OrganizationPage() {
     setSaved(false);
     const result = await updateOrganization({
       organization_id: organization.id,
-      ...data,
+      name: data.name,
+      nif: data.nif,
+      address: data.address,
+      email: data.email || undefined,
+      phone_country_code: data.phone_country_code || undefined,
+      phone_number: data.phone_number || undefined,
     });
     if (result.error === null) {
-      setOrganization({ ...organization, ...data });
+      const phone =
+        data.phone_country_code && data.phone_number
+          ? {
+              country_code: data.phone_country_code,
+              number: data.phone_number,
+            }
+          : null;
+      setOrganization({
+        ...organization,
+        name: data.name,
+        nif: data.nif,
+        address: data.address,
+        email: data.email || null,
+        phone,
+      });
       setSaved(true);
       setEditing(false);
     }
   }
 
   function handleCancel() {
-    reset({
-      name: organization?.name ?? "",
-      nif: organization?.nif ?? "",
-      address: organization?.address ?? "",
-    });
+    if (organization) reset(defaultsFromOrg(organization));
     setEditing(false);
     setSaved(false);
   }
@@ -137,6 +176,42 @@ export default function OrganizationPage() {
             )}
           </div>
 
+          <div>
+            <label className="block text-sm text-gray-500 mb-1">
+              {d.organizationEmail}
+            </label>
+            <input
+              type="email"
+              {...register("email")}
+              placeholder="contacto@empresa.pt"
+              className="w-full border border-gray-200 px-3 py-2 text-sm"
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500 mt-1">{d.required}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-1">
+              {d.organizationPhone}
+            </label>
+            <div className="flex gap-2">
+              <input
+                {...register("phone_country_code")}
+                placeholder="+351"
+                aria-label={d.phoneCountryCode}
+                className="w-24 border border-gray-200 px-3 py-2 text-sm"
+              />
+              <input
+                {...register("phone_number")}
+                placeholder="912345678"
+                aria-label={d.phoneNumber}
+                inputMode="tel"
+                className="flex-1 border border-gray-200 px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+
           <div className="flex items-center gap-3">
             <Button type="submit" variant="secondary" disabled={isSubmitting}>
               {d.save}
@@ -155,6 +230,14 @@ export default function OrganizationPage() {
           <p className="text-sm font-medium">{organization?.name}</p>
           <p className="text-sm text-gray-500">{organization?.nif}</p>
           <p className="text-sm text-gray-500">{organization?.address}</p>
+          {organization?.email && (
+            <p className="text-sm text-gray-500">{organization.email}</p>
+          )}
+          {organization?.phone && (
+            <p className="text-sm text-gray-500">
+              {organization.phone.country_code} {organization.phone.number}
+            </p>
+          )}
         </div>
       )}
 

@@ -73,12 +73,18 @@ export async function updateOrganization(data: {
   name?: string;
   nif?: string;
   address?: string;
+  email?: string;
+  phone_country_code?: string;
+  phone_number?: string;
 }): Promise<MutationResult> {
   try {
     await corePatch(`/api/v1/admin/organizations/${data.organization_id}`, {
       name: data.name || null,
       nif: data.nif || null,
       address: data.address || null,
+      email: data.email || null,
+      phone_country_code: data.phone_country_code || null,
+      phone_number: data.phone_number || null,
     });
     return { error: null };
   } catch (err) {
