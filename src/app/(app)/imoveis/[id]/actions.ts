@@ -128,6 +128,21 @@ export async function updatePropertyAddress(
   }
 }
 
+export async function updatePropertyTitle(
+  propertyId: string,
+  title: string,
+): Promise<ActionResult<PropertyResponse>> {
+  try {
+    const data = await corePatch<PropertyResponse>(
+      `/api/v1/admin/properties/${propertyId}/title`,
+      { title },
+    );
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
 // Types
 export interface SlotResponse {
   id: string;

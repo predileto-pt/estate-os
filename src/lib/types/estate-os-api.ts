@@ -21,6 +21,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portal/session/init": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mint or refresh an anonymous portal session */
+        post: operations["init_session_api_v1_portal_session_init_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/session/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Return the current session view (auto-mints anonymous if no cookie)
+         * @description Return the session view. Behaviour by cookie state:
+         *
+         *     - **No cookie**: mint a fresh anonymous session, set the cookie, return
+         *       the view. One-call bootstrap for FE.
+         *     - **Valid cookie**: return the existing session (debounced `last_seen_at`).
+         *     - **Invalid cookie** (tampered/expired/orphaned row): 401 `SESSION_INVALID`.
+         *       We don't auto-mint here because preserving the signal helps the FE
+         *       detect tampering and tells callers to drop the bad cookie + retry.
+         */
+        get: operations["get_session_me_api_v1_portal_session_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Apply slice writes (favorites / prefs) */
+        patch: operations["patch_session_me_api_v1_portal_session_me_patch"];
+        trace?: never;
+    };
+    "/api/v1/portal/session/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bind the session to a portal user (Authorization: Bearer <portal JWT>) */
+        post: operations["claim_session_api_v1_portal_session_claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/session/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Flip the session to anonymous; clear favorites + prefs */
+        post: operations["logout_session_api_v1_portal_session_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/auth/register": {
         parameters: {
             query?: never;
@@ -421,6 +500,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/properties/{property_id}/title": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update property title
+         * @description Replace a property's `title`. Strips surrounding whitespace; empty / whitespace-only inputs are rejected at the schema layer (422). On no-op (new value equal to current after normalization) returns the existing aggregate without bumping `aggregate_version` or emitting an event.
+         */
+        patch: operations["update_property_title_api_v1_admin_properties__property_id__title_patch"];
+        trace?: never;
+    };
     "/api/v1/admin/properties/{property_id}/address": {
         parameters: {
             query?: never;
@@ -439,6 +538,26 @@ export interface paths {
          * @description Replace a property's `address`. Strips surrounding whitespace; empty / whitespace-only inputs are rejected at the schema layer (422). On no-op (new value equal to current after normalization) returns the existing aggregate without bumping `aggregate_version` or emitting an event.
          */
         patch: operations["update_property_address_api_v1_admin_properties__property_id__address_patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/properties/{property_id}/enhance-description": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rewrite the property's description via LLM
+         * @description Sends the property's current description plus its structured facts (title, address, listing type, typology, characteristics) to a LangChain + GPT-4o-mini adapter that returns polished marketing copy. The new value is persisted, `aggregate_version` is bumped, and `PROPERTY_UPDATED.v1` is emitted so the listings projector re-indexes.
+         */
+        post: operations["enhance_property_description_api_v1_admin_properties__property_id__enhance_description_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/admin/properties/{property_id}/publish": {
@@ -848,7 +967,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List active properties with filters */
+        /** List active properties with filters (q = semantic search) */
         get: operations["list_properties_api_v1_listings_properties_get"];
         put?: never;
         post?: never;
@@ -867,6 +986,34 @@ export interface paths {
         };
         /** Get a single active property by ID */
         get: operations["get_property_api_v1_listings_properties__property_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Hierarchical tree of populated locations (FE selector)
+         * @description Powers the FE's location selector for the search read path.
+         *
+         *     Returns the hierarchical tree of populated locations
+         *     (district → municipality → parish) derived from the
+         *     `property_listings` projection. Regions with zero published
+         *     listings are excluded.
+         *
+         *     TTL-cached at the use-case layer — repeated requests inside the
+         *     window don't re-query the DB.
+         */
+        get: operations["list_locations_api_v1_listings_locations_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1509,6 +1656,21 @@ export interface components {
             membership: components["schemas"]["organizations__adapters__api__routes__admin_auth__MembershipSummary"];
             subscription: components["schemas"]["SubscriptionSummary"] | null;
         };
+        /**
+         * AgencyResponse
+         * @description Display contact for the listing's agency.
+         *
+         *     Resolved from `Organization.name` + the creating user's email/phone
+         *     at projection time. Spec `2026-05-listings-agency-contact`.
+         */
+        AgencyResponse: {
+            /** Name */
+            name?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Phone */
+            phone?: string | null;
+        };
         /** ApplicantDetailResponse */
         ApplicantDetailResponse: {
             /**
@@ -1638,6 +1800,15 @@ export interface components {
          * @enum {string}
          */
         CivilStatus: "single" | "married" | "divorced" | "widowed" | "civil_union" | "separated";
+        /** CountryNode */
+        CountryNode: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Districts */
+            districts: components["schemas"]["DistrictNode"][];
+        };
         /** CreateBookingInvitationRequest */
         CreateBookingInvitationRequest: {
             /**
@@ -1834,6 +2005,8 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
+            /** Title */
+            title: string;
             /** Address */
             address: string;
             listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
@@ -1943,6 +2116,29 @@ export interface components {
              */
             created_at: string;
         };
+        /**
+         * CursorPageResponse
+         * @description Cursor-paginated response shape — used by the public endpoint
+         *     `GET /api/v1/listings/properties`. `next_cursor` is an opaque
+         *     token from `listings.domain.pagination.encode`; pass it back
+         *     verbatim as `?cursor=` on the next request to fetch the next
+         *     page. `null` means end of results.
+         */
+        CursorPageResponse: {
+            /** Items */
+            items: components["schemas"]["ListedPropertyResponse"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /** Limit */
+            limit: number;
+        };
+        /** DistrictNode */
+        DistrictNode: {
+            /** Name */
+            name: string;
+            /** Municipalities */
+            municipalities: components["schemas"]["MunicipalityNode"][];
+        };
         /** EnrichPropertyRequest */
         EnrichPropertyRequest: {
             /**
@@ -2015,6 +2211,13 @@ export interface components {
          * @enum {string}
          */
         ExtractionJobStatus: "pending" | "processing" | "completed" | "failed" | "retrying";
+        /** FavoritesPatchRequest */
+        FavoritesPatchRequest: {
+            /** Add */
+            add?: string[];
+            /** Remove */
+            remove?: string[];
+        };
         /**
          * FieldEvidenceRead
          * @description A single extracted field value with its provenance.
@@ -2294,15 +2497,21 @@ export interface components {
         JobStatus: "pending" | "processing" | "completed" | "failed";
         /**
          * ListedPropertyResponse
-         * @description Public-facing listing payload.
+         * @description Public-facing listing payload, served from the
+         *     `property_listings` projection (collapsed from the legacy
+         *     `ListedProperty` over the live `properties` table).
          *
-         *     `address` removed (privacy fix, spec
+         *     `address` is intentionally NOT here (privacy fix, spec
          *     `2026-05-property-address-enrichment-fix`). Structured location
-         *     fields (parish/municipality/district/country) are NOT exposed in v1
-         *     — they live on `property_listings`, which the public route doesn't
-         *     yet read. Exposing them is a follow-up that switches the public
-         *     route from the legacy `ListedProperty` (over `properties`) to
-         *     `PropertyListing` (over `property_listings`).
+         *     fields (parish/municipality/district/country) ARE exposed now that
+         *     the route reads from the projection.
+         *
+         *     `matched_pois` / `unmatched_pois` (ADR-014 §15) default to `[]`
+         *     — ALWAYS present, just empty on the q-empty path. Empty defaults
+         *     keep the schema regular and don't require
+         *     `response_model_exclude_none` (which would strip the nullable
+         *     parish/municipality/district fields too — that's a v1
+         *     contract break).
          */
         ListedPropertyResponse: {
             /**
@@ -2315,11 +2524,24 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
+            /** Title */
+            title: string;
             listing_type: components["schemas"]["listings__domain__models__ListingType"];
             typology: components["schemas"]["Typology"];
             /** Description */
             description: string | null;
             characteristics?: components["schemas"]["PropertyCharacteristicsResponse"] | null;
+            /** Parish */
+            parish?: string | null;
+            /** Municipality */
+            municipality?: string | null;
+            /** District */
+            district?: string | null;
+            /**
+             * Country
+             * @default Portugal
+             */
+            country: string;
             /** Latitude */
             latitude?: number | null;
             /** Longitude */
@@ -2341,6 +2563,36 @@ export interface components {
              * @default []
              */
             images: components["schemas"]["listings__adapters__api__schemas__PropertyImageResponse"][];
+            /**
+             * Pois
+             * @default []
+             */
+            pois: components["schemas"]["POIResponse"][];
+            /**
+             * Matched Pois
+             * @default []
+             */
+            matched_pois: components["schemas"]["POIResponse"][];
+            /**
+             * Unmatched Pois
+             * @default []
+             */
+            unmatched_pois: string[];
+            agency?: components["schemas"]["AgencyResponse"];
+        };
+        /**
+         * LocationTreeResponse
+         * @description Response schema for `GET /api/v1/listings/locations`. Drives
+         *     the FE selector (country → district → municipality → parish).
+         *
+         *     Served from a bundled JSON catalog
+         *     (`src/listings/static_data/locations.json`), NOT derived from
+         *     `property_listings`. The full geography renders from day one;
+         *     empty regions are still surfaced. Spec amended 2026-05-11.
+         */
+        LocationTreeResponse: {
+            /** Countries */
+            countries: components["schemas"]["CountryNode"][];
         };
         /** MarkNotificationsReadRequest */
         MarkNotificationsReadRequest: {
@@ -2387,6 +2639,13 @@ export interface components {
          * @enum {string}
          */
         MembershipRole: "owner" | "admin" | "member";
+        /** MunicipalityNode */
+        MunicipalityNode: {
+            /** Name */
+            name: string;
+            /** Parishes */
+            parishes: string[];
+        };
         /** NotificationResponse */
         NotificationResponse: {
             /**
@@ -2437,6 +2696,9 @@ export interface components {
             nif: string | null;
             /** Address */
             address: string | null;
+            /** Email */
+            email?: string | null;
+            phone?: components["schemas"]["PhoneResponse"] | null;
             /**
              * Created At
              * Format: date-time
@@ -2461,6 +2723,33 @@ export interface components {
             /** Updated At */
             updated_at: string;
         };
+        /**
+         * POIResponse
+         * @description POI matched against the user's extracted `nearby_pois`. Rich
+         *     fields surface from the listings projection (populated by the
+         *     properties POI snapshot — ADR-014 §13). Only the q-set search
+         *     path populates these; q-empty calls leave `matched_pois` /
+         *     `unmatched_pois` as empty lists.
+         */
+        POIResponse: {
+            /** Category */
+            category: string;
+            /** Name */
+            name: string;
+            /** Distance Meters */
+            distance_meters: number;
+            /** Address */
+            address?: string | null;
+            /**
+             * Image Urls
+             * @default []
+             */
+            image_urls: string[];
+            /** Reviews */
+            reviews?: {
+                [key: string]: unknown;
+            }[] | null;
+        };
         /** PaginatedBookingsResponse */
         PaginatedBookingsResponse: {
             /** Bookings */
@@ -2468,7 +2757,12 @@ export interface components {
             /** Total */
             total: number;
         };
-        /** PaginatedListingResponse */
+        /**
+         * PaginatedListingResponse
+         * @description Offset/limit response shape — used by the admin endpoint
+         *     `GET /api/v1/admin/listings/properties`. The public endpoint
+         *     switched to `CursorPageResponse` in ADR-016.
+         */
         PaginatedListingResponse: {
             /** Items */
             items: components["schemas"]["ListedPropertyResponse"][];
@@ -2504,11 +2798,18 @@ export interface components {
          * PoiCategory
          * @enum {string}
          */
-        PoiCategory: "hospital" | "bank" | "grocery" | "school" | "pharmacy" | "gym" | "restaurant" | "coffee_shop" | "laundry" | "gas_station" | "public_transit" | "kindergarten" | "park" | "post_office" | "library" | "shopping_mall" | "bakery" | "police_station";
+        PoiCategory: "hospital" | "bank" | "grocery" | "school" | "pharmacy" | "gym" | "restaurant" | "coffee_shop" | "laundry" | "gas_station" | "public_transit" | "kindergarten" | "park" | "post_office" | "library" | "shopping_mall" | "bakery" | "police_station" | "tire_shop" | "auto_shop";
         /** PortalResponse */
         PortalResponse: {
             /** Url */
             url: string;
+        };
+        /** PrefsPatchRequest */
+        PrefsPatchRequest: {
+            /** Merge */
+            merge?: {
+                [key: string]: unknown;
+            };
         };
         /** PresignFileSpec */
         PresignFileSpec: {
@@ -2746,6 +3047,8 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
+            /** Title */
+            title: string;
             /** Address */
             address: string;
             listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
@@ -2821,6 +3124,8 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
+            /** Title */
+            title: string;
             /** Address */
             address: string;
             listing_type: components["schemas"]["properties__domain__models__property__ListingType"];
@@ -2994,6 +3299,26 @@ export interface components {
              * @default noreply@predileto.pt
              */
             from_email: string;
+        };
+        /** SessionPatchRequest */
+        SessionPatchRequest: {
+            favorites?: components["schemas"]["FavoritesPatchRequest"] | null;
+            prefs?: components["schemas"]["PrefsPatchRequest"] | null;
+        };
+        /** SessionView */
+        SessionView: {
+            /** Kind */
+            kind: string;
+            /** User Id */
+            user_id: string | null;
+            /** Capabilities */
+            capabilities: string[];
+            /** Prefs */
+            prefs: {
+                [key: string]: unknown;
+            };
+            /** Favorites */
+            favorites: string[];
         };
         /** SlotResponse */
         SlotResponse: {
@@ -3401,6 +3726,15 @@ export interface components {
             nif?: string | null;
             /** Address */
             address?: string | null;
+            /** Email */
+            email?: string | null;
+            /**
+             * Phone Country Code
+             * @description E.g. +351
+             */
+            phone_country_code?: string | null;
+            /** Phone Number */
+            phone_number?: string | null;
         };
         /** UpdateProfileRequest */
         UpdateProfileRequest: {
@@ -3456,6 +3790,14 @@ export interface components {
             reviews?: {
                 [key: string]: unknown;
             }[] | null;
+        };
+        /** UpdatePropertyTitleRequest */
+        UpdatePropertyTitleRequest: {
+            /**
+             * Title
+             * @description New title; whitespace-only rejected
+             */
+            title: string;
         };
         /**
          * UpdateSourceSectionReviewRequest
@@ -3632,31 +3974,32 @@ export interface components {
             /** Created At */
             created_at: string;
         };
-        /** PropertyImageResponse */
+        /**
+         * PropertyImageResponse
+         * @description Lean public image shape: id (for keying), display_order,
+         *     download_url. Trimmed `filename` / `content_type` / `size_bytes`
+         *     during the projection-shape unification — none of those are
+         *     necessary for rendering the gallery.
+         */
         listings__adapters__api__schemas__PropertyImageResponse: {
             /**
              * Id
              * Format: uuid
              */
             id: string;
-            /** Filename */
-            filename: string;
-            /** Content Type */
-            content_type: string;
-            /** Size Bytes */
-            size_bytes: number;
             /** Display Order */
             display_order: number;
             /** Download Url */
             download_url: string;
         };
-        /** PropertyPriceResponse */
+        /**
+         * PropertyPriceResponse
+         * @description Lean public price shape — no `id` since the public surface has
+         *     no per-price actions (no detail page per price, no edit/delete).
+         *     Trimmed during the legacy `ListingRepository` collapse into
+         *     `PropertyListingRepository`.
+         */
         listings__adapters__api__schemas__PropertyPriceResponse: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
             /** Amount */
             amount: string;
             listing_type: components["schemas"]["listings__domain__models__ListingType"];
@@ -3783,6 +4126,130 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    init_session_api_v1_portal_session_init_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionView"];
+                };
+            };
+        };
+    };
+    get_session_me_api_v1_portal_session_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionView"];
+                };
+            };
+        };
+    };
+    patch_session_me_api_v1_portal_session_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionPatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    claim_session_api_v1_portal_session_claim_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_session_api_v1_portal_session_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionView"];
                 };
             };
         };
@@ -5012,6 +5479,62 @@ export interface operations {
             };
         };
     };
+    update_property_title_api_v1_admin_properties__property_id__title_patch: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyTitleRequest"];
+            };
+        };
+        responses: {
+            /** @description Title updated (or unchanged on no-op) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Title failed schema validation (empty/whitespace-only) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     update_property_address_api_v1_admin_properties__property_id__address_patch: {
         parameters: {
             query: {
@@ -5061,6 +5584,67 @@ export interface operations {
             };
             /** @description Address failed schema validation (empty/whitespace-only) */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    enhance_property_description_api_v1_admin_properties__property_id__enhance_description_post: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Description enhanced */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description LLM adapter not configured (missing OPENAI_API_KEY) */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6471,6 +7055,8 @@ export interface operations {
     list_properties_api_v1_listings_properties_get: {
         parameters: {
             query?: {
+                /** @description Free-text semantic query. When provided, at least one of `parish`/`municipality`/`district` is required (422 otherwise). */
+                q?: string | null;
                 /** @description Filter by listing type (sale/purchase) */
                 listing_type?: components["schemas"]["listings__domain__models__ListingType"] | null;
                 /** @description Filter by typology (house/apartment/land/ruin) */
@@ -6479,12 +7065,16 @@ export interface operations {
                 min_price?: number | string | null;
                 /** @description Maximum price filter */
                 max_price?: number | string | null;
-                /** @description Filter by district/location (partial match on address) */
+                /** @description Exact-match filter on the structured `parish` column. */
+                parish?: string | null;
+                /** @description Exact-match filter on the structured `municipality` column. */
+                municipality?: string | null;
+                /** @description Exact-match filter on the structured `district` column. */
                 district?: string | null;
-                /** @description Number of results per page */
+                /** @description Opaque token from a prior response's `next_cursor`. Omit for the head page. */
+                cursor?: string | null;
+                /** @description Results per page (1–20). Cap matches the infinite-scroll tick size. */
                 limit?: number;
-                /** @description Pagination offset */
-                offset?: number;
             };
             header?: never;
             path?: never;
@@ -6492,23 +7082,28 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successful Response */
+            /** @description Listing results — vector-ranked when `q` is set, otherwise structured-filter order. `next_cursor` is an opaque token; pass it back as `?cursor=` for the next page. `null` means end of results. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedListingResponse"];
+                    "application/json": components["schemas"]["CursorPageResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Cursor problem. `detail` is one of: `cursor_unsupported_version` (drop cursor + refetch from head — schema bump), `cursor_invalid` (drop cursor + refetch from head — corrupt token), `cursor_kind_mismatch` (drop cursor + refetch from head — search was toggled or filters changed mode), `cursor_filter_mismatch` (drop cursor + refetch from head — user changed filters). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description `q` was provided without any location filter. */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
+                content?: never;
             };
         };
     };
@@ -6543,6 +7138,26 @@ export interface operations {
             };
         };
     };
+    list_locations_api_v1_listings_locations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocationTreeResponse"];
+                };
+            };
+        };
+    };
     list_org_active_listings_api_v1_admin_listings_properties_get: {
         parameters: {
             query: {
@@ -6555,7 +7170,11 @@ export interface operations {
                 min_price?: number | string | null;
                 /** @description Maximum price filter */
                 max_price?: number | string | null;
-                /** @description Filter by district/location (partial match on address) */
+                /** @description Exact-match filter on the structured `parish` column. */
+                parish?: string | null;
+                /** @description Exact-match filter on the structured `municipality` column. */
+                municipality?: string | null;
+                /** @description Exact-match filter on the structured `district` column. */
                 district?: string | null;
                 /** @description Number of results per page */
                 limit?: number;

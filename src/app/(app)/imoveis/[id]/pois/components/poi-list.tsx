@@ -47,6 +47,8 @@ const CATEGORY_LABEL_KEY: Record<PoiCategory, keyof Dictionary["dashboard"]> = {
   shopping_mall: "poiCategoryShoppingMall",
   bakery: "poiCategoryBakery",
   police_station: "poiCategoryPoliceStation",
+  tire_shop: "poiCategoryTireShop",
+  auto_shop: "poiCategoryAutoShop",
 };
 
 function groupByCategory(

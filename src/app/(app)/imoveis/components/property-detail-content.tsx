@@ -12,7 +12,7 @@ import { useGlobalLoading } from "@/components/ui/global-loading-overlay";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
-import { deleteProperty, enhancePropertyDescription, publishProperty, unpublishProperty, updatePropertyAddress } from "../[id]/actions";
+import { deleteProperty, enhancePropertyDescription, publishProperty, unpublishProperty, updatePropertyAddress, updatePropertyTitle } from "../[id]/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
@@ -557,6 +557,10 @@ export function PropertyDetailContent({
   const [addressDraft, setAddressDraft] = useState(property.address);
   const [addressError, setAddressError] = useState<string | null>(null);
   const [isSavingAddress, startSaveAddress] = useTransition();
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(property.title);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [isSavingTitle, startSaveTitle] = useTransition();
   const [isEnhancingDescription, setIsEnhancingDescription] = useState(false);
   const [enhanceDescriptionError, setEnhanceDescriptionError] = useState<string | null>(null);
   const detailRouter = useRouter();
@@ -577,6 +581,38 @@ export function PropertyDetailContent({
       globalLoading.hide();
       setIsEnhancingDescription(false);
     }
+  };
+
+  const handleEditTitle = () => {
+    setTitleDraft(property.title);
+    setTitleError(null);
+    setIsEditingTitle(true);
+  };
+
+  const handleCancelTitle = () => {
+    setIsEditingTitle(false);
+    setTitleError(null);
+  };
+
+  const handleSaveTitle = () => {
+    const trimmed = titleDraft.trim();
+    if (!trimmed) {
+      setTitleError("Título não pode estar vazio");
+      return;
+    }
+    if (trimmed === property.title) {
+      setIsEditingTitle(false);
+      return;
+    }
+    startSaveTitle(async () => {
+      const result = await updatePropertyTitle(property.id, trimmed);
+      if (result.error) {
+        setTitleError(result.error);
+        return;
+      }
+      setIsEditingTitle(false);
+      detailRouter.refresh();
+    });
   };
 
   const handleEditAddress = () => {
@@ -746,37 +782,38 @@ export function PropertyDetailContent({
         </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            {isEditingAddress ? (
+            {isEditingTitle ? (
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <input
                   type="text"
-                  value={addressDraft}
-                  onChange={(e) => setAddressDraft(e.target.value)}
+                  value={titleDraft}
+                  onChange={(e) => setTitleDraft(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSaveAddress();
-                    if (e.key === "Escape") handleCancelAddress();
+                    if (e.key === "Enter") handleSaveTitle();
+                    if (e.key === "Escape") handleCancelTitle();
                   }}
                   autoFocus
-                  disabled={isSavingAddress}
+                  disabled={isSavingTitle}
+                  maxLength={200}
                   className="flex-1 min-w-0 text-lg font-bold font-heading text-gray-900 px-2 py-0.5 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
-                <Button variant="primary" onClick={handleSaveAddress} disabled={isSavingAddress}>
-                  {isSavingAddress ? "..." : "Guardar"}
+                <Button variant="primary" onClick={handleSaveTitle} disabled={isSavingTitle}>
+                  {isSavingTitle ? "..." : "Guardar"}
                 </Button>
-                <Button variant="steel" onClick={handleCancelAddress} disabled={isSavingAddress}>
+                <Button variant="steel" onClick={handleCancelTitle} disabled={isSavingTitle}>
                   Cancelar
                 </Button>
               </div>
             ) : (
               <>
                 <h1 className="text-lg font-bold font-heading text-gray-900 truncate">
-                  {property.address}
+                  {property.title}
                 </h1>
                 <button
                   type="button"
-                  onClick={handleEditAddress}
+                  onClick={handleEditTitle}
                   className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer shrink-0"
-                  aria-label="Editar endereço"
+                  aria-label="Editar título"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -795,7 +832,7 @@ export function PropertyDetailContent({
               </>
             )}
           </div>
-          <div className={cn("flex items-center gap-2", isEditingAddress && "hidden")}>
+          <div className={cn("flex items-center gap-2", isEditingTitle && "hidden")}>
             {property.status === "draft" && (
               <Button
                 variant="primary"
@@ -830,8 +867,8 @@ export function PropertyDetailContent({
         {publishError && (
           <p className="mt-2 text-xs text-red-600">{publishError}</p>
         )}
-        {addressError && (
-          <p className="mt-2 text-xs text-red-600">{addressError}</p>
+        {titleError && (
+          <p className="mt-2 text-xs text-red-600">{titleError}</p>
         )}
       </div>
 
@@ -1048,27 +1085,55 @@ export function PropertyDetailContent({
                 )}
               </div>
               <div className="px-4 py-4">
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 mt-0.5 shrink-0">
-                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  <span className="text-sm text-gray-700">{property.address}</span>
-                </div>
-                {hasCoords && (
-                  <a
-                    href={`https://www.google.com/maps?q=${lat},${lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      <polyline points="15 3 21 3 21 9" />
-                      <line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                    Google Maps
-                  </a>
+                {isEditingAddress ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={addressDraft}
+                      onChange={(e) => setAddressDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveAddress();
+                        if (e.key === "Escape") handleCancelAddress();
+                      }}
+                      autoFocus
+                      disabled={isSavingAddress}
+                      className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    {addressError && <p className="text-xs text-red-500">{addressError}</p>}
+                    <div className="flex items-center gap-2">
+                      <Button variant="primary" onClick={handleSaveAddress} disabled={isSavingAddress}>
+                        {isSavingAddress ? "..." : "Guardar"}
+                      </Button>
+                      <Button variant="steel" onClick={handleCancelAddress} disabled={isSavingAddress}>
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-start gap-2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 mt-0.5 shrink-0">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <span className="text-sm text-gray-700">{property.address}</span>
+                    </div>
+                    {hasCoords && (
+                      <a
+                        href={`https://www.google.com/maps?q=${lat},${lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                        Google Maps
+                      </a>
+                    )}
+                  </>
                 )}
               </div>
             </div>
