@@ -143,6 +143,24 @@ export async function updatePropertyTitle(
   }
 }
 
+export type UpdatePropertyCharacteristicsBody =
+  components["schemas"]["UpdatePropertyCharacteristicsRequest"];
+
+export async function updatePropertyCharacteristics(
+  propertyId: string,
+  body: UpdatePropertyCharacteristicsBody,
+): Promise<ActionResult<PropertyResponse>> {
+  try {
+    const data = await corePatch<PropertyResponse>(
+      `/api/v1/admin/properties/${propertyId}/characteristics`,
+      body,
+    );
+    return { error: null, data };
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Network error" };
+  }
+}
+
 // Types
 export interface SlotResponse {
   id: string;

@@ -12,7 +12,7 @@ import { useGlobalLoading } from "@/components/ui/global-loading-overlay";
 import { Select } from "@/components/ui/select";
 import { cn, formatDate } from "@/lib/utils";
 import { createPropertyPrice, updateOwnerContact } from "../novo/actions";
-import { deleteProperty, enhancePropertyDescription, publishProperty, unpublishProperty, updatePropertyAddress, updatePropertyTitle } from "../[id]/actions";
+import { deleteProperty, enhancePropertyDescription, publishProperty, unpublishProperty, updatePropertyAddress, updatePropertyCharacteristics, updatePropertyTitle } from "../[id]/actions";
 
 type PropertyResponse = components["schemas"]["PropertyResponse"];
 type PropertyOwnerResponse = components["schemas"]["PropertyOwnerResponse"];
@@ -540,6 +540,133 @@ function PropertyPriceCard({
 
 
 
+function LandCharacteristicsCard({
+  property,
+  dict,
+}: {
+  property: PropertyResponse;
+  dict: Dictionary["dashboard"];
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [isEditing, setIsEditing] = useState(false);
+  const [areaDraft, setAreaDraft] = useState(
+    property.characteristics?.area_in_m2 != null
+      ? String(property.characteristics.area_in_m2)
+      : "",
+  );
+  const [error, setError] = useState<string | null>(null);
+
+  const currentArea = property.characteristics?.area_in_m2 ?? null;
+
+  function handleEdit() {
+    setAreaDraft(currentArea != null ? String(currentArea) : "");
+    setError(null);
+    setIsEditing(true);
+  }
+
+  function handleCancel() {
+    setIsEditing(false);
+    setError(null);
+  }
+
+  function handleSave() {
+    const trimmed = areaDraft.trim();
+    const parsed = trimmed === "" ? null : Number(trimmed);
+    if (parsed !== null && (isNaN(parsed) || parsed <= 0)) {
+      setError("Área inválida");
+      return;
+    }
+    if (parsed === currentArea) {
+      setIsEditing(false);
+      return;
+    }
+    startTransition(async () => {
+      const result = await updatePropertyCharacteristics(property.id, {
+        area_in_m2: parsed,
+      });
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setIsEditing(false);
+      router.refresh();
+    });
+  }
+
+  return (
+    <div className="border border-gray-200 bg-white overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Small variant="label">{dict.characteristics}</Small>
+          <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-gray-200 text-gray-600">
+            {dict.land}
+          </span>
+        </div>
+        {!isEditing && (
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            aria-label="Editar área"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+          </button>
+        )}
+      </div>
+      <div className="px-4 py-4">
+        {isEditing ? (
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">{dict.areaM2}</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={areaDraft}
+                  onChange={(e) => setAreaDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSave();
+                    if (e.key === "Escape") handleCancel();
+                  }}
+                  autoFocus
+                  disabled={isPending}
+                  placeholder="0"
+                  className="w-32 px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <span className="text-sm text-gray-500">m²</span>
+              </div>
+            </div>
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <div className="flex items-center gap-2">
+              <Button variant="primary" onClick={handleSave} disabled={isPending}>
+                {isPending ? "..." : "Guardar"}
+              </Button>
+              <Button variant="steel" onClick={handleCancel} disabled={isPending}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <AreaIcon />
+            <div>
+              <div className="text-xs text-gray-400">{dict.areaM2}</div>
+              <div className="text-sm font-medium text-gray-900">
+                {currentArea != null ? `${currentArea} m²` : "—"}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function PropertyDetailContent({
   property,
   dict,
@@ -1038,7 +1165,9 @@ export function PropertyDetailContent({
           </div>
 
           {/* Characteristics card */}
-          {property.typology !== "land" && (
+          {property.typology === "land" ? (
+            <LandCharacteristicsCard property={property} dict={dict} />
+          ) : (
             <div className="border border-gray-200 bg-white overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
                 <Small variant="label">{dict.characteristics}</Small>

@@ -520,6 +520,26 @@ export interface paths {
         patch: operations["update_property_title_api_v1_admin_properties__property_id__title_patch"];
         trace?: never;
     };
+    "/api/v1/admin/properties/{property_id}/characteristics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update property characteristics (partial)
+         * @description Partial update of `characteristics`. Only fields explicitly present in the request body are applied; pass `null` to clear a field. On no-op (merged result equal to current) returns the existing aggregate without bumping `aggregate_version` or emitting an event.
+         */
+        patch: operations["update_property_characteristics_api_v1_admin_properties__property_id__characteristics_patch"];
+        trace?: never;
+    };
     "/api/v1/admin/properties/{property_id}/address": {
         parameters: {
             query?: never;
@@ -3753,6 +3773,33 @@ export interface components {
              */
             address: string;
         };
+        /**
+         * UpdatePropertyCharacteristicsRequest
+         * @description Partial update — only fields explicitly present in the body are
+         *     applied. Pass `null` to clear a field.
+         */
+        UpdatePropertyCharacteristicsRequest: {
+            /** Area In M2 */
+            area_in_m2?: number | null;
+            /** Num Of Bedrooms */
+            num_of_bedrooms?: number | null;
+            /** Num Of Bathrooms */
+            num_of_bathrooms?: number | null;
+            /** Built At */
+            built_at?: number | null;
+            /** Energy Rating */
+            energy_rating?: string | null;
+            /** Floor */
+            floor?: number | null;
+            /** Parking Spaces */
+            parking_spaces?: number | null;
+            /** Has Elevator */
+            has_elevator?: boolean | null;
+            /** Has Garden */
+            has_garden?: boolean | null;
+            /** Has Pool */
+            has_pool?: boolean | null;
+        };
         /** UpdatePropertyOwnerContactRequest */
         UpdatePropertyOwnerContactRequest: {
             /** Email */
@@ -5527,6 +5574,62 @@ export interface operations {
                 content?: never;
             };
             /** @description Title failed schema validation (empty/whitespace-only) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_property_characteristics_api_v1_admin_properties__property_id__characteristics_patch: {
+        parameters: {
+            query: {
+                organization_id: string;
+            };
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePropertyCharacteristicsRequest"];
+            };
+        };
+        responses: {
+            /** @description Characteristics updated (or unchanged on no-op) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Property not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Domain validation failed (e.g. non-positive area) */
             422: {
                 headers: {
                     [name: string]: unknown;
