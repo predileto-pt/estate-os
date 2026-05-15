@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
         });
         if (meRes.ok) {
           const me = await meRes.json();
-          const orgId = me.user?.organization_id;
+          const orgId = me.memberships?.[0]?.organization_id;
           if (orgId) {
             response.cookies.set("organization_id", orgId, {
               path: "/",

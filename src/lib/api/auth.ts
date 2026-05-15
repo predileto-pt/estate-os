@@ -31,6 +31,10 @@ export async function getOrganizationId(): Promise<string | null> {
   const cached = cookieStore.get("organization_id")?.value;
   if (cached) return cached;
 
+  // Fallback for the rare case where the cookie was cleared mid-session.
+  // The cookie is normally stamped at login in `src/app/auth/callback/route.ts`;
+  // we can't write it from here because this function is called from Server
+  // Components and Next.js forbids cookie mutation during a server render.
   const headers = await getAuthHeaders();
   if (!headers) return null;
 
@@ -38,19 +42,7 @@ export async function getOrganizationId(): Promise<string | null> {
   if (!res.ok) return null;
 
   const data: MeResponse = await res.json();
-  const orgId = data.memberships[0]?.organization_id ?? null;
-
-  if (orgId) {
-    cookieStore.set("organization_id", orgId, {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30,
-    });
-  }
-
-  return orgId;
+  return data.memberships[0]?.organization_id ?? null;
 }
 
 export async function getAuthContext(): Promise<{
